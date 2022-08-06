@@ -1,20 +1,16 @@
-export const onCardValidationChanged =(event)  => {
-    console.log("CARD_VALIDATION_CHANGED: %o", event);
-    payButton.disabled = !Frames.isCardValid();
-  }
+export const eventNames = { 
+  CARD_VALIDATION_CHANGED: "CARD_VALIDATION_CHANGED",
+  CARD_TOKENIZED:"CARD_TOKENIZED",
+  CARD_TOKENIZATION_FAILED:"CARD_TOKENIZATION_FAILED",
+  SUBMIT:"SUBMIT",
+  SUBMIT_FAILED:"SUBMIT_FAILED",
+  SIGN:"SIGN"
+}
 
-  export const onCardTokenized = event => {
-    console.log("CARD_TOKENIZED: %o", event);
-    const token = event.token;
-    console.log(`card tokenized ${token}`)
-  }
-  
-  export const onCardTokenizationFailed = error => {
-    console.log("CARD_TOKENIZATION_FAILED: %o", error);
-    Frames.enableSubmitForm();
-  }
-  
-  export const onValidationChanged = event => {
-    console.log("FRAME_VALIDATION_CHANGED: %o", event)
-  }
-  
+export const sendEvent = (eventName, data) => {
+  const message = JSON.stringify({
+    channel: CHANNEL,
+    event: { eventName, ...data },
+  });
+  window.parent.postMessage(message, '*');
+}
