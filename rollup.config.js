@@ -1,18 +1,18 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
-
+import multi from '@rollup/plugin-multi-entry';
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
-	input: 'js/main.js',
+	input:'src/js/main.js',
 	output: {
 		sourcemap: true,
 		format: 'iife',
-		name: 'app',
-		file: 'public/build/bundle.js'
+		name: 'version',
+		file: 'src/public/build/bundle.min.js',
+		plugins:[terser()]
 	},
 	plugins: [
 		// we'll extract any component CSS out into
@@ -28,10 +28,6 @@ export default {
 			browser: true,
 		}),
 		commonjs(),
-		// Watch the `public` directory and refresh the
-		// browser on changes when not in production
-		!production && livereload('public'),
-
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
 		production && terser()

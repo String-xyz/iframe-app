@@ -1,5 +1,5 @@
 locals {
-  cluster_name       = "iframes"
+  cluster_name       = "public-sdk"
   env                = "dev"
   service_name       = "iframe-app"
   root_domain        = "dev.string-api.xyz"
@@ -36,6 +36,14 @@ locals {
         {
           name  = "ENV"
           value = local.env
+        },
+        {
+          name  = "PUBLIC_DIR"
+          value = "./public"
+        },
+        {
+          name  = "TEMPLATE_DIR"
+          value = "./templates/*.html"
         },
         {
           name  = "REGION"
