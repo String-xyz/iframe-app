@@ -5,8 +5,6 @@ LABEL Description="String iFrame and JS SDK"
 EXPOSE 3000
 # Copy over the app files
 COPY ./cmd/app/main /app/
-COPY ./templates /app/templates
-COPY ./public/build /app/public/build
 WORKDIR /app
 
 CMD ["./main"]

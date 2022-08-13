@@ -2,7 +2,6 @@ package api
 
 import (
 	"html/template"
-	"io/fs"
 	"net/http"
 	"os"
 
@@ -10,12 +9,13 @@ import (
 	"github.com/labstack/echo"
 )
 
+const templateDir = "public/templates/*.html"
+
 func Start() {
 	e := echo.New()
-	templDir := os.Getenv("TEMPLATE_DIR")
 	port := os.Getenv("PORT")
 	renderer := &TemplateRenderer{
-		templates: template.Must(template.ParseFS(src.BuildFs, templDir)),
+		templates: template.Must(template.ParseFS(src.BuildFs, templateDir)),
 	}
 	e.Renderer = renderer
 	registerRoutes(e)
@@ -24,7 +24,7 @@ func Start() {
 
 func registerRoutes(e *echo.Echo) {
 	useOS := len(os.Args) > 1 && os.Args[1] == "live"
-	assetHandler := http.FileServer(getFileSystem(useOS))
+	assetHandler := http.FileServer(src.GetFileSystem(useOS))
 	e.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", assetHandler)))
 	e.GET("/", index)
 	e.GET("/platform", plaform)
@@ -38,16 +38,4 @@ func registerRoutes(e *echo.Echo) {
 // ** Handle internal transaction endpoints
 func registerTransact(e *echo.Echo) {
 	e.POST("/transact", transact)
-}
-
-// ** Read files from dir or embeded when compiled
-func getFileSystem(useOS bool) http.FileSystem {
-	if useOS {
-		return http.FS(os.DirFS(os.Getenv("PUBLIC_DIR")))
-	}
-	fsys, err := fs.Sub(src.BuildFs, "public/build")
-	if err != nil {
-		panic(err)
-	}
-	return http.FS(fsys)
 }

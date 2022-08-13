@@ -1,16 +1,16 @@
-const CHANNEL = 'STRING_PAY';
 import {sendEvent, eventNames} from './events';
-
+const CHANNEL = 'STRING_PAY';
+const CHECKOUT_PUB_KEY = process.env.CHECKOUT_PUB_KEY;
   const init = () => { 
-    Frames.init("pk_test_8ac41c0d-fbcc-4ae3-a771-31ea533a2beb");
+    Frames.init(CHECKOUT_PUB_KEY);
     registerEventHandlers();
   };
 
   const registerEventHandlers = () => {
     window.addEventListener('message', function (e) {
-      const payload = JSON.parse(e.data);
+      const payload = e.data;
       const channel = payload.channel;
-      const event = payload.event
+      const event = payload.event;
       if (channel == CHANNEL) {
           handleEvent(event)
       }

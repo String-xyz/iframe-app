@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { eventNames } from "./events";
 
 const CHANNEL = 'STRING_PAY';
-const INTERNAL_URL = "https://iframe-app.dev.string-api.xyz/";
+const INTERNAL_URL = process.env.INTERNAL_URL;
 
 const sendEvent = (elem, eventName, data) => {
     if (!elem) {
@@ -49,7 +49,7 @@ const StringFrame = {
         stringElem = iframe;
 
         window.addEventListener('message', function (e) {
-            const payload = JSON.parse(e.data);
+            const payload = e.data;
             const channel = payload.channel;
             const event = payload.event
             if (channel == CHANNEL) {
@@ -78,7 +78,7 @@ const StringFrame = {
         }
     },
     submit: async (payload) => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         const signer = provider.getSigner();
         try { 
             const signature = await signer.signMessage("hello");
