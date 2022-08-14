@@ -46,7 +46,7 @@ func (s service) Transact(body model.Transaction) (string, error) {
 func (s service) Qoute(body model.Transaction) (model.Quote, error) {
 	ctx, cancel := contextWithTimeout(120)
 	defer cancel()
-	resp, err := Post[response](ctx, BASE_URL+"transact/qoute", body)
+	resp, err := Post[response](ctx, BASE_URL+"transact/quote", body)
 	if err != nil {
 		return model.Quote{}, err
 	}
