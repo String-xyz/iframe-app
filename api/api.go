@@ -25,6 +25,7 @@ func Start() {
 func registerRoutes(e *echo.Echo) {
 	useOS := len(os.Args) > 1 && os.Args[1] == "live"
 	assetHandler := http.FileServer(src.GetFileSystem(useOS))
+
 	e.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", assetHandler)))
 	e.GET("/", index)
 	e.GET("/platform", plaform)
@@ -38,4 +39,5 @@ func registerRoutes(e *echo.Echo) {
 // ** Handle internal transaction endpoints
 func registerTransact(e *echo.Echo) {
 	e.POST("/transact", transact)
+	e.POST("/quote", quote)
 }

@@ -12,7 +12,7 @@ type response struct {
 	Data model.Quote `json:"data"`
 }
 
-type trxResponse struct {
+type txResponse struct {
 	model.Response
 	Data struct {
 		TxID string `json:"txID"`
@@ -21,7 +21,7 @@ type trxResponse struct {
 
 type Service interface {
 	Transact(body model.Transaction) (string, error)
-	Qoute(body model.Transaction) (model.Quote, error)
+	Quote(body model.Transaction) (model.Quote, error)
 }
 
 type service struct {
@@ -35,15 +35,15 @@ func New() Service {
 func (s service) Transact(body model.Transaction) (string, error) {
 	ctx, cancel := contextWithTimeout(120)
 	defer cancel()
-	resp, err := Post[trxResponse](ctx, BASE_URL+"transact", body)
+	resp, err := Post[txResponse](ctx, BASE_URL+"transact", body)
 	if err != nil {
 		return "", err
 	}
 	return resp.Data.TxID, nil
 }
 
-// Qoute call internal apis to execute a Qoute coming from the iframe
-func (s service) Qoute(body model.Transaction) (model.Quote, error) {
+// Quote call internal apis to execute a Quote coming from the iframe
+func (s service) Quote(body model.Transaction) (model.Quote, error) {
 	ctx, cancel := contextWithTimeout(120)
 	defer cancel()
 	resp, err := Post[response](ctx, BASE_URL+"transact/quote", body)
