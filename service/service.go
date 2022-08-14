@@ -9,7 +9,7 @@ import (
 
 type response struct {
 	model.Response
-	Data model.Qoute `json:"data"`
+	Data model.Quote `json:"data"`
 }
 
 type trxResponse struct {
@@ -21,7 +21,7 @@ type trxResponse struct {
 
 type Service interface {
 	Transact(body model.Transaction) (string, error)
-	Qoute(body model.Transaction) (model.Qoute, error)
+	Qoute(body model.Transaction) (model.Quote, error)
 }
 
 type service struct {
@@ -43,12 +43,12 @@ func (s service) Transact(body model.Transaction) (string, error) {
 }
 
 // Qoute call internal apis to execute a Qoute coming from the iframe
-func (s service) Qoute(body model.Transaction) (model.Qoute, error) {
+func (s service) Qoute(body model.Transaction) (model.Quote, error) {
 	ctx, cancel := contextWithTimeout(120)
 	defer cancel()
 	resp, err := Post[response](ctx, BASE_URL+"transact/qoute", body)
 	if err != nil {
-		return model.Qoute{}, err
+		return model.Quote{}, err
 	}
 	return resp.Data, nil
 }

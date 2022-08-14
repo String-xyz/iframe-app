@@ -15,7 +15,7 @@ type Estimate struct {
 	TotalUSD   float64   `json:"totalUSD"`
 }
 
-type Qoute struct {
+type Quote struct {
 	Estimate  Estimate `json:"estimate"`
 	Signature string   `json:"signature"`
 }
@@ -28,6 +28,6 @@ type Transaction struct {
 	ContractParams   []string `json:"contractParams"`
 	TxValue          string   `json:"txValue"`
 	GasLimit         float64  `json:"gasLimit"`
-	Qoute            Qoute    `json:"qoute,omitempty"`
+	Quote            Quote    `json:"qoute,omitempty"`
 	CardToken        string   `json:"cardToken,omitempty"`
 }
