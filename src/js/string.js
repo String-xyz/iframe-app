@@ -11,7 +11,7 @@ const sendEvent = (elem, eventName, data) => {
     }
     const message = JSON.stringify({
         channel: CHANNEL,
-        event: { eventName, ...data },
+        event: { eventName, payload: data },
     });
     elem.contentWindow.postMessage(message, '*');
 }
@@ -77,16 +77,33 @@ const StringFrame = {
                 events.onSubmitFailed(event.error)
         }
     },
-    submit: async (payload) => {
+
+    transact: async (payload) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         const signer = provider.getSigner();
-        try { 
+        try {
             const signature = await signer.signMessage("hello");
-            sendEvent(stringElem, eventNames.SUBMIT, { apiKey: apiKey, payload: payload })
-        } catch(error) { 
+            sendEvent(stringElem, eventNames.TRANSACT, { apiKey: apiKey, payload: payload })
+        } catch (error) {
             console.error(error)
         }
     },
+
+    quote: (payload = testData) => {
+        sendEvent(stringElem, eventNames.QUOTE, { apiKey: apiKey, payload: payload })
+    }
 }
 
 window.StringFrame = StringFrame;
+
+// remove once ready
+testData = { 
+		chainID: 43113,
+		userAddress: '0x44A4b9E2A69d86BA382a511f845CbF2E31286770',
+		contractAddress: '0x861af9ed4fee884e5c49e9ce444359fe3631418b',
+		contractABI: ['function mintTo(address recipient) payable returns (uint256)'],
+		contractFunction: 'mintTo',
+		contractParameters: ['0x44A4b9E2A69d86BA382a511f845CbF2E31286770'],
+		txValue: (item.price * 1e18).toString(),
+		gasLimit: '8000000'
+	};

@@ -16,7 +16,7 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./cmd/app/main ./cmd/app/main.go
 
 run:
-	cd ./cmd/app && ENV=local go run .
+	npm run build && cd ./cmd/app && ENV=local go run .
 	
 docker-build: test-envvars
 	docker build -t $(ECR_REPO_URL):${SERVICE_TAG} .

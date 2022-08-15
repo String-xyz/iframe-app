@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {sendEvent, eventNames} from './events';
 const CHANNEL = 'STRING_PAY';
 const CHECKOUT_PUB_KEY = process.env.CHECKOUT_PUB_KEY;
@@ -39,12 +40,14 @@ const CHECKOUT_PUB_KEY = process.env.CHECKOUT_PUB_KEY;
 
   const handleEvent = event => {
     switch (event.eventName) { 
-        case "SUBMIT":
+        case "TRANSACT":
            currentPayload = event.payload;
            Frames.submit();
-           events.onCardValidationChanged(event.isCardValid);
            break;
-    }
+           case "QUOTE":
+            quote(event.payload);
+            break;
+     }
   };
 
   const onCardValidationChanged = event => {
@@ -70,8 +73,25 @@ const CHECKOUT_PUB_KEY = process.env.CHECKOUT_PUB_KEY;
     console.log("FRAME_VALIDATION_CHANGED: %o", event);
   };
 
-  const transact = (token, payload) => { 
+  const transact = async (token, payload) => { 
+    const data = {...payload, cardToken:token}
+    try { 
+      const resp = await axios.post('/transact', data)
+      sendEvent(eventNames.TRANSACT, {data:resp.data})
+      currentPayload = undefined
+    } catch (error) { 
+      sendEvent(eventNames.TRANSACT_FAILED, {error})
+      currentPayload = undefined
+    }
+  };
 
+  const quote = async (payload) => { 
+    try { 
+      const resp = await axios.post('/transact/quote', payload)
+      sendEvent(eventNames.QUOTE, {data:resp.data})
+    } catch (error) { 
+      sendEvent(eventNames.QUOTE_FAILED, {error})
+    }
   };
   
 init();
