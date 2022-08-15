@@ -28,6 +28,6 @@ type Transaction struct {
 	ContractParams   []string `json:"contractParams"`
 	TxValue          string   `json:"txValue"`
 	GasLimit         float64  `json:"gasLimit"`
-	Quote            Quote    `json:"qoute,omitempty"`
+	Quote            Quote    `json:"quote,omitempty"`
 	CardToken        string   `json:"cardToken,omitempty"`
 }
