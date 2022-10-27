@@ -3,8 +3,8 @@
 	import { modalManager } from '$lib/stores';
 	import type { NFT } from '$lib/types';
 
-	import PurchaseSummary from '$lib/components/PurchaseSummary.svelte';
-	import NFTDetails from '$lib/components/NFTDetails.svelte';
+	import PurchaseSummary from '$lib/components/checkout/PurchaseSummary.svelte';
+	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
 
 	export let txID: string;
 	export let item: NFT;

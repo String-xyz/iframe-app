@@ -3,9 +3,9 @@
 	import { card, quote, finalQuote, modalManager } from '$lib/stores';
 	import type { NFT } from '$lib/types';
 
-	import PurchaseSummary from '$lib/components/PurchaseSummary.svelte';
-	import CardSelect from '$lib/components/CardSelect.svelte';
-	import Address from '$lib/components/Address.svelte';
+	import PurchaseSummary from '$lib/components/checkout/PurchaseSummary.svelte';
+	import CardSelect from '$lib/components/checkout/CardSelect.svelte';
+	import Address from '$lib/components/checkout/Address.svelte';
 	import OrderDetails from './OrderDetails.svelte';
 	import Processing from './Processing.svelte';
 

@@ -11,8 +11,8 @@
 	import type { Card, NFT } from '$lib/types';
 	import { onMount } from 'svelte';
 
-	import NFTDetails from '$lib/components/NFTDetails.svelte';
-	import Spinner from '$lib/components/Spinner.svelte';
+	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
+	import Spinner from '$lib/components/checkout/Spinner.svelte';
 	import PurchaseSuccess from './PurchaseSuccess.svelte';
 	import PurchaseFail from './PurchaseFail.svelte';
 
@@ -20,7 +20,7 @@
 
 	onMount(async () => {
 		let result: any;
-		await transact(item, $card.token, $finalQuote)
+		await transact($finalQuote)
 			.then((tx) => {
 				result = tx;
 			})

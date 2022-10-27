@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { card, modalManager } from '$lib/stores';
 	import type { Card } from '$lib/types';
-	import CardDetails from './modals/checkout/CardDetails.svelte';
+	import CardDetails from '$lib/modals/checkout/CardDetails.svelte';
 
 	const changeCard = () => {
 		card.set(<Card>{})

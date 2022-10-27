@@ -42,10 +42,8 @@ export const parsePayload = (payload: StringPayload) => {
 			contractFunction: payload.contractFunction,
 			contractParameters: payload.contractParameters,
 			txValue: payload.txValue,
-			gasLimit: payload.gasLimit
+			gasLimit: "8000000"
 		}
-
-		console.log(item)
 		
 		return {item, contractParams}
 	} catch (e: any) {

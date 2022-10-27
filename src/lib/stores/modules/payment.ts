@@ -1,6 +1,6 @@
 import { post } from '$lib/services/api';
 import { get as getStore, writable, type Writable } from 'svelte/store';
-import type { NFT, TransactPayload, Card, ContractPayload } from '$lib/types';
+import type { TransactPayload, Card, ContractPayload } from '$lib/types';
 
 export const contractPayload: Writable<ContractPayload> = writable();
 export const card: Writable<Card> = writable();

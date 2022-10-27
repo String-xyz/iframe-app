@@ -3,7 +3,7 @@
 	import { modalManager } from '$lib/stores';
 	import type { NFT } from '$lib/types';
 
-	import NFTDetails from '$lib/components/NFTDetails.svelte';
+	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
 	import OrderConfirmation from './OrderConfirmation.svelte';
 
 	export let item: NFT;

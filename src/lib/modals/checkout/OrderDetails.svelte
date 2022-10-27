@@ -3,14 +3,16 @@
 	import { modalManager } from '$lib/stores';
 	import type { NFT } from '$lib/types';
 
-	import NFTDetails from '$lib/components/NFTDetails.svelte';
-	import PurchaseSummary from '$lib/components/PurchaseSummary.svelte';
+	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
+	import PurchaseSummary from '$lib/components/checkout/PurchaseSummary.svelte';
 	import OrderConfirmation from './OrderConfirmation.svelte';
+	import { Events, sendEvent } from '$lib/events';
 
 	export let item: NFT;
 
 	const back = () => {
 		modalManager.set(null);
+		sendEvent(Events.IFRAME_CLOSE)
 	};
 
 	const next = () => {

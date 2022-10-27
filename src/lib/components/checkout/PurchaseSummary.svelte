@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { quote, refreshQuote, finalQuote, quoteItem, quoteInterval, contractPayload } from '$lib/stores';
-	import type { NFT, TransactPayload } from '$lib/types';
+	import { quote, stopQuote, contractPayload,
+		refreshQuote, finalQuote } from '$lib/stores';
+	import type { NFT } from '$lib/types';
 
 	import { abbrev, getBlockExplorer } from '$lib/utils';
 	import { onMount, onDestroy } from 'svelte';
@@ -12,14 +13,13 @@
 
 	onMount(async () => {
 		console.log("purchasesummary", item)
-		quoteItem.set(item);
-		await refreshQuote($contractPayload.userAddress);
+		if (item) {
+			await refreshQuote();
+		}
 	});
 
 	onDestroy(() => {
-		quoteItem.set(<NFT>{});
-		quote.set(<TransactPayload>{});
-		clearInterval($quoteInterval);
+		stopQuote();
 	});
 
 	$: quoted = $quote?.data?.quote.estimate;
@@ -30,7 +30,7 @@
 	<div class="flex justify-between mt-4">
 		<span>Transaction</span>
 		<span>
-			<a href={getBlockExplorer(item.chainID) + txID} target='_blank' rel='noreferrer'>
+			<a href={getBlockExplorer($contractPayload.chainID) + txID} target='_blank' rel='noreferrer'>
 				<span class="text-primary mr-3">{abbrev(txID)}</span>
 				<img class="inline" src="/assets/external_link.svg" alt="Ext Link" />
 			</a>
