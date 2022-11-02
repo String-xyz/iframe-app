@@ -21,7 +21,7 @@
 	</div>
 	<footer class="footer footer-center my-6 select-none text-xs">
 		<div class="inline">
-			<span>Powered by <img class="inline" src="/assets/string_logo_text_gray.svg" alt="String" /></span>
+			<span>Powered by <img class="inline" src="/assets/string_text_logo.svg" alt="String" /></span>
 		</div>
 	</footer>
 </div>

@@ -11,6 +11,6 @@ export const getQuote = async (): Promise<TransactPayload> => {
 };
 
 export const transact = async (quote: TransactPayload): Promise<any> => {
-	quote.data.cardToken = getStore(card).token;
-	return await post('transact', JSON.stringify(quote.data));
+	quote.cardToken = getStore(card).token;
+	return await post('transact', JSON.stringify(quote));
 };

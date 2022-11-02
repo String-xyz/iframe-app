@@ -12,8 +12,8 @@ const PayloadSchema = z.object({
 	chainID: z.number(),
 	userAddress: z.string(),
 	contractAddress:z.string(),
-	contractABI: z.string().array(),
 	contractFunction: z.string(),
+	contractReturn: z.string(),
 	contractParameters: z.string().array(),
 	txValue: z.string()
 });
@@ -38,8 +38,8 @@ export const parsePayload = (payload: StringPayload) => {
 			chainID: payload.chainID,
 			userAddress: payload.userAddress,
 			contractAddress: payload.contractAddress,
-			contractABI: payload.contractABI,
 			contractFunction: payload.contractFunction,
+			contractReturn: payload.contractReturn,
 			contractParameters: payload.contractParameters,
 			txValue: payload.txValue,
 			gasLimit: "8000000"

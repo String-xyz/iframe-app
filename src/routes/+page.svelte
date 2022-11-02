@@ -15,6 +15,7 @@
 	$: modal?.scrollHeight && sendResize()
 
 	const sendResize = () => {
+		console.log("resize", modal.scrollHeight)
 		sendEvent(Events.IFRAME_RESIZE, {"height": modal.scrollHeight})
 	}
 	

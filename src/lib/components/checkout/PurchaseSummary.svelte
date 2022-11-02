@@ -12,7 +12,6 @@
 	export let txID = "";
 
 	onMount(async () => {
-		console.log("purchasesummary", item)
 		if (item) {
 			await refreshQuote();
 		}
