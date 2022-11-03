@@ -21,7 +21,6 @@
 		stopQuote();
 	});
 
-	$: quoted = $quote?.data?.quote.estimate;
 </script>
 
 {#if final}
@@ -39,29 +38,29 @@
 		<span>Date</span><span>{new Date().toLocaleString('en-US')}</span>
 	</div>
 	<div class="flex justify-between mt-2 mb-6">
-		<span>Total</span><span>$ {$finalQuote?.data?.quote.estimate.totalUSD.toFixed(2)}</span>
+		<span>Total</span><span>$ {$finalQuote?.totalUSD.toFixed(2)}</span>
 	</div>
 
 {:else}
 	<div class="flex justify-between mt-9">
 		<span class="text-xl font-bold">Purchase summary</span>
 	</div>
-	{#if quoted}
-		{#key quoted}
+	{#if $quote}
+		{#key $quote}
 			<div class="text-sm mt-5">
 				<div class="flex justify-between">
-					<span>Item price</span><span in:fade="{{ duration: 1000 }}">$ {quoted.baseUSD.toFixed(2)}</span>
+					<span>Item price</span><span in:fade="{{ duration: 1000 }}">$ {$quote.baseUSD.toFixed(2)}</span>
 				</div>
 				<div class="flex justify-between mt-2">			
-					<span>Network fee</span><span in:fade="{{ duration: 1000 }}">$ {quoted.gasUSD.toFixed(2)}</span>
+					<span>Network fee</span><span in:fade="{{ duration: 1000 }}">$ {$quote.gasUSD.toFixed(2)}</span>
 				</div>
 				<div class="flex justify-between mt-2">
-					<span>Service fee</span><span in:fade="{{ duration: 1000 }}">$ {quoted.serviceUSD.toFixed(2)}</span>
+					<span>Service fee</span><span in:fade="{{ duration: 1000 }}">$ {$quote.serviceUSD.toFixed(2)}</span>
 				</div>
 			</div>
 			<div class="divider" />
 			<div class="flex justify-between mb-4 text-xl">
-				<span class="font-bold">Total</span><span in:fade="{{duration: 1000 }}">$ {quoted.totalUSD.toFixed(2)}</span>
+				<span class="font-bold">Total</span><span in:fade="{{duration: 1000 }}">$ {$quote.totalUSD.toFixed(2)}</span>
 			</div>
 		{/key}
 		<div class="flex justify-between mt-3">

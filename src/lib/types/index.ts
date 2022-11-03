@@ -47,6 +47,7 @@ export interface ContractPayload {
 }
 
 export interface StringPayload {
+	apiKey: string;
 	name: string;
 	collection: string;
 	currency: string;

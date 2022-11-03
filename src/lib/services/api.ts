@@ -1,20 +1,23 @@
-import { apiKey } from "$lib/stores";
+import { API_KEY, JWT_TOKEN } from "$lib/stores";
 import { get as getStore } from 'svelte/store'
 
 const baseUrl = import.meta.env.VITE_API_BASE_PATH;
-const JWT_TOKEN = import.meta.env.VITE_JWT_TOKEN
-
 const getHeaders = () => {
 	const headers: HeadersInit = {
 		'Content-Type': 'application/json',
-		'X-Api-Key': getStore(apiKey),
-		'Authorization': `Bearer ${JWT_TOKEN}`
+		'X-Api-Key': getStore(API_KEY),
+		'Authorization': `Bearer ${getStore(JWT_TOKEN)}`
 	}
 
 	return headers
 }
 export const post = async (path: string, body: any = undefined) => {
 	try {
+		if (typeof body === 'object') {
+			body = JSON.stringify(body)
+			console.log(body)
+		}
+
 		const result = await fetch(`${baseUrl}/${path}`, {
 			method: 'POST',
 			body: body,

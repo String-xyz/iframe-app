@@ -1,4 +1,4 @@
-import { contractPayload, modalProps, isAuthorized, apiKey } from '$lib/stores';
+import { contractPayload, modalProps, isAuthorized, login } from '$lib/stores';
 import { get as getStore } from 'svelte/store'
 import { parsePayload } from '$lib/utils';
 
@@ -36,17 +36,19 @@ export const sendEvent = (eventName: string, data?: any) => {
 const handleEvent = (event: StringEvent) => {
 	let payload;
 	switch (event.eventName) {
-		case Events.INIT:
-			console.log(event)
-			apiKey.set(event.data)
-			console.log("apiKey ", getStore(apiKey))
-			sendEvent(Events.IFRAME_AUTHED, {"valid": true})
-		break;
+		// case Events.INIT:
+		// 	console.log(event)
+		// 	apiKey.set(event.data)
+		// 	console.log("apiKey ", getStore(apiKey))
+		// 	sendEvent(Events.IFRAME_AUTHED, {"valid": true})
+		// break;
 
 		case Events.LOAD_PAYLOAD:
 			payload = parsePayload(event.data);
 			contractPayload.set(payload.contractParams);
 			modalProps.set({item: payload.item});
+
+			login('email', 'nickcage@string.xyz', 'declarationofindependence')
 
 			isAuthorized.set(true);
 		break;
