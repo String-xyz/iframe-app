@@ -1,6 +1,13 @@
-/node_modules/
-/src/public/build/
-.terraform
 .DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+/coverage
 .env
-coverage/*
+.env.*
+!.env.example
+.vercel
+.output
+*.terraform
+yarn-error.log
