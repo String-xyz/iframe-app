@@ -8,12 +8,6 @@ interface StringEvent {
 	data?: any;
 }
 
-// interface CheckoutEvent {
-// 	data: any;
-// 	event: string;
-// 	type: string;
-// }
-
 export enum Events {
 	INIT = 'init',
 	IFRAME_READY = 'ready',
@@ -43,14 +37,6 @@ const handleEvent = (event: StringEvent) => {
 		break;
 	}
 }
-
-// const handleCkoEvent = (e: CheckoutEvent) => {
-// 	switch (e.event) {
-// 		case "":
-		
-// 		break;
-// 	}
-// }
 
 export const registerEvents = () => {
 	window.addEventListener('message', function (e) {
