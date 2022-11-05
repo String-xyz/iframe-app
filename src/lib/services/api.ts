@@ -2,6 +2,7 @@ import { API_KEY, JWT_TOKEN } from "$lib/stores";
 import { get as getStore } from 'svelte/store'
 
 const baseUrl = import.meta.env.VITE_API_BASE_PATH;
+
 const getHeaders = () => {
 	const headers: HeadersInit = {
 		'Content-Type': 'application/json',
@@ -11,6 +12,7 @@ const getHeaders = () => {
 
 	return headers
 }
+
 export const post = async (path: string, body: any = undefined) => {
 	try {
 		if (typeof body === 'object') {
