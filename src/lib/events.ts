@@ -1,25 +1,20 @@
-import { contractPayload, modalProps, isAuthorized, login } from '$lib/stores';
-import { get as getStore } from 'svelte/store'
+import { contractPayload, item, isAuthorized, login } from '$lib/stores';
 import { parsePayload } from '$lib/utils';
 
 const CHANNEL = "STRING_PAY"
+
+const TEST_USER_EMAIL = import.meta.env.VITE_TEST_USER_EMAIL
+const TEST_USER_PWD = import.meta.env.VITE_TEST_USER_PWD
+
 
 interface StringEvent {
 	eventName: string;
 	data?: any;
 }
 
-// interface CheckoutEvent {
-// 	data: any;
-// 	event: string;
-// 	type: string;
-// }
-
 export enum Events {
-	INIT = 'init',
 	LOAD_PAYLOAD = 'load_payload',
 	IFRAME_READY = 'ready',
-	IFRAME_AUTHED = 'authed',
 	IFRAME_RESIZE = 'resize',
 	IFRAME_CLOSE = 'close',
 }
@@ -33,56 +28,43 @@ export const sendEvent = (eventName: string, data?: any) => {
 	window.parent.postMessage(message, '*');
 };
 
-const handleEvent = (event: StringEvent) => {
+const handleEvent = async (event: StringEvent) => {
 	let payload;
 	switch (event.eventName) {
-		// case Events.INIT:
-		// 	console.log(event)
-		// 	apiKey.set(event.data)
-		// 	console.log("apiKey ", getStore(apiKey))
-		// 	sendEvent(Events.IFRAME_AUTHED, {"valid": true})
-		// break;
-
 		case Events.LOAD_PAYLOAD:
 			payload = parsePayload(event.data);
 			contractPayload.set(payload.contractParams);
-			modalProps.set({item: payload.item});
+			item.set(payload.item);
 
-			login('email', 'nickcage@string.xyz', 'declarationofindependence')
-
+			if (!TEST_USER_EMAIL || !TEST_USER_PWD) {
+				console.error("No user email or password found, cannot get JWT token")
+				break
+			}
+			
+			await login('email', TEST_USER_EMAIL, TEST_USER_PWD)
 			isAuthorized.set(true);
 		break;
 	}
 }
 
-// const handleCkoEvent = (e: CheckoutEvent) => {
-// 	switch (e.event) {
-// 		case "":
-		
-// 		break;
-// 	}
-// }
-
-export const registerEvents = () => {
-	window.addEventListener('message', function (e) {
-		// Filter Metamask
+export const registerEvents = async () => {
+	window.addEventListener('message', async (e) => {
+		// Filter Metamask events
 		if (e.data?.data?.name) return;
 
-		// Filter Checkout
-		if (e.data?.type == "cko-msg") {
-			// handleCkoEvent(e.data)
-		} else {
-			// Our messages
-			try {
-				const payload = JSON.parse(e.data);
-				const channel = payload.channel;
-				const event = payload.event
-				if (channel == CHANNEL) {
-					handleEvent(event)
-				}
-			} catch (error) {
-				console.log(error);
+		// Filter Checkout events
+		if (e.data?.type == "cko-msg") return;
+
+		// Our messages
+		try {
+			const payload = JSON.parse(e.data);
+			const channel = payload.channel;
+			const event = payload.event
+			if (channel == CHANNEL) {
+				await handleEvent(event)
 			}
+		} catch (error) {
+			console.log(error);
 		}
 	}, true);		
 }

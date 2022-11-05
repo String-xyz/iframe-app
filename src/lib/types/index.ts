@@ -20,6 +20,10 @@ export interface TransactPayload extends Quote {
 	cardToken: string;
 }
 
+export interface TransactionResponse {
+	txID: string;
+}
+
 export interface Card {
 	token: string;
 	scheme: string;

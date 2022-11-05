@@ -1,14 +1,11 @@
 <script lang="ts">
 	import ModalBase from './ModalBase.svelte';
 	import { modalManager } from '$lib/stores';
-	import type { NFT } from '$lib/types';
 
 	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
 	import PurchaseSummary from '$lib/components/checkout/PurchaseSummary.svelte';
 	import OrderConfirmation from './OrderConfirmation.svelte';
 	import { Events, sendEvent } from '$lib/events';
-
-	export let item: NFT;
 
 	const back = () => {
 		modalManager.set(null);
@@ -21,8 +18,8 @@
 </script>
 
 <ModalBase title="Pay with Card">
-	<NFTDetails {item} />
-	<PurchaseSummary {item} />
+	<NFTDetails />
+	<PurchaseSummary />
 	<div class="text-center mt-6">
 		<button on:click={next} class="btn btn-wide btn-primary rounded border-2 tracking-wider	text-white">
 			Next

@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { card, modalManager } from '$lib/stores';
-	import type { Card } from '$lib/types';
 	import CardDetails from '$lib/modals/checkout/CardDetails.svelte';
 
 	const changeCard = () => {
-		card.set(<Card>{})
+		$card = null
 		modalManager.set(CardDetails);	
 	}
 
-	const showCardDetails = () => {
+	const showAddCard = () => {
 		modalManager.set(CardDetails);
 	};
 
@@ -25,7 +24,7 @@
 {:else}
 	<div class="flex justify-between mt-3">
 		<span>Card number</span>
-		<span class="text-primary text-sm cursor-pointer" on:click={showCardDetails}>
+		<span class="text-primary text-sm cursor-pointer" on:click={showAddCard}>
 			<img class="inline mr-3" src="/assets/card_icon.svg" alt="card_icon" />
 			Add Card
 		</span>

@@ -15,7 +15,6 @@ export const post = async (path: string, body: any = undefined) => {
 	try {
 		if (typeof body === 'object') {
 			body = JSON.stringify(body)
-			console.log(body)
 		}
 
 		const result = await fetch(`${baseUrl}/${path}`, {

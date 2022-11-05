@@ -1,12 +1,9 @@
 <script lang="ts">
 	import ModalBase from './ModalBase.svelte';
 	import { modalManager } from '$lib/stores';
-	import type { NFT } from '$lib/types';
 
 	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
 	import OrderConfirmation from './OrderConfirmation.svelte';
-
-	export let item: NFT;
 
 	const back = () => {
 		modalManager.set(OrderConfirmation);
@@ -14,7 +11,7 @@
 </script>
 
 <ModalBase title="Purchase failed">
-	<NFTDetails {item} />
+	<NFTDetails />
 	<div class="divider" />
 	<p class="text-red-500">We are unable to complete your purchase due to an API error</p>
 	<div class="text-center mt-6">

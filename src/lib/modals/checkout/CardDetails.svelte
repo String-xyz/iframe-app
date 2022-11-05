@@ -5,9 +5,6 @@
 	import { onMount } from 'svelte';
 	import OrderConfirmation from './OrderConfirmation.svelte';
 
-	// svelte-ignore unused-export-let
-	export let item;
-
 	const CHECKOUT_PK = import.meta.env.VITE_CHECKOUT_PUBLIC_KEY;
 
 	let isPaymentInfoValid = false;

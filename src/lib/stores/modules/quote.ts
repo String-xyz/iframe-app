@@ -2,8 +2,8 @@ import { writable, get as getStore, type Writable } from 'svelte/store';
 import { getQuote } from '$lib/stores';
 import type { TransactPayload } from '$lib/types';
 
-export const finalQuote: Writable<TransactPayload> = writable();
-export const quote: Writable<TransactPayload> = writable();
+export const finalQuote: Writable<TransactPayload | null> = writable();
+export const quote: Writable<TransactPayload | null> = writable();
 
 export const quoteInterval: Writable<NodeJS.Timer> = writable();
 
@@ -27,5 +27,5 @@ export const refreshQuote = async () => {
 
 export const stopQuote = async () => {
 	clearInterval(getStore(quoteInterval));
-	quote.set(<TransactPayload>{});
+	quote.set(null);
 }
