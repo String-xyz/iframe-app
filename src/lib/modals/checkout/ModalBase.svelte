@@ -7,8 +7,7 @@
 	const close = () => {
 		modalManager.set(null);
 		sendEvent(Events.IFRAME_CLOSE)
-
-	};
+	}
 </script>
 
 <div class="str-modal">
