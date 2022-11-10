@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { modalManager, modalProps, isAuthorized } from '$lib/stores';
+	import { modalManager, isAuthorized } from '$lib/stores';
 	import OrderDetails from '$lib/modals/checkout/OrderDetails.svelte';
 	import { Events, registerEvents, sendEvent } from '$lib/events';
 
-	onMount(() => {
-		registerEvents();
+	onMount(async () => {
+		await registerEvents();
 		modalManager.set(OrderDetails);
 		sendEvent(Events.IFRAME_READY)
 	});
@@ -15,11 +15,12 @@
 	$: modal?.scrollHeight && sendResize()
 
 	const sendResize = () => {
+		console.log("resize", modal.scrollHeight)
 		sendEvent(Events.IFRAME_RESIZE, {"height": modal.scrollHeight})
 	}
 	
 </script>
 
 {#if $isAuthorized}
-	<svelte:component bind:this={modal} this={$modalManager} {...$modalProps} />
+	<svelte:component bind:this={modal} this={$modalManager} />
 {/if}

@@ -5,10 +5,9 @@
 		finalQuote,
 		transact,
 		modalManager,
-		modalProps,
+		txID,
 	} from '$lib/stores';
 
-	import type { Card, NFT } from '$lib/types';
 	import { onMount } from 'svelte';
 
 	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
@@ -16,32 +15,19 @@
 	import PurchaseSuccess from './PurchaseSuccess.svelte';
 	import PurchaseFail from './PurchaseFail.svelte';
 
-	export let item: NFT;
-
 	onMount(async () => {
-		let result: any;
-		await transact($finalQuote)
-			.then((tx) => {
-				result = tx;
-			})
-			.catch((e) => {
-				console.error(e);
-			});
+		if (!$finalQuote) return;
+		
+		const transaction = await transact($finalQuote)
+		$txID = transaction?.txID
+		$card = null
 
-		const txSuccess = result?.success ?? false;
-		const txID = result?.data?.txID ?? '#';
-
-		if (txSuccess)
-			modalProps.update((props) => {
-				return { ...props, txID };
-			});
-		card.set(<Card>{});
-		modalManager.set(txSuccess ? PurchaseSuccess : PurchaseFail);
+		modalManager.set(txID ? PurchaseSuccess : PurchaseFail);
 	});
 </script>
 
 <ModalBase title="Processing">
-	<NFTDetails {item} />
+	<NFTDetails />
 	<div class="mt-9"></div>
 	<Spinner />
 	<div class="mt-6 text-center">

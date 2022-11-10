@@ -1,30 +1,27 @@
 export interface Quote {
-	estimate: {
-		timestamp: number;
-		baseUSD: number;
-		gasUSD: number;
-		tokenUSD: number;
-		serviceUSD: number;
-		totalUSD: number;
-	};
+	timestamp: number;
+	baseUSD: number;
+	gasUSD: number;
+	tokenUSD: number;
+	serviceUSD: number;
+	totalUSD: number;
 	signature: string;
 }
 
-export interface TransactPayload {
-	success: boolean;
-	data: {
-		chainID: number;
-		userAddress: string;
-		contractAddress: string;
-		contractABI: string[];
-		contractFunction: string;
-		contractParameters: string[];
-		txValue: string;
-		gasLimit: string;
-		type: number;
-		quote: Quote;
-		cardToken: string;
-	};
+export interface TransactPayload extends Quote {
+	userAddress: string;
+	chainID: number;
+	contractAddress: string;
+	contractFunction: string;
+	contractReturn: string;
+	contractParameters: string[];
+	txValue: string;
+	gasLimit: string;
+	cardToken: string;
+}
+
+export interface TransactionResponse {
+	txID: string;
 }
 
 export interface Card {
@@ -46,14 +43,15 @@ export interface ContractPayload {
 	chainID: number;
 	userAddress: string;
 	contractAddress: string;
-	contractABI: string[];
 	contractFunction: string;
+	contractReturn: string,
 	contractParameters: string[];
 	txValue: string;
 	gasLimit: string;
 }
 
 export interface StringPayload {
+	apiKey: string;
 	name: string;
 	collection: string;
 	currency: string;
@@ -63,8 +61,8 @@ export interface StringPayload {
 	chainID: number;
 	userAddress: string;
 	contractAddress: string;
-	contractABI: string[],
 	contractFunction: string;
+	contractReturn: string,
 	contractParameters: string[];
 	txValue: string;
 }
