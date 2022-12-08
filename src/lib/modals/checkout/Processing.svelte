@@ -20,6 +20,7 @@
 		if (!$finalQuote) return;
 		
 		const transaction = await transact($finalQuote)
+		$txURL = transaction?.txURL
 		$txID = transaction?.txID
 		$txURL = transaction?.txUrl
 

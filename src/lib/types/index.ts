@@ -30,6 +30,7 @@ export interface WalletSignaturePayload {
 	timestamp: number;
 	nonce: string;
 	signature: string;
+	txURL: string;
 }
 
 export interface Card {

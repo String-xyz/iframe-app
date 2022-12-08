@@ -1,8 +1,16 @@
 <script lang="ts">
-	import { item, txID, txURL, quote, 
-		stopQuote, refreshQuote, finalQuote } from '$lib/stores';
-	import { abbrev } from '$lib/utils';
+	import {
+		item,
+		txURL,
+		txID,
+		quote,
+		stopQuote,
+		contractPayload,
+		refreshQuote,
+		finalQuote
+	} from '$lib/stores';
 
+	import { abbrev } from '$lib/utils';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -17,7 +25,6 @@
 	onDestroy(() => {
 		stopQuote();
 	});
-
 </script>
 
 {#if final}
@@ -25,7 +32,7 @@
 	<div class="flex justify-between mt-4">
 		<span>Transaction</span>
 		<span>
-			<a href={$txURL} target='_blank' rel='noreferrer'>
+			<a href={$txURL} target="_blank" rel="noreferrer">
 				<span class="text-primary mr-3">{abbrev($txID)}</span>
 				<img class="inline" src="/assets/external_link.svg" alt="Ext Link" />
 			</a>
@@ -37,7 +44,6 @@
 	<div class="flex justify-between mt-2 mb-6">
 		<span>Total</span><span>$ {$finalQuote?.totalUSD.toFixed(2)}</span>
 	</div>
-
 {:else}
 	<div class="flex justify-between mt-9">
 		<span class="text-xl font-bold">Purchase summary</span>
@@ -46,30 +52,36 @@
 		{#key $quote}
 			<div class="text-sm mt-5">
 				<div class="flex justify-between">
-					<span>Item price</span><span in:fade="{{ duration: 1000 }}">$ {$quote?.baseUSD?.toFixed(2)}</span>
-				</div>
-				<div class="flex justify-between mt-2">			
-					<span>Network fee</span><span in:fade="{{ duration: 1000 }}">$ {$quote?.gasUSD?.toFixed(2)}</span>
+					<span>Item price</span><span in:fade={{ duration: 1000 }}
+						>$ {$quote?.baseUSD?.toFixed(2)}</span
+					>
 				</div>
 				<div class="flex justify-between mt-2">
-					<span>Service fee</span><span in:fade="{{ duration: 1000 }}">$ {$quote?.serviceUSD?.toFixed(2)}</span>
+					<span>Network fee</span><span in:fade={{ duration: 1000 }}
+						>$ {$quote?.gasUSD?.toFixed(2)}</span
+					>
+				</div>
+				<div class="flex justify-between mt-2">
+					<span>Service fee</span><span in:fade={{ duration: 1000 }}
+						>$ {$quote?.serviceUSD?.toFixed(2)}</span
+					>
 				</div>
 			</div>
 			<div class="divider" />
 			<div class="flex justify-between mb-4 text-xl">
-				<span class="font-bold">Total</span><span in:fade="{{duration: 1000 }}">$ {$quote?.totalUSD?.toFixed(2)}</span>
+				<span class="font-bold">Total</span><span in:fade={{ duration: 1000 }}
+					>$ {$quote?.totalUSD?.toFixed(2)}</span
+				>
 			</div>
 		{/key}
 		<div class="flex justify-between mt-3">
-			<span class="text-xs">
-				Quote updates every 10s
-			</span>
+			<span class="text-xs"> Quote updates every 10s </span>
 			<!-- <Countdown /> -->
 		</div>
 	{:else}
 		<div class="my-5 text-center">
 			<!-- {#if $currentAccount} -->
-				<h1>Waiting for Quote</h1>
+			<h1>Waiting for Quote</h1>
 			<!-- {:else}
 				<h1>Please connect your wallet</h1>
 			{/if} -->

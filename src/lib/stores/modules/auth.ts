@@ -6,6 +6,15 @@ import type { WalletSignaturePayload } from '$lib/types';
 const TEST_JWT_TOKEN = import.meta.env.VITE_TEST_JWT_TOKEN
 const ENV = import.meta.env.VITE_ENV
 
+
+interface WalletSignaturePayload {
+	address: string;
+	timestamp: number;
+	nonce: string;
+	signature: string;
+}
+
+
 export const isAuthorized: Writable<boolean> = writable(false);
 export const API_KEY: Writable<string> = writable("");
 export const JWT_TOKEN: Writable<string> = writable("");
