@@ -20,7 +20,6 @@
 		if (!$finalQuote) return;
 		
 		const transaction = await transact($finalQuote)
-
 		$txID = transaction?.txID
 		$txURL = transaction?.txUrl
 
