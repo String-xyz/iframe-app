@@ -6,6 +6,7 @@
 		transact,
 		modalManager,
 		txID,
+		txURL,
 	} from '$lib/stores';
 
 	import { onMount } from 'svelte';
@@ -19,10 +20,11 @@
 		if (!$finalQuote) return;
 		
 		const transaction = await transact($finalQuote)
+		$txURL = transaction?.txURL
 		$txID = transaction?.txID
 		$card = null
 
-		modalManager.set(txID ? PurchaseSuccess : PurchaseFail);
+		modalManager.set(txURL ? PurchaseSuccess : PurchaseFail);
 	});
 </script>
 

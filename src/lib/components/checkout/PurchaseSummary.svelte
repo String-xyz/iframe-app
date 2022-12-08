@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { item, txID, quote, stopQuote, contractPayload,
+	import { item, txURL, txID, quote, stopQuote, contractPayload,
 		refreshQuote, finalQuote } from '$lib/stores';
 
-	import { abbrev, getBlockExplorer } from '$lib/utils';
+	import { abbrev } from '$lib/utils';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -25,7 +25,7 @@
 	<div class="flex justify-between mt-4">
 		<span>Transaction</span>
 		<span>
-			<a href={getBlockExplorer($contractPayload.chainID) + $txID} target='_blank' rel='noreferrer'>
+			<a href={$txURL} target='_blank' rel='noreferrer'>
 				<span class="text-primary mr-3">{abbrev($txID)}</span>
 				<img class="inline" src="/assets/external_link.svg" alt="Ext Link" />
 			</a>

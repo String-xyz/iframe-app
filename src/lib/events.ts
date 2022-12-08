@@ -1,11 +1,8 @@
-import { contractPayload, item, isAuthorized, login } from '$lib/stores';
+import { contractPayload, modalManager, item } from '$lib/stores';
 import { parsePayload } from '$lib/utils';
+import WalletLogin from '$lib/modals/onboarding/WalletLogin.svelte';
 
 const CHANNEL = "STRING_PAY"
-
-const TEST_USER_EMAIL = import.meta.env.VITE_TEST_USER_EMAIL
-const TEST_USER_PWD = import.meta.env.VITE_TEST_USER_PWD
-
 
 interface StringEvent {
 	eventName: string;
@@ -32,17 +29,14 @@ const handleEvent = async (event: StringEvent) => {
 	let payload;
 	switch (event.eventName) {
 		case Events.LOAD_PAYLOAD:
+
 			payload = parsePayload(event.data);
 			contractPayload.set(payload.contractParams);
 			item.set(payload.item);
 
-			if (!TEST_USER_EMAIL || !TEST_USER_PWD) {
-				console.error("No user email or password found, cannot get JWT token")
-				break
-			}
+			modalManager.set(WalletLogin);
+
 			
-			await login('email', TEST_USER_EMAIL, TEST_USER_PWD)
-			isAuthorized.set(true);
 		break;
 	}
 }
