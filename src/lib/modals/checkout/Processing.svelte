@@ -20,13 +20,12 @@
 		if (!$finalQuote) return;
 		
 		const transaction = await transact($finalQuote)
-
 		$txID = transaction?.txID
 		$txURL = transaction?.txUrl
 
 		$card = null
 
-		modalManager.set(txID ? PurchaseSuccess : PurchaseFail);
+		modalManager.set(txURL ? PurchaseSuccess : PurchaseFail);
 	});
 </script>
 

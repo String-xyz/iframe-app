@@ -1,0 +1,40 @@
+<script lang="ts">
+	import { modalManager } from '$lib/stores';
+	import { Events, sendEvent } from '$lib/events';
+
+	export let title: string;
+
+	const close = () => {
+		modalManager.set(null);
+		sendEvent(Events.IFRAME_CLOSE)
+	}
+</script>
+
+<div class="str-modal">
+	<header class="flex justify-between">
+		<span class="text-2xl font-bold title">{title}</span>
+		<button on:click={close}><img src="/assets/close.svg" alt="Close" /></button>
+	</header>
+	<div class="content">
+		<slot />
+	</div>
+</div>
+
+<style>
+	:global(.divider:before),
+	:global(.divider:after) {
+		height: 1px !important;
+	}
+	
+	.str-modal {
+		padding-left: 36px;
+		padding-right: 36px;
+		padding-top: 36px;
+		border-radius: 10px;
+		max-width: 600px;
+		max-height: 514px;
+		overflow: hidden;
+		background: white;
+		user-select: none;
+	}
+</style>
