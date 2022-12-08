@@ -45,6 +45,7 @@
 	"dependencies": {
 		"@fingerprintjs/fingerprintjs-pro": "^3.8.1",
 		"@fontsource/ubuntu": "^4.5.11",
+		"ethers": "^5.7.2",
 		"zod": "^3.19.1"
 	}
 }
