@@ -22,6 +22,7 @@ export interface TransactPayload extends Quote {
 
 export interface TransactionResponse {
 	txID: string;
+	txURL: string;
 }
 
 export interface Card {
