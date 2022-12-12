@@ -20,8 +20,9 @@
 		if (!$finalQuote) return;
 		
 		const transaction = await transact($finalQuote)
+
 		$txID = transaction?.txID
-		$txURL = transaction?.txURL
+		$txURL = transaction?.txUrl
 
 		$card = null
 
