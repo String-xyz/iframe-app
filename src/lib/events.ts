@@ -3,10 +3,6 @@ import { parsePayload } from '$lib/utils';
 
 const CHANNEL = "STRING_PAY"
 
-const TEST_USER_EMAIL = import.meta.env.VITE_TEST_USER_EMAIL
-const TEST_USER_PWD = import.meta.env.VITE_TEST_USER_PWD
-
-
 interface StringEvent {
 	eventName: string;
 	data?: any;
@@ -36,12 +32,8 @@ const handleEvent = async (event: StringEvent) => {
 			contractPayload.set(payload.contractParams);
 			item.set(payload.item);
 
-			if (!TEST_USER_EMAIL || !TEST_USER_PWD) {
-				console.error("No user email or password found, cannot get JWT token")
-				break
-			}
+			await login()
 			
-			await login('email', TEST_USER_EMAIL, TEST_USER_PWD)
 			isAuthorized.set(true);
 		break;
 	}

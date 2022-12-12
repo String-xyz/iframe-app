@@ -1,21 +1,21 @@
 import { writable, type Writable } from 'svelte/store';
-import { post } from '$lib/services/api';
+// import { post } from '$lib/services/api';
 
 export const isAuthorized: Writable<boolean> = writable(false);
 export const API_KEY: Writable<string> = writable("");
 export const JWT_TOKEN: Writable<string> = writable("");
 
-export const login = async (loginType: string, email: string, password: string) => {
+const TEST_JWT_TOKEN = import.meta.env.VITE_TEST_JWT_TOKEN
+const ENV = import.meta.env.VITE_ENV
+
+export const login = async () => {
 	try {
-		const data = await post('auth/login', {
-			loginType,
-			email,
-			password
-		});
-		
-		JWT_TOKEN.set(data.token)
-		return data
+		if (ENV === 'dev' && TEST_JWT_TOKEN) {
+			JWT_TOKEN.set(TEST_JWT_TOKEN)
+		} else {
+			// Login
+		}
 	} catch (e) {
-		console.error("Could not login ", email)
+		console.error("Could not login ")
 	}
 }
