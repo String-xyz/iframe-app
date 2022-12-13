@@ -37,16 +37,8 @@ export const getSignature = async (payload: WalletSignaturePayload) => {
 	const signer = provider.getSigner();
 	try {
 		const message = JSON.stringify(payload)
-<<<<<<< HEAD
 		
 		const signature = await signer.signMessage(message);	
-=======
-
-		console.log(message)
-		
-		const signature = await signer.signMessage(message);	
-		console.log(signature)
->>>>>>> c14b4e4685029850472115259d39031640b130bf
 		payload.signature = signature;
 
 		return {...payload}
