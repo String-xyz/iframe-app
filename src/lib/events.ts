@@ -34,8 +34,8 @@ const handleEvent = async (event: StringEvent) => {
 			contractPayload.set(payload.contractParams);
 			item.set(payload.item);
 
-			modalManager.set(WalletLogin)
-			
+			modalManager.set(WalletLogin);
+
 		break;
 	}
 }
