@@ -43,6 +43,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@fingerprintjs/fingerprintjs-pro": "^3.8.1",
 		"@fontsource/ubuntu": "^4.5.11",
 		"zod": "^3.19.1"
 	}
