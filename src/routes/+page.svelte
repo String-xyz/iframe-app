@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { modalManager, isAuthorized } from '$lib/stores';
+	import { modalManager } from '$lib/stores';
 	import OrderDetails from '$lib/modals/checkout/OrderDetails.svelte';
 
 	import { Events, registerEvents, sendEvent } from '$lib/events';
@@ -22,6 +22,4 @@
 	
 </script>
 
-{#if $isAuthorized}
-	<svelte:component bind:this={modal} this={$modalManager} />
-{/if}
+<svelte:component bind:this={modal} this={$modalManager} />
