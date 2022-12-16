@@ -111,7 +111,7 @@
 					<img class="inline mr-3" src="/assets/back_arrow.svg" alt="back">
 					Back
 				</span>
-				<button type='submit' class="btn btn-primary rounded border-2 tracking-wider	text-white w-40 h-11	">
+				<button type='submit' class="btn btn-primary rounded border-2 tracking-wider text-white w-40 h-11 ">
 					Send Link
 				</button>
 			</div>
