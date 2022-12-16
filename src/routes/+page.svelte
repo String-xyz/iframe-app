@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { modalManager } from '$lib/stores';
-	import OrderDetails from '$lib/modals/checkout/OrderDetails.svelte';
 
 	import { Events, registerEvents, sendEvent } from '$lib/events';
 
