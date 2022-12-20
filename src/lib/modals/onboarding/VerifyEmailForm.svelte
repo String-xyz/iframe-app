@@ -9,6 +9,7 @@
 	import { userStore, modalManager } from '$lib/stores';
 	import { z } from 'zod';
 	import { apiClient } from '$lib/services';
+	import OrderDetails from '../checkout/OrderDetails.svelte';
 
 	let tosAgreement = false;
 	let firstNameInput = '';
@@ -32,7 +33,7 @@
 			.requestEmailVerification(_userId, email)
 			.then(() => {
 				console.log('email was successfully verified');
-				modalManager.set(Onboarding); // TODO: @frostbournesb Redirect to the success verified screen
+				modalManager.set(OrderDetails);
 			})
 			.catch((err: any) => {
 				console.log('error requesting email verification', err);
