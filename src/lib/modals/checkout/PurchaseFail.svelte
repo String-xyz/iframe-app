@@ -1,9 +1,10 @@
 <script lang="ts">
 	import ModalBase from './ModalBase.svelte';
-	import { modalManager } from '$lib/stores';
 
 	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
 	import OrderConfirmation from './OrderConfirmation.svelte';
+
+	import { modalManager } from '$lib/stores';
 
 	const back = () => {
 		modalManager.set(OrderConfirmation);

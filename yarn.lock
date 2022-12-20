@@ -72,13 +72,6 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@fingerprintjs/fingerprintjs-pro@^3.8.1":
-  version "3.8.1"
-  resolved "https://registry.yarnpkg.com/@fingerprintjs/fingerprintjs-pro/-/fingerprintjs-pro-3.8.1.tgz#b972659f1d341b7054106a3f27c5ba028f8f2ea2"
-  integrity sha512-hIpShbh75po8j7AQQ2a/avI/X4KCe/wXR9B8+yeK9UQpnADBcNBuSCaaBIQDmDoHCxCsS/2hma91dgwt/u+6cA==
-  dependencies:
-    tslib "^2.0.1"
-    
 "@ethersproject/abi@5.7.0", "@ethersproject/abi@^5.7.0":
   version "5.7.0"
   resolved "https://registry.npmjs.org/@ethersproject/abi/-/abi-5.7.0.tgz"
@@ -420,6 +413,18 @@
     "@ethersproject/logger" "^5.7.0"
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
+
+"@fingerprintjs/fingerprintjs-pro@^3.8.1":
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/@fingerprintjs/fingerprintjs-pro/-/fingerprintjs-pro-3.8.1.tgz#b972659f1d341b7054106a3f27c5ba028f8f2ea2"
+  integrity sha512-hIpShbh75po8j7AQQ2a/avI/X4KCe/wXR9B8+yeK9UQpnADBcNBuSCaaBIQDmDoHCxCsS/2hma91dgwt/u+6cA==
+  dependencies:
+    tslib "^2.0.1"
+
+"@fontsource/lora@^4.5.12":
+  version "4.5.12"
+  resolved "https://registry.yarnpkg.com/@fontsource/lora/-/lora-4.5.12.tgz#3521f6dc87b7ee4e2685e31b9f7e510168ef9ef8"
+  integrity sha512-fOJN5nqvMbxu5P5AZnemQB8bSXUITRNuVN0u9x+19FG+GVarQrGeW1DtXEaX+hXCJjbYjOiQ3psYoa1nVJJk6A==
 
 "@fontsource/ubuntu@^4.5.11":
   version "4.5.11"

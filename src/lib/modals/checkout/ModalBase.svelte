@@ -10,7 +10,7 @@
 	}
 </script>
 
-<div class="str-modal">
+<div class="str-modal text-neutral">
 	<header class="flex justify-between">
 		<span class="text-2xl font-bold title">{title}</span>
 		<button on:click={close}><img src="/assets/close.svg" alt="Close" /></button>
@@ -20,22 +20,18 @@
 	</div>
 	<footer class="footer footer-center my-6 select-none text-xs">
 		<div class="inline">
-			<span>Powered by <img class="inline" src="/assets/string_text_logo.svg" alt="String" /></span>
+			<span class="">Powered by <img class="inline" src="/assets/string_text_logo.svg" alt="String" /></span>
 		</div>
 	</footer>
 </div>
 
 <style>
-	:global(.divider:before),
-	:global(.divider:after) {
-		height: 1px !important;
-	}
-	
 	.str-modal {
 		padding-left: 36px;
 		padding-right: 36px;
 		padding-top: 36px;
-		border-radius: 10px;
+		border-radius: 8px;
+		border: 1px solid black;
 		max-width: 374px;
 		overflow: hidden;
 		background: white;
