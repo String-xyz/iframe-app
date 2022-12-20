@@ -6,9 +6,8 @@
 	import ResendEmailLink from './ResendEmailLink.svelte';
 	import Onboarding from './Onboarding.svelte';
 
-	import { email, modalManager, store } from '$lib/stores';
+	import { userStore, modalManager } from '$lib/stores';
 	import { z } from 'zod';
-	import { Events, sendEvent } from '$lib/events';
 	import { apiClient } from '$lib/services';
 
 	let tosAgreement = false;
@@ -27,15 +26,15 @@
 	async function requestEmailVerification(email: string) {
 		let _userId = '';
 
-		store.userId.subscribe((value) => (_userId = value));
+		userStore.userId.subscribe((value) => (_userId = value));
 		modalManager.set(ResendEmailLink);
 		apiClient
 			.requestEmailVerification(_userId, email)
-			.then((res) => {
+			.then(() => {
 				console.log('email was successfully verified');
 				modalManager.set(Onboarding); // TODO: @frostbournesb Redirect to the success verified screen
 			})
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log('error requesting email verification', err);
 				alert('error requesting email verification'); // TODO: @frostbournesb Show error message screen
 			});
@@ -45,9 +44,8 @@
 		if (!validateInput()) return;
 
 		try {
-			store.email.set(emailInput);
+			userStore.email.set(emailInput);
 			await requestEmailVerification(emailInput);
-			cleanForm();
 		} catch (e) {
 			console.log('Error requesting email verification', e);
 			return;
@@ -65,13 +63,6 @@
 
 		return isEmailValid && isFNValid && isLNValid && isTOSValid;
 	};
-
-	function cleanForm() {
-		firstNameInput = '';
-		lastNameInput = '';
-		emailInput = '';
-		tosAgreement = false;
-	}
 
 	//TODO: We want the error to be removed when the field is empty
 	// const checkEmailEmpty = () => {
