@@ -19,7 +19,6 @@ export const userStore = {
 	email
 };
 
-
 export const getSignature = async (payload: WalletSignaturePayload) => {
 	const provider = new ethers.providers.Web3Provider((<any>window).ethereum);
 	const signer = provider.getSigner();
@@ -49,7 +48,7 @@ export const login = async (walletAddress: string) => {
 				walletAddress
 			});
 
-			const sig = await getSignature({address: data.address, timestamp: data.timestamp, nonce: data.nonce, signature: data.signature});
+			const sig = await getSignature({ address: data.address, timestamp: data.timestamp, nonce: data.nonce, signature: data.signature });
 
 			const login = await post('login', {
 				...sig
