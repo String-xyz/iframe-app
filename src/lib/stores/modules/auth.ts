@@ -14,7 +14,6 @@ interface WalletSignaturePayload {
 	signature: string;
 }
 
-
 export const isAuthorized: Writable<boolean> = writable(false);
 export const API_KEY: Writable<string> = writable("");
 export const JWT_TOKEN: Writable<string> = writable("");
@@ -49,4 +48,23 @@ export const getSignature = async (payload: WalletSignaturePayload) => {
 	}
 }
 
+export const login = async (walletAddress: string) => {
+	try {
+		if (ENV === 'dev' && TEST_JWT_TOKEN) {
+			JWT_TOKEN.set(TEST_JWT_TOKEN)
+		} else {
+			const data = await post('login/request', {
+				walletAddress
+			});
 
+			const sig = await getSignature({address: data.address, timestamp: data.timestamp, nonce: data.nonce, signature: data.signature});
+
+			const login = await post('login', {
+				...sig
+			});
+		}
+
+	} catch (e) {
+		console.error("Could not login ", e)
+	}
+}
