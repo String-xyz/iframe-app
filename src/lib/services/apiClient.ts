@@ -1,16 +1,25 @@
 import axios from 'axios';
+import { store } from '$lib/stores';
 
 // function createApiClient({ axiosInstance }: { axiosInstance: Axios }) {
 export function createApiClient() {
 	const baseUrl = import.meta.env.VITE_API_BASE_PATH;
-	let store = {
-		apiKey: '', // starts as empty string, but will be set by an interceptor
-		accessToken: ''
-	};
+
+	/* This piece of code is only for PR testing purposes */
+	store.apiKey.set('<YOUR_API_KEY>');
+	store.accessToken.set('<YOUR_ACCESS');
+	store.userId.set('<YOUR_USER_ID>');
+	/* This piece of code is only for PR testing purposes */
+
+	let _apiKey = '';
+	let _accessToken = '';
+
+	store.apiKey.subscribe((value) => _apiKey = value);
+	store.accessToken.subscribe((value) => _accessToken = value);
 
 	const commonHeaders: any = {
 		'Content-Type': 'application/json',
-		'X-Api-Key': store.apiKey
+		'X-Api-Key': store.apiKey,
 	}
 
 	const httpClient = axios.create({
@@ -20,7 +29,7 @@ export function createApiClient() {
 
 	async function createApiKey() {
 		const { data } = await httpClient.post<{ apiKey: string }>('/apikeys');
-		_setApiKeyHeader(data.apiKey);
+		store.apiKey.set(data.apiKey);
 		return data;
 	}
 
@@ -34,7 +43,6 @@ export function createApiClient() {
 		return data;
 	}
 
-
 	async function requestLogin(walletAddress: string) {
 		const { data } = await httpClient.get<{ nonce: string }>(`/login`, { params: { walletAddress } });
 		return data;
@@ -43,10 +51,10 @@ export function createApiClient() {
 	async function createUser(nonce: string, signature: string) {
 		try {
 			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, { nonce, signature }, {
-				headers: { 'X-Api-Key': store.apiKey },
+				headers: { 'X-Api-Key': _apiKey },
 			});
 			// set the access token in the store
-			_seyAccessToken(data.authToken?.token);
+			store.accessToken.set(data.authToken?.token);
 
 			return data;
 		} catch (e: any) {
@@ -57,26 +65,28 @@ export function createApiClient() {
 
 	async function updateUser(userId: string, update: UserUpdate) {
 		const { data } = await httpClient.put<User>(`/users/${userId}`, update, {
-			headers: { 'X-Api-Key': store.apiKey, 'Authorization': `Bearer ${store.accessToken}` },
+			headers: { 'X-Api-Key': _apiKey, 'Authorization': `Bearer ${_accessToken}` },
 		});
 		return data;
 	}
 
 	async function requestEmailVerification(userId: string, email: string) {
 		await httpClient.get(`/users/${userId}/verify-email`, {
-			headers: { 'X-Api-Key': store.apiKey, 'Authorization': `Bearer ${store.accessToken}` },
-			params: { email }
+			headers: { 'X-Api-Key': _apiKey, 'Authorization': `Bearer ${_accessToken}` },
+			params: { email },
+			timeout: 15 * 60 * 1000 // 15 minutes
 		});
+
 		return
 	}
 
 	async function loginUser(nonce: string, signature: string) {
 		try {
 			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/login/sign`, { nonce, signature }, {
-				headers: { 'X-Api-Key': store.apiKey },
+				headers: { 'X-Api-Key': _apiKey },
 			});
 			// set the access token in the store
-			_seyAccessToken(data.authToken?.token);
+			store.accessToken.set(data.authToken?.token);
 
 			return data;
 		} catch (e: any) {
@@ -85,11 +95,10 @@ export function createApiClient() {
 		}
 	}
 
-
 	async function getUserStatus(userId: string) {
 		try {
-			const { data } = await httpClient.get<{ authToken: AuthToken, user: User }>(`/users/${userId}/status`, {
-				headers: { 'X-Api-Key': store.apiKey, 'Authorization': `Bearer ${store.accessToken}` },
+			const { data } = await httpClient.get<{ status: string, emailStatus: string }>(`/users/${userId}/status`, {
+				headers: { 'X-Api-Key': _apiKey, 'Authorization': `Bearer ${_accessToken}` },
 			});
 
 			return data;
@@ -99,21 +108,11 @@ export function createApiClient() {
 		}
 	}
 
-
 	function _getErrorFromAxiosError(e: any) {
 		if (e.response) return e.response.data;
 		else if (e.request) return e.request;
 		else return e.message;
 	}
-
-	function _seyAccessToken(accessToken: string) {
-		store.accessToken = accessToken;
-	}
-
-	function _setApiKeyHeader(_apiKey: string) {
-		store.apiKey = _apiKey;
-	}
-
 
 	return {
 		createApiKey,
@@ -124,7 +123,7 @@ export function createApiClient() {
 		updateUser,
 		requestEmailVerification,
 		loginUser,
-		getUserStatus
+		getUserStatus,
 	};
 }
 
