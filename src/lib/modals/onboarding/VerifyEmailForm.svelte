@@ -6,7 +6,7 @@
 	import ResendEmailLink from './ResendEmailLink.svelte';
 	import Onboarding from './Onboarding.svelte';
 
-	import { userStore, modalManager } from '$lib/stores';
+	import { userId, email, modalManager } from '$lib/stores';
 	import { z } from 'zod';
 	import { apiClient } from '$lib/services';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
@@ -25,35 +25,30 @@
 	const nameSchema = z.string().min(1);
 
 	async function requestEmailVerification(email: string) {
-		let _userId = '';
-
-		userStore.userId.subscribe((value) => (_userId = value));
 		modalManager.set(ResendEmailLink);
 		apiClient
-			.requestEmailVerification(_userId, email)
+			.requestEmailVerification($userId, email)
 			.then(() => {
 				console.log('email was successfully verified');
 				modalManager.set(OrderDetails);
 			})
 			.catch((err: any) => {
 				console.log('error requesting email verification', err);
-				alert('error requesting email verification'); // TODO: @frostbournesb Show error message screen
 			});
 	}
 
 	const handleVerify = async () => {
-		if (!validateInput()) return;
+		if (!isValidInput()) return;
 
 		try {
-			userStore.email.set(emailInput);
+			email.set(emailInput);
 			await requestEmailVerification(emailInput);
 		} catch (e) {
 			console.log('Error requesting email verification', e);
-			return;
 		}
 	};
 
-	const validateInput = () => {
+	const isValidInput = () => {
 		isEmailValid = emailSchema.safeParse(emailInput).success;
 
 		isFNValid = nameSchema.safeParse(firstNameInput).success;

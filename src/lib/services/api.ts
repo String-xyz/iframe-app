@@ -2,7 +2,7 @@
  * @file API service
  * @deprecated This file is deprecated and will be removed in the future. Please use the new API client instead.
  */
-import { API_KEY, JWT_TOKEN } from "$lib/stores";
+import { accessToken, apiKey } from "$lib/stores";
 import { get as getStore } from 'svelte/store'
 
 const baseUrl = import.meta.env.VITE_API_BASE_PATH;
@@ -10,8 +10,8 @@ const baseUrl = import.meta.env.VITE_API_BASE_PATH;
 const getHeaders = () => {
 	const headers: HeadersInit = {
 		'Content-Type': 'application/json',
-		'X-Api-Key': getStore(API_KEY),
-		'Authorization': 'Bearer ' + getStore(JWT_TOKEN)
+		'X-Api-Key': getStore(apiKey),
+		'Authorization': 'Bearer ' + getStore(accessToken)
 	}
 
 	return headers

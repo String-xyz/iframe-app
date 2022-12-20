@@ -6,7 +6,7 @@
 	import VerifyEmailForm from "./VerifyEmailForm.svelte";
 	import OrderDetails from "../checkout/OrderDetails.svelte";
 
-	import { modalManager, contractPayload, login, JWT_TOKEN } from "$lib/stores";
+	import { modalManager, contractPayload, login, accessToken } from "$lib/stores";
 	import { onMount } from "svelte";
 
 	const ENV = import.meta.env.VITE_ENV
@@ -20,7 +20,7 @@
 		if (ENV === 'dev') {
 			await login($contractPayload.userAddress);
 
-			if ($JWT_TOKEN) {
+			if ($accessToken) {
 				action = sendToVerify
 				actionText = "Pay with String"
 			} else {

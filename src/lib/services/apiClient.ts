@@ -5,12 +5,6 @@ import { userStore } from '$lib/stores';
 export function createApiClient() {
 	const baseUrl = import.meta.env.VITE_API_BASE_PATH;
 
-	/* This piece of code is only for PR testing purposes */
-	store.apiKey.set('<YOUR_API_KEY>');
-	store.accessToken.set('<YOUR_ACCESS');
-	store.userId.set('<YOUR_USER_ID>');
-	/* This piece of code is only for PR testing purposes */
-
 	let _apiKey = '';
 	let _accessToken = '';
 
