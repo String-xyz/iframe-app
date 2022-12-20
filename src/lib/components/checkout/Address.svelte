@@ -5,7 +5,7 @@
 	$: address = $contractPayload.userAddress || "";
 </script>
 
-<div id="addr">
+<div class="addr">
 	<h2 class="text-md flex justify-between mt-5">
 		<span>Send to</span>
 		<span>{abbrev(address)}</span>
