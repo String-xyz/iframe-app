@@ -6,8 +6,10 @@
 	import ResendEmailLink from './ResendEmailLink.svelte';
 	import Onboarding from './Onboarding.svelte';
 
-	import { email, modalManager } from '$lib/stores';
+	import { email, modalManager, store } from '$lib/stores';
 	import { z } from 'zod';
+	import { Events, sendEvent } from '$lib/events';
+	import { apiClient } from '$lib/services';
 
 	let tosAgreement = false;
 	let firstNameInput = '';
@@ -22,13 +24,36 @@
 	const emailSchema = z.string().trim().email();
 	const nameSchema = z.string().min(1);
 
-	const handleVerify = () => {
-		if (!isValidInput()) return;
-		email.set(emailInput);
-		next();
+	async function requestEmailVerification(email: string) {
+		let _userId = '';
+
+		store.userId.subscribe((value) => (_userId = value));
+		modalManager.set(ResendEmailLink);
+		apiClient
+			.requestEmailVerification(_userId, email)
+			.then((res) => {
+				console.log('email was successfully verified');
+				modalManager.set(Onboarding); // TODO: @frostbournesb Redirect to the success verified screen
+			})
+			.catch((err) => {
+				console.log('error requesting email verification', err);
+				alert('error requesting email verification'); // TODO: @frostbournesb Show error message screen
+			});
+	}
+
+	const handleVerify = async () => {
+		if (!validateInput()) return;
+
+		try {
+			store.email.set(emailInput);
+			await requestEmailVerification(emailInput);
+		} catch (e) {
+			console.log('Error requesting email verification', e);
+			return;
+		}
 	};
 
-	const isValidInput = () => {
+	const validateInput = () => {
 		isEmailValid = emailSchema.safeParse(emailInput).success;
 
 		isFNValid = nameSchema.safeParse(firstNameInput).success;

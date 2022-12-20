@@ -1,3 +1,7 @@
+/**
+ * @file API service
+ * @deprecated This file is deprecated and will be removed in the future. Please use the new API client instead.
+ */
 import { API_KEY, JWT_TOKEN } from "$lib/stores";
 import { get as getStore } from 'svelte/store'
 
@@ -41,12 +45,12 @@ export const get = async (path: string, body: any = undefined) => {
 		if (typeof body === 'object') {
 			body = JSON.stringify(body)
 		}
-		
+
 		const result = await fetch(`${baseUrl}/${path}`, {
 			body,
 			headers: getHeaders()
 		});
-		
+
 		if (result.ok) {
 			return result.json();
 		} else {
@@ -64,7 +68,7 @@ export const put = async (path: string, body: any = undefined) => {
 			body: body,
 			headers: getHeaders()
 		});
-		
+
 		if (result.ok) {
 			return result.json();
 		} else {
@@ -78,6 +82,6 @@ export const put = async (path: string, body: any = undefined) => {
 export const getStatus = async () => {
 	const result = await get('healthcheck');
 	const APIError = result?.statusCode !== undefined;
-	
+
 	return { APIError };
 };
