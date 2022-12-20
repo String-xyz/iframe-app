@@ -19,7 +19,6 @@ export function createApiClient() {
 
 	const commonHeaders: any = {
 		'Content-Type': 'application/json',
-		'X-Api-Key': store.apiKey,
 	}
 
 	const httpClient = axios.create({
