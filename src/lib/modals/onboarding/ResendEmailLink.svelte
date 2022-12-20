@@ -1,30 +1,30 @@
 <script>
-	import ModalBase from "./ModalBase.svelte";
+	import ModalBase from './ModalBase.svelte';
 	import BackButton from '$lib/components/shared/BackButton.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 
-	import VerifyEmailForm from "./VerifyEmailForm.svelte";
-	import OrderDetails from "../checkout/OrderDetails.svelte";
+	import VerifyEmailForm from './VerifyEmailForm.svelte';
+	import OrderDetails from '../checkout/OrderDetails.svelte';
 
 	import { email, modalManager } from '$lib/stores';
 
-	const ENV = import.meta.env.VITE_ENV
+	const ENV = import.meta.env.VITE_ENV;
 
 	const resend = () => {
-		// This is temporary 
+		// This is temporary
 		if (ENV === 'dev') {
-			next()
+			next();
 		}
-	}
+	};
 
 	const next = () => {
-		modalManager.set(OrderDetails)
-	}
+		modalManager.set(OrderDetails);
+	};
 
 	const back = () => {
-		email.set("")
-		modalManager.set(VerifyEmailForm)
-	}
+		email.set('');
+		modalManager.set(VerifyEmailForm);
+	};
 </script>
 
 <ModalBase title="Verify your Email" size="size-resend">
@@ -35,6 +35,6 @@
 	<p class="mt-5">Haven’t received the email? Check your spam folder</p>
 	<div class="float-right mt-7">
 		<BackButton {back} />
-		<StyledButton action={resend} wide={false}>Resend Link</StyledButton>
+		<!-- <StyledButton action={resend} wide={false}>Resend Link</StyledButton> -->
 	</div>
 </ModalBase>
