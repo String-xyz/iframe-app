@@ -26,7 +26,7 @@
 
 		$card = null
 
-		modalManager.set(txURL ? PurchaseSuccess : PurchaseFail);
+		modalManager.set($txURL ? PurchaseSuccess : PurchaseFail);
 	});
 </script>
 
