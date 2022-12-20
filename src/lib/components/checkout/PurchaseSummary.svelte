@@ -29,7 +29,8 @@
 
 {#if final}
 	<span class="text-xl font-bold mt-9">Purchase summary</span>
-	<div class="flex justify-between mt-4">
+	<p class="text-sm mt-2">We’ve sent a receipt to your email</p>
+	<div class="flex justify-between mt-5">
 		<span>Transaction</span>
 		<span>
 			<a href={$txURL} target="_blank" rel="noreferrer">
@@ -75,7 +76,10 @@
 			</div>
 		{/key}
 		<div class="flex justify-between mt-3">
-			<span class="text-xs"> Quote updates every 10s </span>
+			<span class="text-xs">
+				<img class="inline" src="/assets/info.svg" alt="info" />
+				Quote updates every 10s
+			</span>
 			<!-- <Countdown /> -->
 		</div>
 	{:else}

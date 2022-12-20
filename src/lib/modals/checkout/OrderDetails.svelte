@@ -1,10 +1,12 @@
 <script lang="ts">
 	import ModalBase from './ModalBase.svelte';
-	import { modalManager } from '$lib/stores';
+	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 
 	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
 	import PurchaseSummary from '$lib/components/checkout/PurchaseSummary.svelte';
 	import OrderConfirmation from './OrderConfirmation.svelte';
+
+	import { modalManager } from '$lib/stores';
 	import { Events, sendEvent } from '$lib/events';
 
 	const back = () => {
@@ -21,11 +23,11 @@
 	<NFTDetails />
 	<PurchaseSummary />
 	<div class="text-center mt-6">
-		<button on:click={next} class="btn btn-wide btn-primary rounded border-2 tracking-wider	text-white">
+		<StyledButton action={next}>
 			Next
 			<img class="ml-2" src="/assets/next_arrow.svg" alt="next" /> 
-		</button>
-		<span on:click={back} class="inline-block mt-6 cursor-pointer">
+		</StyledButton>
+		<span on:click={back} class="inline-block cursor-pointer">
 			Cancel
 		</span>
 	</div>
