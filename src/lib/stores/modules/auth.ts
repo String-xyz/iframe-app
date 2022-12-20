@@ -23,7 +23,7 @@ export const userId: Writable<string> = writable("");
 export const accessToken: Writable<string> = writable("");
 export const apiKey: Writable<string> = writable("");
 
-export const store = {
+export const userStore = {
 	apiKey,
 	accessToken,
 	userId,

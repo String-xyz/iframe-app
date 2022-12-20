@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { store } from '$lib/stores';
+import { userStore } from '$lib/stores';
 
 // function createApiClient({ axiosInstance }: { axiosInstance: Axios }) {
 export function createApiClient() {
@@ -14,8 +14,8 @@ export function createApiClient() {
 	let _apiKey = '';
 	let _accessToken = '';
 
-	store.apiKey.subscribe((value) => _apiKey = value);
-	store.accessToken.subscribe((value) => _accessToken = value);
+	userStore.apiKey.subscribe((value) => _apiKey = value);
+	userStore.accessToken.subscribe((value) => _accessToken = value);
 
 	const commonHeaders: any = {
 		'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export function createApiClient() {
 
 	async function createApiKey() {
 		const { data } = await httpClient.post<{ apiKey: string }>('/apikeys');
-		store.apiKey.set(data.apiKey);
+		userStore.apiKey.set(data.apiKey);
 		return data;
 	}
 
@@ -52,8 +52,8 @@ export function createApiClient() {
 			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, { nonce, signature }, {
 				headers: { 'X-Api-Key': _apiKey },
 			});
-			// set the access token in the store
-			store.accessToken.set(data.authToken?.token);
+			// set the access token in the userStore
+			userStore.accessToken.set(data.authToken?.token);
 
 			return data;
 		} catch (e: any) {
@@ -84,8 +84,8 @@ export function createApiClient() {
 			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/login/sign`, { nonce, signature }, {
 				headers: { 'X-Api-Key': _apiKey },
 			});
-			// set the access token in the store
-			store.accessToken.set(data.authToken?.token);
+			// set the access token in the userStore
+			userStore.accessToken.set(data.authToken?.token);
 
 			return data;
 		} catch (e: any) {
