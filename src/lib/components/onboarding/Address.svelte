@@ -6,8 +6,10 @@
 
 </script>
 
+<p>
 <span class="dot"></span>
 <span class="ml-2">{abbrev(address)}</span>
+</p>
 
 <style>
 	.dot {

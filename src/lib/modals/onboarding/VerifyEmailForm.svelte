@@ -1,9 +1,12 @@
 <script lang="ts">
 	import ModalBase from './ModalBase.svelte';
-	import VerifyEmailSent from './VerifyEmailSent.svelte';
+	import BackButton from '$lib/components/shared/BackButton.svelte';
+	import StyledButton from '$lib/components/shared/StyledButton.svelte';
+
+	import ResendEmailLink from './ResendEmailLink.svelte';
+	import Onboarding from './Onboarding.svelte';
 
 	import { email, modalManager } from '$lib/stores';
-	import { Events, sendEvent } from '$lib/events';
 	import { z } from "zod";
 
 	let tosAgreement = false;
@@ -21,15 +24,13 @@
 	const nameSchema = z.string().min(1);
 	
 	const handleVerify = () => {
-		if (validateInput()) {
-			console.log("valid")
+		if (!isValidInput()) return;
+		email.set(emailInput)
+		next()
 
-		} else {
-			console.log("invalid")
-		}
 	}
 	
-	const validateInput = () => {
+	const isValidInput = () => {
 		isEmailValid = emailSchema.safeParse(emailInput).success;
 
 		isFNValid = nameSchema.safeParse(firstNameInput).success;
@@ -41,17 +42,23 @@
 		return isEmailValid && isFNValid && isLNValid && isTOSValid;
 	}
 
+	//TODO: We want the error to be removed when the field is empty
+	// const checkEmailEmpty = () => {
+	// 	if (emailInput.length == 0) {
+	// 		isEmailValid = true;
+	// 	}
+	// }
+
 	const back = () => {
-		modalManager.set(null);
-		sendEvent(Events.IFRAME_CLOSE)
+		modalManager.set(Onboarding);
 	};
 
 	const next = () => {
-		modalManager.set(VerifyEmailSent);
+		modalManager.set(ResendEmailLink);
 	};
 </script>
 
-<ModalBase title="Verify your email">
+<ModalBase title="Verify your email" size="size-form">
 	<form on:submit|preventDefault={handleVerify}>
 		<p class="text-xl mt-5">To proceed, we'll need a bit of information and to verify your email.</p>
 		<div class="mt-5">
@@ -107,13 +114,8 @@
 				</span>
 			</div>
 			<div class="mt-7 float-right">
-				<span on:click={back} class="inline-block mr-6 text-base cursor-pointer">
-					<img class="inline mr-3" src="/assets/back_arrow.svg" alt="back">
-					Back
-				</span>
-				<button type='submit' class="btn btn-primary rounded border-2 tracking-wider	text-white w-40 h-11	">
-					Send Link
-				</button>
+				<BackButton {back} />
+				<StyledButton type="submit" wide={false}>Send Link</StyledButton>
 			</div>
 		</div>
 	</form>
