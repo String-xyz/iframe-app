@@ -12,7 +12,7 @@
 	}
 </script>
 
-<div class="str-modal text-neutral" class:size-onboard="{size === 'size-onboard'}" class:size-form="{size === 'size-form'}" class:size-resend="{size === 'size-resend'}" >
+<div class="str-modal text-neutral border border-neutral" class:size-onboard="{size === 'size-onboard'}" class:size-form="{size === 'size-form'}" class:size-resend="{size === 'size-resend'}" >
 	<header class="flex justify-between">
 		<span class="text-3xl font-bold title text-neutral">{title}</span>
 		<button on:click={close}><img src="/assets/close.svg" alt="Close" /></button>
@@ -28,7 +28,6 @@
 		padding-right: 36px;
 		padding-top: 36px;
 		border-radius: 8px;
-		border: 1px solid black;
 		overflow: hidden;
 		background: white;
 		user-select: none;
