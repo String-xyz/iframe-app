@@ -10,7 +10,7 @@
 	}
 </script>
 
-<div class="str-modal text-neutral">
+<div class="str-modal text-neutral border border-neutral">
 	<header class="flex justify-between">
 		<span class="text-2xl font-bold title">{title}</span>
 		<button on:click={close}><img src="/assets/close.svg" alt="Close" /></button>
@@ -31,7 +31,6 @@
 		padding-right: 36px;
 		padding-top: 36px;
 		border-radius: 8px;
-		border: 1px solid black;
 		max-width: 374px;
 		overflow: hidden;
 		background: white;

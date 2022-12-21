@@ -3,6 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+    font-family: 'Lora';
+    background-color: transparent !important;
+}
+
 body {
-	font-family: 'Lora';
+    display: flex;
+    justify-content: center;
 }
