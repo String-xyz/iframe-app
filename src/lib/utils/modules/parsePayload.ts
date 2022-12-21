@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { error } from '@sveltejs/kit';
 import type { NFT, ContractPayload, StringPayload } from '$lib/types';
-import { API_KEY } from "$lib/stores";
+import { apiKey } from "$lib/stores";
 
 const PayloadSchema = z.object({
 	apiKey: z.string(),
@@ -27,7 +27,7 @@ export const parsePayload = (payload: StringPayload) => {
 	try {
 		payload = PayloadSchema.parse(payload);
 
-		API_KEY.set(payload.apiKey)
+		apiKey.set(payload.apiKey)
 
 		const item: NFT = {
 			name: payload.name,
