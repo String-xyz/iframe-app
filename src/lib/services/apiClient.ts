@@ -5,6 +5,12 @@ import { userStore } from '$lib/stores';
 export function createApiClient() {
 	const baseUrl = import.meta.env.VITE_API_BASE_PATH;
 
+	/* This piece of code is only for PR testing purposes */
+	// userStore.apiKey.set('str.6169e2ea53ea4078b54522f99b479d34');
+	// userStore.accessToken.set('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6ImIwNmRiN2M2LTkwZjUtNGJmOS04Nzk2LWU3ZDUwMmQ5MGNlZiIsImV4cCI6MTY3MTU3NjU5NywiaWF0IjoxNjcxNTc1Njk3fQ.PqYBVIKoso7Mu436OfzHlkI4QtP9aZtRa9Qe1k6dbss');
+	// userStore.userId.set('b06db7c6-90f5-4bf9-8796-e7d502d90cef');
+	/* This piece of code is only for PR testing purposes */
+
 	let _apiKey = '';
 	let _accessToken = '';
 
@@ -41,7 +47,15 @@ export function createApiClient() {
 		return data;
 	}
 
-	async function createUser(nonce: string, signature: string) {
+	async function createUser(nonce: string, signature: string, visitor: VisitorData) {
+		const body = {
+			nonce,
+			signature,
+			fingerprint: visitor
+		};
+
+		const headers = { 'X-Api-Key': _apiKey };
+
 		try {
 			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, { nonce, signature }, {
 				headers: { 'X-Api-Key': _apiKey },
@@ -153,4 +167,9 @@ interface UserUpdate {
 	firstName?: string;
 	middleName?: string;
 	lastName?: string;
+}
+
+export interface VisitorData {
+	visitorId?: string;
+	requestId?: string;
 }

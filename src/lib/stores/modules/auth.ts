@@ -19,16 +19,13 @@ export const userStore = {
 	email
 };
 
-export const getSignature = async (payload: WalletSignaturePayload) => {
-	const provider = new ethers.providers.Web3Provider((<any>window).ethereum);
+export const getSignature = async (nonce: string) => {
+	const provider = new ethers.providers.Web3Provider(window.ethereum);
 	const signer = provider.getSigner();
 	try {
-		const message = JSON.stringify(payload)
+		const signature = await signer.signMessage(nonce);
 
-		const signature = await signer.signMessage(message);
-		payload.signature = signature;
-
-		return { ...payload }
+		return signature;
 	} catch (err: any) {
 		if (err.code == 4001) {
 			console.log("Login rejected")
