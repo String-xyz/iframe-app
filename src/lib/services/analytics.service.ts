@@ -31,6 +31,7 @@ export function createAnalyticsService(options = {}) {
 			return visitorData;
 		} catch (e) {
 			console.error('analytics service error:', e);
+			throw e;
 		}
 	}
 

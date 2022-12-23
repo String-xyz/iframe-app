@@ -5,12 +5,6 @@ import { userStore } from '$lib/stores';
 export function createApiClient() {
 	const baseUrl = import.meta.env.VITE_API_BASE_PATH;
 
-	/* This piece of code is only for PR testing purposes */
-	// userStore.apiKey.set('str.6169e2ea53ea4078b54522f99b479d34');
-	// userStore.accessToken.set('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6ImIwNmRiN2M2LTkwZjUtNGJmOS04Nzk2LWU3ZDUwMmQ5MGNlZiIsImV4cCI6MTY3MTU3NjU5NywiaWF0IjoxNjcxNTc1Njk3fQ.PqYBVIKoso7Mu436OfzHlkI4QtP9aZtRa9Qe1k6dbss');
-	// userStore.userId.set('b06db7c6-90f5-4bf9-8796-e7d502d90cef');
-	/* This piece of code is only for PR testing purposes */
-
 	let _apiKey = '';
 	let _accessToken = '';
 
@@ -48,25 +42,25 @@ export function createApiClient() {
 	}
 
 	async function createUser(nonce: string, signature: string, visitor: VisitorData) {
+		const headers = { 'X-Api-Key': _apiKey };
 		const body = {
 			nonce,
 			signature,
 			fingerprint: visitor
 		};
 
-		const headers = { 'X-Api-Key': _apiKey };
-
 		try {
-			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, { nonce, signature }, {
-				headers: { 'X-Api-Key': _apiKey },
-			});
+			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, body, { headers });
 			// set the access token in the userStore
 			userStore.accessToken.set(data.authToken?.token);
+			// set the user id in the userStore
+			userStore.userId.set(data.user.id);
 
 			return data;
 		} catch (e: any) {
-			console.error("createUser error:", _getErrorFromAxiosError(e));
-			throw e;
+			const error = _getErrorFromAxiosError(e);
+			console.error("createUser error:", error);
+			throw error;
 		}
 	}
 
@@ -87,13 +81,20 @@ export function createApiClient() {
 		return
 	}
 
-	async function loginUser(nonce: string, signature: string) {
+	async function loginUser(nonce: string, signature: string, visitor: VisitorData) {
+		const headers = { 'X-Api-Key': _apiKey };
+		const body = {
+			nonce,
+			signature,
+			fingerprint: visitor
+		};
+
 		try {
-			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/login/sign`, { nonce, signature }, {
-				headers: { 'X-Api-Key': _apiKey },
-			});
+			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/login/sign`, body, { headers });
 			// set the access token in the userStore
 			userStore.accessToken.set(data.authToken?.token);
+			// set the user id in the userStore
+			userStore.userId.set(data.user.id);
 
 			return data;
 		} catch (e: any) {

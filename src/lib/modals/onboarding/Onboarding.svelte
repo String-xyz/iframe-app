@@ -2,35 +2,60 @@
 	import ModalBase from './ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 	import Address from '$lib/components/onboarding/Address.svelte';
-
+	import { ethers } from 'ethers';
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 
-	import { modalManager, contractPayload, login, accessToken } from '$lib/stores';
+	import { modalManager, contractPayload, accessToken } from '$lib/stores';
+	import { createAnalyticsService, apiClient } from '$lib/services';
 	import { onMount } from 'svelte';
-
-	const ENV = import.meta.env.VITE_ENV;
 
 	let action = () => {};
 
 	let actionText = 'Pay with String';
 
 	onMount(async () => {
-		// It goes to VerifyEmailForm for testing purposes
-		if (ENV === 'dev') {
-			await login($contractPayload.userAddress);
-
-			if ($accessToken) {
-				action = sendToVerify;
-				actionText = 'Pay with String';
-			} else {
-				action = authorizeWallet;
-				actionText = 'Authorize Wallet';
-			}
+		if ($accessToken) {
+			action = sendToVerify;
+			actionText = 'Pay with String';
+		} else {
+			action = authorizeWallet;
+			actionText = 'Authorize Wallet';
 		}
 	});
 
-	const authorizeWallet = () => {};
+	const authorizeWallet = async () => {
+		const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+		// connect wallet
+		await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+		// get nonce from the api
+		const walletAddress = $contractPayload.userAddress;
+		const { nonce } = await apiClient.requestLogin(walletAddress);
+
+		// sign nonce with wallet
+		const signer = provider.getSigner();
+		const signature = await signer.signMessage(nonce);
+
+		// get fingerprint data
+		const analyticsService = createAnalyticsService();
+		const visitorData = await analyticsService.getVisitorData();
+
+		// try to create user, if user already exists, login
+		try {
+			const { user } = await apiClient.createUser(nonce, signature, visitorData);
+			console.log('User created', user);
+			// TODO:@frostbournesb: show "Pay with String" button
+		} catch (e) {
+			if (e.code === 'CONFLICT') {
+				// user already exists
+				const { user } = await apiClient.loginUser(nonce, signature, visitorData);
+				console.log('User logged in', user);
+				// TODO:@frostbournesb: show "Pay with String" button
+			}
+		}
+	};
 
 	const sendToVerify = () => {
 		modalManager.set(VerifyEmailForm);
