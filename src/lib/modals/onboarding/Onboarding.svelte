@@ -46,13 +46,17 @@
 		try {
 			const { user } = await apiClient.createUser(nonce, signature, visitorData);
 			console.log('User created', user);
-			// TODO:@frostbournesb: show "Pay with String" button
+			sendToVerify();
 		} catch (e) {
 			if (e.code === 'CONFLICT') {
 				// user already exists
 				const { user } = await apiClient.loginUser(nonce, signature, visitorData);
+				// if (user.emailVerified) {
+				// 	sendToCheckout();
+				// } else {
+				// 	sendToVerify();
+				// }
 				console.log('User logged in', user);
-				// TODO:@frostbournesb: show "Pay with String" button
 			}
 		}
 	};
