@@ -51,10 +51,11 @@ export function createApiClient() {
 
 		try {
 			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, body, { headers });
-			// set the access token in the userStore
+			// set store values
 			userStore.accessToken.set(data.authToken?.token);
-			// set the user id in the userStore
 			userStore.userId.set(data.user.id);
+			userStore.userStatus.set(data.user.status);
+
 
 			return data;
 		} catch (e: any) {

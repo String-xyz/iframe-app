@@ -6,7 +6,7 @@
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 
-	import { modalManager, contractPayload, accessToken } from '$lib/stores';
+	import { modalManager, contractPayload, accessToken, userStatus } from '$lib/stores';
 	import { createAnalyticsService, apiClient } from '$lib/services';
 	import { onMount } from 'svelte';
 
@@ -15,7 +15,7 @@
 	let actionText = 'Pay with String';
 
 	onMount(async () => {
-		if ($accessToken) {
+		if ($accessToken && $userStatus !== 'email_verified') {
 			action = sendToVerify;
 			actionText = 'Pay with String';
 		} else {
@@ -45,18 +45,21 @@
 		// try to create user, if user already exists, login
 		try {
 			const { user } = await apiClient.createUser(nonce, signature, visitorData);
-			console.log('User created', user);
+			console.log('----- user created', user);
 			sendToVerify();
 		} catch (e) {
 			if (e.code === 'CONFLICT') {
+				console.log('----- user already exists', e);
 				// user already exists
 				const { user } = await apiClient.loginUser(nonce, signature, visitorData);
-				// if (user.emailVerified) {
-				// 	sendToCheckout();
-				// } else {
-				// 	sendToVerify();
-				// }
-				console.log('User logged in', user);
+				console.log('----- user logged id', user);
+
+				if (user.status !== 'email_verified') {
+					sendToVerify();
+					return;
+				}
+
+				sendToCheckout();
 			}
 		}
 	};
