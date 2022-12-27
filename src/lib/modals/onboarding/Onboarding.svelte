@@ -22,16 +22,14 @@
 
 			// if the user is logged in, check if they have verified their email
 			try {
-				const { emailStatus } = await apiClient.getUserStatus($userId);
-				if (emailStatus === 'email_verified') {
+				const { status } = await apiClient.getUserStatus($userId);
+				if (status === 'email_verified') {
 					sendToCheckout();
 					return;
 				}
-
 				action = sendToVerify;
 				actionText = 'Pay with String';
 			} catch (e) {
-				console.log('----- error', e);
 				alert('Error getting user status: ' + e.message);
 				action = authorizeWallet;
 				actionText = 'Authorize Wallet';
