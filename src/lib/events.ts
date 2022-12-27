@@ -2,6 +2,7 @@ import Onboarding from '$lib/modals/onboarding/Onboarding.svelte';
 
 import { contractPayload, modalManager, item } from '$lib/stores';
 import { parsePayload } from '$lib/utils';
+import VerifyDevice from './modals/onboarding/VerifyDevice.svelte';
 
 const CHANNEL = "STRING_PAY"
 
@@ -35,7 +36,7 @@ const handleEvent = async (event: StringEvent) => {
 			contractPayload.set(payload.contractParams);
 			item.set(payload.item);
 
-			modalManager.set(Onboarding);
+			modalManager.set(VerifyDevice);
 			
 		break;
 	}
