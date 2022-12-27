@@ -6,7 +6,7 @@
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 
-	import { modalManager, contractPayload, accessToken, userStatus } from '$lib/stores';
+	import { modalManager, contractPayload, accessToken, userId } from '$lib/stores';
 	import { createAnalyticsService, apiClient } from '$lib/services';
 	import { onMount } from 'svelte';
 
@@ -15,9 +15,27 @@
 	let actionText = 'Pay with String';
 
 	onMount(async () => {
-		if ($accessToken && $userStatus !== 'email_verified') {
-			action = sendToVerify;
-			actionText = 'Pay with String';
+		// get user status
+
+		if ($accessToken) {
+			// TODO: get user id from jwt
+
+			// if the user is logged in, check if they have verified their email
+			try {
+				const { emailStatus } = await apiClient.getUserStatus($userId);
+				if (emailStatus === 'email_verified') {
+					sendToCheckout();
+					return;
+				}
+
+				action = sendToVerify;
+				actionText = 'Pay with String';
+			} catch (e) {
+				console.log('----- error', e);
+				alert('Error getting user status: ' + e.message);
+				action = authorizeWallet;
+				actionText = 'Authorize Wallet';
+			}
 		} else {
 			action = authorizeWallet;
 			actionText = 'Authorize Wallet';
@@ -25,42 +43,49 @@
 	});
 
 	const authorizeWallet = async () => {
-		const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-		// connect wallet
-		await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-		// get nonce from the api
-		const walletAddress = $contractPayload.userAddress;
-		const { nonce } = await apiClient.requestLogin(walletAddress);
-
-		// sign nonce with wallet
-		const signer = provider.getSigner();
-		const signature = await signer.signMessage(nonce);
-
-		// get fingerprint data
-		const analyticsService = createAnalyticsService();
-		const visitorData = await analyticsService.getVisitorData();
-
-		// try to create user, if user already exists, login
 		try {
-			const { user } = await apiClient.createUser(nonce, signature, visitorData);
-			console.log('----- user created', user);
-			sendToVerify();
-		} catch (e) {
-			if (e.code === 'CONFLICT') {
-				console.log('----- user already exists', e);
-				// user already exists
-				const { user } = await apiClient.loginUser(nonce, signature, visitorData);
-				console.log('----- user logged id', user);
+			const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-				if (user.status !== 'email_verified') {
-					sendToVerify();
-					return;
+			// connect wallet
+			await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+			// get nonce from the api
+			const walletAddress = $contractPayload.userAddress;
+			const { nonce } = await apiClient.requestLogin(walletAddress);
+
+			// sign nonce with wallet
+			const signer = provider.getSigner();
+			const signature = await signer.signMessage(nonce);
+
+			// get fingerprint data
+			const analyticsService = createAnalyticsService();
+			const visitorData = await analyticsService.getVisitorData();
+
+			// try to create user, if user already exists, login
+			try {
+				const { user } = await apiClient.createUser(nonce, signature, visitorData);
+				console.log('----- user created', user);
+				sendToVerify();
+			} catch (e) {
+				if (e.code === 'CONFLICT') {
+					console.log('----- user already exists', e);
+					// user already exists
+					const { user } = await apiClient.loginUser(nonce, signature, visitorData);
+					console.log('----- user logged id', user);
+
+					if (user.status !== 'email_verified') {
+						sendToVerify();
+						return;
+					}
+
+					sendToCheckout();
 				}
 
-				sendToCheckout();
+				throw e;
 			}
+		} catch (e) {
+			console.log('----- error', e);
+			alert('TODO: Show an error screen');
 		}
 	};
 

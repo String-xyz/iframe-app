@@ -6,15 +6,13 @@ export const userId: Writable<string> = writable("");
 export const accessToken: Writable<string> = writable("");
 export const refreshToken: Writable<string> = writable("");
 export const apiKey: Writable<string> = writable("");
-export const userStatus: Writable<string> = writable("");
 
 export const userStore = {
 	apiKey,
 	accessToken,
 	userId,
 	email,
-	refreshToken,
-	userStatus
+	refreshToken
 };
 
 // Make sure we only run this code on the browser
@@ -27,7 +25,6 @@ if (browser) {
 	userId.set(getI("userId") || "");
 	email.set(getI("email") || "");
 	refreshToken.set(getI("refreshToken") || "");
-	userStatus.set(getI("userStatus") || "unverified");
 
 	// Save svelte store to localStore every time it changes
 	apiKey.subscribe
@@ -40,6 +37,4 @@ if (browser) {
 		(value => localStorage.setItem("email", value));
 	refreshToken.subscribe
 		(value => localStorage.setItem("refreshToken", value));
-	userStatus.subscribe
-		(value => localStorage.setItem("userStatus", value));
 }

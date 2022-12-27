@@ -54,8 +54,6 @@ export function createApiClient() {
 			// set store values
 			userStore.accessToken.set(data.authToken?.token);
 			userStore.userId.set(data.user.id);
-			userStore.userStatus.set(data.user.status);
-
 
 			return data;
 		} catch (e: any) {
