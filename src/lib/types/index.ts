@@ -25,9 +25,8 @@ export interface TransactionResponse {
 	txUrl: string;
 }
 
+/** @deprecated */
 export interface WalletSignaturePayload {
-	address: string;
-	timestamp: number;
 	nonce: string;
 	signature: string;
 }

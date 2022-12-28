@@ -1,62 +1,40 @@
 import { writable, type Writable } from 'svelte/store';
-import { post } from '$lib/services/api';
-import { ethers } from "ethers";
-import type { WalletSignaturePayload } from '$lib/types';
-
-const TEST_JWT_TOKEN = import.meta.env.VITE_TEST_JWT_TOKEN
-const TEST_USER_ID = import.meta.env.VITE_TEST_USER_ID
-const ENV = import.meta.env.VITE_ENV
+import { browser } from "$app/environment";
 
 export const email: Writable<string> = writable("");
 export const userId: Writable<string> = writable("");
 export const accessToken: Writable<string> = writable("");
+export const refreshToken: Writable<string> = writable("");
 export const apiKey: Writable<string> = writable("");
 
 export const userStore = {
 	apiKey,
 	accessToken,
 	userId,
-	email
+	email,
+	refreshToken
 };
 
+// Make sure we only run this code on the browser
+if (browser) {
+	const getI = (key: string) => localStorage.getItem(key);
 
-export const getSignature = async (payload: WalletSignaturePayload) => {
-	const provider = new ethers.providers.Web3Provider((<any>window).ethereum);
-	const signer = provider.getSigner();
-	try {
-		const message = JSON.stringify(payload)
+	// set initial values from localStorage
+	apiKey.set(getI("apiKey") || "");
+	accessToken.set(getI("accessToken") || "");
+	userId.set(getI("userId") || "");
+	email.set(getI("email") || "");
+	refreshToken.set(getI("refreshToken") || "");
 
-		const signature = await signer.signMessage(message);
-		payload.signature = signature;
-
-		return { ...payload }
-	} catch (err: any) {
-		if (err.code == 4001) {
-			console.log("Login rejected")
-		} else {
-			console.error(err)
-		}
-	}
-}
-
-export const login = async (walletAddress: string) => {
-	try {
-		if (ENV === 'dev' && TEST_JWT_TOKEN) {
-			accessToken.set(TEST_JWT_TOKEN)
-			userId.set(TEST_USER_ID)
-		} else {
-			const data = await post('login/request', {
-				walletAddress
-			});
-
-			const sig = await getSignature({address: data.address, timestamp: data.timestamp, nonce: data.nonce, signature: data.signature});
-
-			const login = await post('login', {
-				...sig
-			});
-		}
-
-	} catch (e) {
-		console.error("Could not login ", e)
-	}
+	// Save svelte store to localStore every time it changes
+	apiKey.subscribe
+		(value => { localStorage.setItem("apiKey", value) });
+	accessToken.subscribe
+		(value => localStorage.setItem("accessToken", value));
+	userId.subscribe
+		(value => localStorage.setItem("userId", value));
+	email.subscribe
+		(value => localStorage.setItem("email", value));
+	refreshToken.subscribe
+		(value => localStorage.setItem("refreshToken", value));
 }

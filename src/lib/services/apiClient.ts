@@ -41,18 +41,25 @@ export function createApiClient() {
 		return data;
 	}
 
-	async function createUser(nonce: string, signature: string) {
+	async function createUser(nonce: string, signature: string, visitor: VisitorData) {
+		const headers = { 'X-Api-Key': _apiKey };
+		const body = {
+			nonce,
+			signature,
+			fingerprint: visitor
+		};
+
 		try {
-			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, { nonce, signature }, {
-				headers: { 'X-Api-Key': _apiKey },
-			});
-			// set the access token in the userStore
+			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, body, { headers });
+			// set store values
 			userStore.accessToken.set(data.authToken?.token);
+			userStore.userId.set(data.user.id);
 
 			return data;
 		} catch (e: any) {
-			console.error("createUser error:", _getErrorFromAxiosError(e));
-			throw e;
+			const error = _getErrorFromAxiosError(e);
+			console.error("createUser error:", error);
+			throw error;
 		}
 	}
 
@@ -73,13 +80,20 @@ export function createApiClient() {
 		return
 	}
 
-	async function loginUser(nonce: string, signature: string) {
+	async function loginUser(nonce: string, signature: string, visitor: VisitorData) {
+		const headers = { 'X-Api-Key': _apiKey };
+		const body = {
+			nonce,
+			signature,
+			fingerprint: visitor
+		};
+
 		try {
-			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/login/sign`, { nonce, signature }, {
-				headers: { 'X-Api-Key': _apiKey },
-			});
+			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/login/sign`, body, { headers });
 			// set the access token in the userStore
 			userStore.accessToken.set(data.authToken?.token);
+			// set the user id in the userStore
+			userStore.userId.set(data.user.id);
 
 			return data;
 		} catch (e: any) {
@@ -153,4 +167,9 @@ interface UserUpdate {
 	firstName?: string;
 	middleName?: string;
 	lastName?: string;
+}
+
+export interface VisitorData {
+	visitorId?: string;
+	requestId?: string;
 }

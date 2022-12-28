@@ -1,55 +1,118 @@
 <script>
-	import ModalBase from "./ModalBase.svelte";
-	import StyledButton from "$lib/components/shared/StyledButton.svelte";
-	import Address from "$lib/components/onboarding/Address.svelte";
+	import ModalBase from './ModalBase.svelte';
+	import StyledButton from '$lib/components/shared/StyledButton.svelte';
+	import Address from '$lib/components/onboarding/Address.svelte';
+	import { ethers } from 'ethers';
+	import VerifyEmailForm from './VerifyEmailForm.svelte';
+	import OrderDetails from '../checkout/OrderDetails.svelte';
 
-	import VerifyEmailForm from "./VerifyEmailForm.svelte";
-	import OrderDetails from "../checkout/OrderDetails.svelte";
-
-	import { modalManager, contractPayload, login, accessToken } from "$lib/stores";
-	import { onMount } from "svelte";
-
-	const ENV = import.meta.env.VITE_ENV
+	import { modalManager, contractPayload, accessToken, userId } from '$lib/stores';
+	import { createAnalyticsService, apiClient } from '$lib/services';
+	import { onMount } from 'svelte';
 
 	let action = () => {};
 
-	let actionText = "Pay with String"
+	let actionText = 'Pay with String';
 
 	onMount(async () => {
-		// It goes to VerifyEmailForm for testing purposes
-		if (ENV === 'dev') {
-			await login($contractPayload.userAddress);
+		// get user status
 
-			if ($accessToken) {
-				action = sendToVerify
-				actionText = "Pay with String"
-			} else {
-				action = authorizeWallet
-				actionText = "Authorize Wallet"
+		if ($accessToken) {
+			// TODO: get user id from jwt
+
+			// if the user is logged in, check if they have verified their email
+			try {
+				const { status } = await apiClient.getUserStatus($userId);
+				if (status === 'email_verified') {
+					sendToCheckout();
+					return;
+				}
+				action = sendToVerify;
+				actionText = 'Pay with String';
+			} catch (e) {
+				alert('Error getting user status: ' + e.message);
+				action = authorizeWallet;
+				actionText = 'Authorize Wallet';
 			}
+		} else {
+			action = authorizeWallet;
+			actionText = 'Authorize Wallet';
 		}
+	});
 
-	})
+	const authorizeWallet = async () => {
+		try {
+			const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-	const authorizeWallet = () => {
+			// connect wallet
+			await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-	}
+			// get nonce from the api
+			const walletAddress = $contractPayload.userAddress;
+			const { nonce } = await apiClient.requestLogin(walletAddress);
+
+			// sign nonce with wallet
+			const signer = provider.getSigner();
+			const signature = await signer.signMessage(nonce);
+
+			// get fingerprint data
+			const analyticsService = createAnalyticsService();
+			const visitorData = await analyticsService.getVisitorData();
+
+			// try to create user, if user already exists, login
+			try {
+				const { user } = await apiClient.createUser(nonce, signature, visitorData);
+				console.log('----- user created', user);
+				sendToVerify();
+			} catch (e) {
+				if (e.code === 'CONFLICT') {
+					console.log('----- user already exists', e);
+					// user already exists
+					const { user } = await apiClient.loginUser(nonce, signature, visitorData);
+					console.log('----- user logged id', user);
+
+					if (user.status !== 'email_verified') {
+						sendToVerify();
+						return;
+					}
+
+					sendToCheckout();
+					return;
+				}
+
+				throw e;
+			}
+		} catch (e) {
+			console.log('----- error', e);
+			alert('TODO: Show an error screen');
+		}
+	};
 
 	const sendToVerify = () => {
-		modalManager.set(VerifyEmailForm)
-	}
+		modalManager.set(VerifyEmailForm);
+	};
 
 	const sendToCheckout = () => {
 		//TODO: When not in testing, if a device is known, send them directly to checkout
-		modalManager.set(OrderDetails)
-	}
+		modalManager.set(OrderDetails);
+	};
 </script>
 
 <ModalBase title="Pay with String" size="size-onboard">
-	<p class="mt-3 text-lg">String makes it easy to purchase digital assets with your credit or debit card. Log-in with your wallet to complete your purchase. This is where we are going to send blockchain items when purchased.</p>
+	<p class="mt-3 text-lg">
+		String makes it easy to purchase digital assets with your credit or debit card. Log-in with your
+		wallet to complete your purchase. This is where we are going to send blockchain items when
+		purchased.
+	</p>
 	<div class="wallet mt-5 flex justify-center">
 		<div class="flex flex-col justify-center">
-			<img class="mb-6" width="150px" height="36px" src="/assets/string_text_logo.svg" alt="String" />
+			<img
+				class="mb-6"
+				width="150px"
+				height="36px"
+				src="/assets/string_text_logo.svg"
+				alt="String"
+			/>
 			<Address />
 		</div>
 	</div>
@@ -60,7 +123,7 @@
 
 <style>
 	.wallet {
-		background-color:#DFF1FF;
+		background-color: #dff1ff;
 		border-radius: 8px;
 		height: 130px;
 	}

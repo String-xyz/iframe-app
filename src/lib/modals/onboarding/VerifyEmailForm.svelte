@@ -31,6 +31,7 @@
 			.then(() => {
 				console.log('email was successfully verified');
 				modalManager.set(OrderDetails);
+				// set user status to email_verified
 			})
 			.catch((err: any) => {
 				console.log('error requesting email verification', err);
@@ -86,6 +87,7 @@
 				<div class="mt-4">
 					<label for="name">First name</label>
 					<div class="name mt-1">
+						<!-- svelte-ignore a11y-autofocus -->						
 						<input
 							bind:value={firstNameInput}
 							class="input input-bordered border-2 w-64"
