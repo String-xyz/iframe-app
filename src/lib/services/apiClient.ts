@@ -20,6 +20,7 @@ export function createApiClient() {
 	const httpClient = axios.create({
 		baseURL: baseUrl,
 		headers: commonHeaders,
+		// withCredentials: true,
 	});
 
 	async function createApiKey() {
@@ -39,7 +40,8 @@ export function createApiClient() {
 	}
 
 	async function requestLogin(walletAddress: string) {
-		const { data } = await httpClient.get<{ nonce: string }>(`/login`, { params: { walletAddress } });
+		const headers = { 'X-Api-Key': _apiKey };
+		const { data } = await httpClient.get<{ nonce: string }>(`/login`, { params: { walletAddress }, headers });
 		return data;
 	}
 
