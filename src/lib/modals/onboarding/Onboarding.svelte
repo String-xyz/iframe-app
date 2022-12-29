@@ -64,6 +64,7 @@
 				const { user } = await apiClient.createUser(nonce, signature, visitorData);
 				console.log('----- user created', user);
 				sendToVerify();
+				return;
 			} catch (e) {
 				if (e.code === 'CONFLICT') {
 					console.log('----- user already exists', e);

@@ -6,6 +6,7 @@ export const userId: Writable<string> = writable("");
 export const accessToken: Writable<string> = writable("");
 export const refreshToken: Writable<string> = writable("");
 export const apiKey: Writable<string> = writable("");
+export const userStatus: Writable<string> = writable("");
 
 export const userStore = {
 	apiKey,
