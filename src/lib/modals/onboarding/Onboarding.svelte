@@ -62,6 +62,8 @@
 			// try to create user, if user already exists, login
 			try {
 				const { user } = await apiClient.createUser(nonce, signature, visitorData);
+				// set user id in store
+				userId.set(user.id);
 				console.log('----- user created', user);
 				sendToVerify();
 				return;
@@ -70,6 +72,7 @@
 					console.log('----- user already exists', e);
 					// user already exists
 					const { user } = await apiClient.loginUser(nonce, signature, visitorData);
+					userId.set(user.id);
 					console.log('----- user logged id', user);
 
 					if (user.status !== 'email_verified') {

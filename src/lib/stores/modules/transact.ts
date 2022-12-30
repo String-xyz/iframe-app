@@ -6,14 +6,3 @@ export const contractPayload: Writable<ContractPayload> = writable();
 export const card: Writable<Card | null> = writable();
 export const txID: Writable<string> = writable();
 export const txURL: Writable<string> = writable();
-
-
-export const getQuote = async (): Promise<TransactPayload> => {
-	const data = JSON.stringify(getStore(contractPayload));
-	return await post('quotes', data);
-};
-
-export const transact = async (quote: TransactPayload): Promise<TransactionResponse> => {
-	quote.cardToken = getStore(card)?.token ?? "";
-	return await post('transactions', JSON.stringify(quote));
-};

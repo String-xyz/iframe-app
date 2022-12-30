@@ -1,17 +1,10 @@
 import axios from 'axios';
 import { userStore } from '$lib/stores';
+import type { TransactPayload, TransactionResponse, Card, ContractPayload } from '$lib/types';
 
-// function createApiClient({ axiosInstance }: { axiosInstance: Axios }) {
-export function createApiClient() {
+export function createApiClient({ apiKey }: { apiKey: string }): ApiClient {
 	const baseUrl = import.meta.env.VITE_API_BASE_PATH;
-
-	let _apiKey = '';
-	let _accessToken = '';
-	let _refreshToken = '';
-
-	userStore.apiKey.subscribe((value) => _apiKey = value);
-	userStore.accessToken.subscribe((value) => _accessToken = value);
-	userStore.refreshToken.subscribe((value) => _refreshToken = value);
+	let _apiKey = apiKey;
 
 	const commonHeaders: any = {
 		'Content-Type': 'application/json',
@@ -20,7 +13,7 @@ export function createApiClient() {
 	const httpClient = axios.create({
 		baseURL: baseUrl,
 		headers: commonHeaders,
-		// withCredentials: true,
+		withCredentials: true, // send cookies
 	});
 
 	async function createApiKey() {
@@ -54,13 +47,7 @@ export function createApiClient() {
 		};
 
 		try {
-			// const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, body, { headers });
-			const { data } = await httpClient.post(`/users`, body, { headers });
-			// set store values
-			userStore.accessToken.set(data.authToken?.token);
-			userStore.refreshToken.set(data.authToken?.refreshToken);
-			userStore.userId.set(data.user.id);
-
+			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, body, { headers });
 			return data;
 		} catch (e: any) {
 			const error = _getErrorFromAxiosError(e);
@@ -71,19 +58,19 @@ export function createApiClient() {
 
 	async function updateUser(userId: string, update: UserUpdate) {
 		const { data } = await httpClient.put<User>(`/users/${userId}`, update, {
-			headers: { 'X-Api-Key': _apiKey, 'Authorization': `Bearer ${_accessToken}` },
+			headers: { 'X-Api-Key': _apiKey },
 		});
 		return data;
 	}
 
 	async function requestEmailVerification(userId: string, email: string) {
 		await httpClient.get(`/users/${userId}/verify-email`, {
-			headers: { 'X-Api-Key': _apiKey, 'Authorization': `Bearer ${_accessToken}` },
+			headers: { 'X-Api-Key': _apiKey },
 			params: { email },
 			timeout: 15 * 60 * 1000 // 15 minutes
 		});
 
-		return
+		return;
 	}
 
 	async function loginUser(nonce: string, signature: string, visitor: VisitorData) {
@@ -96,11 +83,6 @@ export function createApiClient() {
 
 		try {
 			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/login/sign`, body, { headers });
-			// set the access token in the userStore
-			userStore.accessToken.set(data.authToken?.token);
-			// set the user id in the userStore
-			userStore.userId.set(data.user.id);
-
 			return data;
 		} catch (e: any) {
 			console.error("createUser error:", _getErrorFromAxiosError(e));
@@ -109,14 +91,36 @@ export function createApiClient() {
 	}
 
 	async function getUserStatus(userId: string) {
+		const headers = { 'X-Api-Key': _apiKey };
 		try {
-			const { data } = await httpClient.get<{ status: string, emailStatus: string }>(`/users/${userId}/status`, {
-				headers: { 'X-Api-Key': _apiKey, 'Authorization': `Bearer ${_accessToken}` },
-			});
-
+			const { data } = await httpClient.get<{ status: string, emailStatus: string }>(`/users/${userId}/status`, { headers });
 			return data;
 		} catch (e: any) {
 			console.error("getUserStatus error:", _getErrorFromAxiosError(e));
+			throw e;
+		}
+	}
+
+	async function getQuote(contractPayload: ContractPayload) {
+		const headers = { 'X-Api-Key': _apiKey };
+		try {
+			const { data } = await httpClient.post<Promise<TransactPayload>>(`/quotes`, contractPayload, { headers });
+			console.log("getQuote data:", data);
+			return data;
+		} catch (e: any) {
+			console.error("getQuote error:", _getErrorFromAxiosError(e));
+			throw e;
+		}
+	};
+
+	async function transact(transactPayload: TransactPayload) {
+		const headers = { 'X-Api-Key': _apiKey };
+		try {
+			const { data } = await httpClient.post<TransactionResponse>(`/transactions`, transactPayload, { headers });
+			console.log("transact data:", data);
+			return data;
+		} catch (e: any) {
+			console.error("transact error:", _getErrorFromAxiosError(e));
 			throw e;
 		}
 	}
@@ -132,18 +136,16 @@ export function createApiClient() {
 	httpClient.interceptors.response.use(
 		response => response,
 		async error => {
-			if (error.response.status === 401 && error.response.data.code === 'TOKEN_EXPIRED') {
+			if (error.response.status === 401 && error.response.data.code === 'TOKEN_EXPIRED' || error.response.data.code === 'MISSING_TOKEN') {
 				console.log('------- refreshing token....')
 				const originalRequest = error.config;
 				try {
-					const body = { refreshToken: _refreshToken };
 					const headers = { 'X-Api-Key': _apiKey };
-					const res = await httpClient.post<AuthToken>(`/login/refresh`, body, { headers });
+					const res = await httpClient.post<AuthToken>(`/login/refresh`, {}, { headers });
 					if (!res) throw new Error("no data returned from refresh token request");
 
 					// update the access token in the userStore
 					userStore.accessToken.set(res.data.token);
-					userStore.refreshToken.set(res.data.refreshToken);
 					// retry the original request with the new access token
 					originalRequest.headers['Authorization'] = `Bearer ${res.data.token}`;
 					return httpClient(originalRequest);
@@ -167,6 +169,8 @@ export function createApiClient() {
 		requestEmailVerification,
 		loginUser,
 		getUserStatus,
+		getQuote,
+		transact,
 	};
 }
 
@@ -179,12 +183,18 @@ interface ApiKeyResponse {
 	updatedAt: string;
 }
 
+interface RefreshToken {
+	token: string;
+	expAt: Date;
+}
+
 interface AuthToken {
 	token: string;
-	refreshToken: string;
+	refreshToken: RefreshToken;
 	issuedAt: string;
 	expAt: string;
 }
+
 
 interface User {
 	id: string;
@@ -208,4 +218,18 @@ interface UserUpdate {
 export interface VisitorData {
 	visitorId?: string;
 	requestId?: string;
+}
+
+export interface ApiClient {
+	createApiKey: () => Promise<{ apiKey: string }>;
+	getApiKeys: () => Promise<ApiKeyResponse[]>;
+	validateApiKey: (keyId: string) => Promise<{ Status: string }>;
+	requestLogin: (walletAddress: string) => Promise<{ nonce: string }>;
+	createUser: (email: string, password: string, visitor: VisitorData) => Promise<{ authToken: AuthToken, user: User }>;
+	updateUser: (userId: string, userUpdate: UserUpdate) => Promise<User>;
+	requestEmailVerification: (userId: string, email: string) => Promise<void>;
+	loginUser: (nonce: string, signature: string, visitor: VisitorData) => Promise<{ authToken: AuthToken, user: User }>;
+	getUserStatus: (userId: string) => Promise<{ status: string, emailStatus: string }>;
+	getQuote: (contractPayload: ContractPayload) => Promise<TransactPayload>;
+	transact: (quote: TransactPayload) => Promise<TransactionResponse>;
 }
