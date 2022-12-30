@@ -8,37 +8,29 @@
 	import VerifyDevice from './VerifyDevice.svelte';
 
 	import { onMount } from 'svelte';
-	import { modalManager, contractPayload } from '$lib/stores';
-	import { AuthState, login } from '$lib/services';
+	import { modalManager, contractPayload, userId } from '$lib/stores';
+	import { apiClient, AuthState, login } from '$lib/services';
 
 	let action = () => {};
 
 	let actionText = 'Pay with String';
 
 	onMount(async () => {
-		// get user status
-
-		// if ($accessToken) {
-		// 	// TODO: get user id from jwt
-
-		// 	// if the user is logged in, check if they have verified their email
-		// 	try {
-		// 		const { status } = await apiClient.getUserStatus($userId);
-		// 		if (status === 'email_verified') {
-		// 			sendToCheckout();
-		// 			return;
-		// 		}
-		// 		action = sendToVerify;
-		// 		actionText = 'Pay with String';
-		// 	} catch (err: any) {
-		// 		alert('Error getting user status: ' + err.message);
-		// 		action = authorizeWallet;
-		// 		actionText = 'Authorize Wallet';
-		// 	}
-		// } else {
+		// if the user is logged in, check if they have verified their email
+		try {
+			if (!$userId) throw new Error('User is not logged in');
+			const { status } = await apiClient.getUserStatus($userId);
+			if (status === 'email_verified') {
+				sendToCheckout();
+				return;
+			}
+			action = sendToVerify;
+			actionText = 'Pay with String';
+		} catch (err: any) {
+			console.log('Could not get user: ' + err.message);
 			action = authorizeWallet;
 			actionText = 'Authorize Wallet';
-		// }
+		}
 	});
 
 	const authorizeWallet = async () => {
@@ -69,7 +61,7 @@
 	};
 
 	const sendToDeviceVerify = () => {
-		modalManager.set(VerifyDevice)
+		modalManager.set(VerifyDevice);
 	}
 
 </script>
