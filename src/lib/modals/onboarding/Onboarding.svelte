@@ -36,9 +36,11 @@
 	const authorizeWallet = async () => {
 		const { state } = await login($contractPayload.userAddress);
 		console.log(state)
+
 		switch (state) {
 			case AuthState.AUTHORIZED:
-				sendToCheckout();
+				action = sendToCheckout;
+				actionText = 'Pay with String';
 			break;
 
 			case AuthState.USER_CREATED:

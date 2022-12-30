@@ -68,6 +68,9 @@ export const login = async (walletAddress: string) => {
 	previousAttempt.signature = signature;
 	previousAttempt.nonce = nonce;
 
+	// visitorData.visitorId = "";
+	// visitorData.requestId = "";
+
 	try {
 		const { user } = await apiClient.createUser(nonce, signature, visitorData);
 		
@@ -83,6 +86,7 @@ export const login = async (walletAddress: string) => {
 					}
 
 					return { state: AuthState.AUTHORIZED, user }
+
 				} catch (err: any) {
 					switch (err.code) {
 						case "UNPROCESSABLE_ENTITY":
@@ -105,4 +109,6 @@ export const login = async (walletAddress: string) => {
 				throw err;
 		}
 	}
+
+	return { state: AuthState.ERROR }
 }
