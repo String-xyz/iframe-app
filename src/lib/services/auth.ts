@@ -68,14 +68,11 @@ export const login = async (walletAddress: string) => {
 	previousAttempt.signature = signature;
 	previousAttempt.nonce = nonce;
 
-	console.log("attempt")
-
 	try {
 		const { user } = await apiClient.createUser(nonce, signature, visitorData);
 		
 		return { state: "USER_CREATED", user }
 	} catch (err: any) {
-		console.log("in auth", err)
 		switch (err.code) {
 			case "CONFLICT": {
 				try {
