@@ -8,14 +8,14 @@
 
 	import { email, modalManager } from '$lib/stores';
 
-	const ENV = import.meta.env.VITE_ENV;
+	// const ENV = import.meta.env.VITE_ENV;
 
-	const resend = () => {
-		// This is temporary
-		if (ENV === 'dev') {
-			next();
-		}
-	};
+	// const resend = () => {
+	// 	// This is temporary
+	// 	if (ENV === 'dev') {
+	// 		next();
+	// 	}
+	// };
 
 	const next = () => {
 		modalManager.set(OrderDetails);

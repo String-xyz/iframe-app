@@ -150,7 +150,15 @@ interface AuthToken {
 	expAt: string;
 }
 
-interface User {
+interface UserUpdate {
+	walletAddress?: string;
+	firstName?: string;
+	middleName?: string;
+	lastName?: string;
+}
+
+
+export interface User {
 	id: string;
 	firstName: string;
 	middleName: string;
@@ -160,13 +168,6 @@ interface User {
 	tags: object;
 	createdAt: string;
 	updateAt: string;
-}
-
-interface UserUpdate {
-	walletAddress?: string;
-	firstName?: string;
-	middleName?: string;
-	lastName?: string;
 }
 
 export interface VisitorData {

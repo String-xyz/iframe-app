@@ -1,14 +1,15 @@
-<script>
+<script lang='ts'>
 	import ModalBase from './ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 	import Address from '$lib/components/onboarding/Address.svelte';
-	import { ethers } from 'ethers';
+
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
+	import VerifyDevice from './VerifyDevice.svelte';
 
-	import { modalManager, contractPayload, accessToken, userId } from '$lib/stores';
-	import { createAnalyticsService, apiClient } from '$lib/services';
 	import { onMount } from 'svelte';
+	import { modalManager, contractPayload } from '$lib/stores';
+	import { AuthState, login } from '$lib/services';
 
 	let action = () => {};
 
@@ -17,74 +18,45 @@
 	onMount(async () => {
 		// get user status
 
-		if ($accessToken) {
-			// TODO: get user id from jwt
+		// if ($accessToken) {
+		// 	// TODO: get user id from jwt
 
-			// if the user is logged in, check if they have verified their email
-			try {
-				const { status } = await apiClient.getUserStatus($userId);
-				if (status === 'email_verified') {
-					sendToCheckout();
-					return;
-				}
-				action = sendToVerify;
-				actionText = 'Pay with String';
-			} catch (e) {
-				alert('Error getting user status: ' + e.message);
-				action = authorizeWallet;
-				actionText = 'Authorize Wallet';
-			}
-		} else {
+		// 	// if the user is logged in, check if they have verified their email
+		// 	try {
+		// 		const { status } = await apiClient.getUserStatus($userId);
+		// 		if (status === 'email_verified') {
+		// 			sendToCheckout();
+		// 			return;
+		// 		}
+		// 		action = sendToVerify;
+		// 		actionText = 'Pay with String';
+		// 	} catch (err: any) {
+		// 		alert('Error getting user status: ' + err.message);
+		// 		action = authorizeWallet;
+		// 		actionText = 'Authorize Wallet';
+		// 	}
+		// } else {
 			action = authorizeWallet;
 			actionText = 'Authorize Wallet';
-		}
+		// }
 	});
 
 	const authorizeWallet = async () => {
-		try {
-			const provider = new ethers.providers.Web3Provider(window.ethereum);
+		const { state } = await login($contractPayload.userAddress);
+		console.log(state)
+		switch (state) {
+			case AuthState.AUTHORIZED:
+				sendToCheckout();
+			break;
 
-			// connect wallet
-			await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-			// get nonce from the api
-			const walletAddress = $contractPayload.userAddress;
-			const { nonce } = await apiClient.requestLogin(walletAddress);
-
-			// sign nonce with wallet
-			const signer = provider.getSigner();
-			const signature = await signer.signMessage(nonce);
-
-			// get fingerprint data
-			const analyticsService = createAnalyticsService();
-			const visitorData = await analyticsService.getVisitorData();
-
-			// try to create user, if user already exists, login
-			try {
-				const { user } = await apiClient.createUser(nonce, signature, visitorData);
-				console.log('----- user created', user);
+			case AuthState.EMAIL_UNVERIFIED:
 				sendToVerify();
-			} catch (e) {
-				if (e.code === 'CONFLICT') {
-					console.log('----- user already exists', e);
-					// user already exists
-					const { user } = await apiClient.loginUser(nonce, signature, visitorData);
-					console.log('----- user logged id', user);
+			break;
 
-					if (user.status !== 'email_verified') {
-						sendToVerify();
-						return;
-					}
+			case AuthState.DEVICE_UNVERIFIED:
+				sendToDeviceVerify();
+			break;
 
-					sendToCheckout();
-					return;
-				}
-
-				throw e;
-			}
-		} catch (e) {
-			console.log('----- error', e);
-			alert('TODO: Show an error screen');
 		}
 	};
 
@@ -93,9 +65,13 @@
 	};
 
 	const sendToCheckout = () => {
-		//TODO: When not in testing, if a device is known, send them directly to checkout
 		modalManager.set(OrderDetails);
 	};
+
+	const sendToDeviceVerify = () => {
+		modalManager.set(VerifyDevice)
+	}
+
 </script>
 
 <ModalBase title="Pay with String" size="size-onboard">
