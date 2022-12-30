@@ -6,7 +6,7 @@
 	import ResendEmailLink from './ResendEmailLink.svelte';
 	import Onboarding from './Onboarding.svelte';
 
-	import { userId, email, modalManager } from '$lib/stores';
+	import { userId, email, modalManager, userStatus } from '$lib/stores';
 	import { z } from 'zod';
 	import { apiClient } from '$lib/services';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
@@ -87,7 +87,7 @@
 				<div class="mt-4">
 					<label for="name">First name</label>
 					<div class="name mt-1">
-						<!-- svelte-ignore a11y-autofocus -->						
+						<!-- svelte-ignore a11y-autofocus -->
 						<input
 							bind:value={firstNameInput}
 							class="input input-bordered border-2 w-64"

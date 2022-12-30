@@ -7,9 +7,11 @@ export function createApiClient() {
 
 	let _apiKey = '';
 	let _accessToken = '';
+	let _refreshToken = '';
 
 	userStore.apiKey.subscribe((value) => _apiKey = value);
 	userStore.accessToken.subscribe((value) => _accessToken = value);
+	userStore.refreshToken.subscribe((value) => _refreshToken = value);
 
 	const commonHeaders: any = {
 		'Content-Type': 'application/json',
@@ -17,7 +19,7 @@ export function createApiClient() {
 
 	const httpClient = axios.create({
 		baseURL: baseUrl,
-		headers: commonHeaders
+		headers: commonHeaders,
 	});
 
 	async function createApiKey() {
@@ -50,9 +52,11 @@ export function createApiClient() {
 		};
 
 		try {
-			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, body, { headers });
+			// const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, body, { headers });
+			const { data } = await httpClient.post(`/users`, body, { headers });
 			// set store values
 			userStore.accessToken.set(data.authToken?.token);
+			userStore.refreshToken.set(data.authToken?.refreshToken);
 			userStore.userId.set(data.user.id);
 
 			return data;
@@ -120,6 +124,36 @@ export function createApiClient() {
 		else if (e.request) return e.request;
 		else return e.message;
 	}
+
+	// Response interceptor to refresh the access token. Every time a request is made, the interceptor will check if the access token is expired.
+	// If it is, it will try to refresh the token, and then retry the original request.
+	httpClient.interceptors.response.use(
+		response => response,
+		async error => {
+			if (error.response.status === 401 && error.response.data.code === 'TOKEN_EXPIRED') {
+				console.log('------- refreshing token....')
+				const originalRequest = error.config;
+				try {
+					const body = { refreshToken: _refreshToken };
+					const headers = { 'X-Api-Key': _apiKey };
+					const res = await httpClient.post<AuthToken>(`/login/refresh`, body, { headers });
+					if (!res) throw new Error("no data returned from refresh token request");
+
+					// update the access token in the userStore
+					userStore.accessToken.set(res.data.token);
+					userStore.refreshToken.set(res.data.refreshToken);
+					// retry the original request with the new access token
+					originalRequest.headers['Authorization'] = `Bearer ${res.data.token}`;
+					return httpClient(originalRequest);
+				} catch (e: any) {
+					console.error("refresh token error:", _getErrorFromAxiosError(e));
+					// TODO: logout user. For now, just throw the error
+					return Promise.reject(error);
+				}
+			}
+
+			return Promise.reject(error);
+		});
 
 	return {
 		createApiKey,
