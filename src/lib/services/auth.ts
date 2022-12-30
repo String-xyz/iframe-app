@@ -84,18 +84,22 @@ export const login = async (walletAddress: string) => {
 
 					return { state: AuthState.AUTHORIZED, user }
 				} catch (err: any) {
-					console.error(err)
-					return { state: AuthState.ERROR }
+					switch (err.code) {
+						case "UNPROCESSABLE_ENTITY":
+							return { state: AuthState.DEVICE_UNVERIFIED }
+						
+						// default:
+						// 	throw err;
+					}
 				}
+				break;
 			}
 
-			case "UNPROCESSABLE_ENTITY": {
+			case "UNPROCESSABLE_ENTITY":
 				return { state: AuthState.DEVICE_UNVERIFIED }
-			}
 
-			case "ERR_BAD_REQUEST": {
+			case "ERR_BAD_REQUEST":
 				return { state: AuthState.INVALID }
-			}
 
 			default: 
 				throw err;

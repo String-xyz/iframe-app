@@ -41,6 +41,7 @@
 				sendToCheckout();
 			break;
 
+			case AuthState.USER_CREATED:
 			case AuthState.EMAIL_UNVERIFIED:
 				sendToVerify();
 			break;
