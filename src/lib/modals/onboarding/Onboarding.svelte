@@ -6,7 +6,7 @@
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 
-	import { modalManager, contractPayload, accessToken, userId } from '$lib/stores';
+	import { modalManager, contractPayload, userId } from '$lib/stores';
 	import { createAnalyticsService, apiClient } from '$lib/services';
 	import { onMount } from 'svelte';
 
@@ -15,26 +15,18 @@
 	let actionText = 'Pay with String';
 
 	onMount(async () => {
-		// get user status
-
-		if ($accessToken) {
-			// TODO: get user id from jwt
-
-			// if the user is logged in, check if they have verified their email
-			try {
-				const { status } = await apiClient.getUserStatus($userId);
-				if (status === 'email_verified') {
-					sendToCheckout();
-					return;
-				}
-				action = sendToVerify;
-				actionText = 'Pay with String';
-			} catch (e) {
-				alert('Error getting user status: ' + e.message);
-				action = authorizeWallet;
-				actionText = 'Authorize Wallet';
+		// if the user is logged in, check if they have verified their email
+		try {
+			if (!$userId) throw new Error('User is not logged in');
+			const { status } = await apiClient.getUserStatus($userId);
+			if (status === 'email_verified') {
+				sendToCheckout();
+				return;
 			}
-		} else {
+			action = sendToVerify;
+			actionText = 'Pay with String';
+		} catch (e) {
+			console.log('Could not get user: ' + e.message);
 			action = authorizeWallet;
 			actionText = 'Authorize Wallet';
 		}

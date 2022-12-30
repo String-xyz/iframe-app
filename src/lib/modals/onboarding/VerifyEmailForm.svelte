@@ -6,7 +6,7 @@
 	import ResendEmailLink from './ResendEmailLink.svelte';
 	import Onboarding from './Onboarding.svelte';
 
-	import { userId, email, modalManager, userStatus } from '$lib/stores';
+	import { userId, email, modalManager } from '$lib/stores';
 	import { z } from 'zod';
 	import { apiClient } from '$lib/services';
 	import OrderDetails from '../checkout/OrderDetails.svelte';

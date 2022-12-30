@@ -1,14 +1,13 @@
+import type { TransactPayload, TransactionResponse, ContractPayload } from '$lib/types';
 import axios from 'axios';
-import { userStore } from '$lib/stores';
-import type { TransactPayload, TransactionResponse, Card, ContractPayload } from '$lib/types';
 
-export function createApiClient({ apiKey }: { apiKey: string }): ApiClient {
+export function createApiClient(): ApiClient {
 	const baseUrl = import.meta.env.VITE_API_BASE_PATH;
-	let _apiKey = apiKey;
+	let _apiKey = '';
 
 	const commonHeaders: any = {
 		'Content-Type': 'application/json',
-	}
+	};
 
 	const httpClient = axios.create({
 		baseURL: baseUrl,
@@ -16,9 +15,12 @@ export function createApiClient({ apiKey }: { apiKey: string }): ApiClient {
 		withCredentials: true, // send cookies
 	});
 
+	function setApiKey(key: string) {
+		_apiKey = key;
+	}
+
 	async function createApiKey() {
 		const { data } = await httpClient.post<{ apiKey: string }>('/apikeys');
-		userStore.apiKey.set(data.apiKey);
 		return data;
 	}
 
@@ -131,6 +133,23 @@ export function createApiClient({ apiKey }: { apiKey: string }): ApiClient {
 		else return e.message;
 	}
 
+	// TODO: Create a Request interceptor to add the X-Api-Key header to every request
+	// httpClient.interceptors.request.use(
+	// 	async (config: any) => {
+	// 		if (!_apiKey) {
+	// 			console.error('---- 1 ::::::: No API key set');
+	// 			return Promise.reject('No API key set');
+	// 		}
+
+	// 		config.headers['X-Api-Key'] = _apiKey;
+	// 		return config;
+	// 	},
+	// 	error => {
+	// 		console.error('---- 2 ::::::: No API key set');
+	// 		return Promise.reject(error);
+	// 	}
+	// );
+
 	// Response interceptor to refresh the access token. Every time a request is made, the interceptor will check if the access token is expired.
 	// If it is, it will try to refresh the token, and then retry the original request.
 	httpClient.interceptors.response.use(
@@ -145,7 +164,6 @@ export function createApiClient({ apiKey }: { apiKey: string }): ApiClient {
 					if (!res) throw new Error("no data returned from refresh token request");
 
 					// update the access token in the userStore
-					userStore.accessToken.set(res.data.token);
 					// retry the original request with the new access token
 					originalRequest.headers['Authorization'] = `Bearer ${res.data.token}`;
 					return httpClient(originalRequest);
@@ -160,6 +178,7 @@ export function createApiClient({ apiKey }: { apiKey: string }): ApiClient {
 		});
 
 	return {
+		setApiKey,
 		createApiKey,
 		getApiKeys,
 		validateApiKey,
@@ -221,6 +240,7 @@ export interface VisitorData {
 }
 
 export interface ApiClient {
+	setApiKey: (apiKey: string) => void;
 	createApiKey: () => Promise<{ apiKey: string }>;
 	getApiKeys: () => Promise<ApiKeyResponse[]>;
 	validateApiKey: (keyId: string) => Promise<{ Status: string }>;
