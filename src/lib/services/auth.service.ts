@@ -33,6 +33,10 @@ export const requestSignature = async (nonce: string) => {
 export const getVisitorData = async () => {
 	const visitorData = await locationService.getVisitorData();
 
+	// Use your own values if you want
+	// visitorData.visitorId = "uNngbc1ug3xpZ1czqqJH";
+	// visitorData.requestId = "1672778461626.kiTB1x";
+
 	return visitorData;
 }
 
@@ -67,10 +71,6 @@ export const login = async (walletAddress: string) => {
 
 	previousAttempt.signature = signature;
 	previousAttempt.nonce = nonce;
-
-	// Use your own values if you want
-	// visitorData.visitorId = "dle6eqRHxjPEj4H3WLoC";
-	// visitorData.requestId = "1672776338395.gciyxi";
 
 	try {
 		const { user } = await apiClient.createUser(nonce, signature, visitorData);
