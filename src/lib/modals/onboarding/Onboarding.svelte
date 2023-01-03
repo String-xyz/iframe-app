@@ -12,7 +12,7 @@
 	import { apiClient, AuthState, login } from '$lib/services';
 
 	// default action: Authorize Wallet
-	let action: () => void;
+	let action: Function;
 	let actionText = 'Authorize Wallet';
 
 	// TODO: Logout function: Make an api call to logout endpoint, clear localStorage, disconnect wallet
@@ -20,7 +20,6 @@
 
 	onMount(async () => {
 		// A prerequisite for this modal to be shown is that there is always a wallet connected
-		console.log('--- Wallet is already connected');
 
 		if (!(await isUserLoggedIn())) {
 			actionText = 'Authorize Wallet';
@@ -34,8 +33,7 @@
 		return;
 	});
 
-	async function payWithString() {
-
+	const payWithString = async () => {
 		//This is redundant, we already know the user is logged in
 		let isLoggedIn = await isUserLoggedIn();
 		if (!isLoggedIn) {
@@ -58,7 +56,7 @@
 			action = authorizeWallet;
 			actionText = 'Authorize Wallet';
 		}
-	});
+	};
 
 	const authorizeWallet = async () => {
 		const { state } = await login($contractPayload.userAddress);

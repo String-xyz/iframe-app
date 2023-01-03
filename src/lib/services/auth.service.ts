@@ -36,8 +36,6 @@ export const getVisitorData = async () => {
 	return visitorData;
 }
 
-export 
-
 export const retryLogin = async () => {
 	const visitorData = await getVisitorData();
 
@@ -70,8 +68,9 @@ export const login = async (walletAddress: string) => {
 	previousAttempt.signature = signature;
 	previousAttempt.nonce = nonce;
 
-	// visitorData.visitorId = "";
-	// visitorData.requestId = "";
+	// Use your own values if you want
+	// visitorData.visitorId = "dle6eqRHxjPEj4H3WLoC";
+	// visitorData.requestId = "1672776338395.gciyxi";
 
 	try {
 		const { user } = await apiClient.createUser(nonce, signature, visitorData);
