@@ -5,7 +5,6 @@
 	$: address = $contractPayload.userAddress
 		? abbrev($contractPayload.userAddress)
 		: 'No Wallet Connected';
-	// let dotColor = '#15E883'; // $userWalletAddress ? 'green' : 'red';s
 </script>
 
 <p>
