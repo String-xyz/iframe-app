@@ -1,28 +1,32 @@
+import type { TransactPayload, TransactionResponse, ContractPayload } from '$lib/types';
 import axios from 'axios';
-import { userStore } from '$lib/stores';
 
-// function createApiClient({ axiosInstance }: { axiosInstance: Axios }) {
-export function createApiClient() {
+export function createApiClient(): ApiClient {
 	const baseUrl = import.meta.env.VITE_API_BASE_PATH;
-
 	let _apiKey = '';
-	let _accessToken = '';
-
-	userStore.apiKey.subscribe((value) => _apiKey = value);
-	userStore.accessToken.subscribe((value) => _accessToken = value);
+	let _walletAddress = '';
 
 	const commonHeaders: any = {
 		'Content-Type': 'application/json',
-	}
+	};
 
 	const httpClient = axios.create({
 		baseURL: baseUrl,
-		headers: commonHeaders
+		headers: commonHeaders,
+		withCredentials: true, // send cookies
 	});
+
+	function setApiKey(key: string) {
+		_apiKey = key;
+	}
+
+	// this is not ideal, temporary solution until we migrate this file to the sdk
+	function _setWalletAddress(address: string) {
+		_walletAddress = address;
+	}
 
 	async function createApiKey() {
 		const { data } = await httpClient.post<{ apiKey: string }>('/apikeys');
-		userStore.apiKey.set(data.apiKey);
 		return data;
 	}
 
@@ -37,7 +41,8 @@ export function createApiClient() {
 	}
 
 	async function requestLogin(walletAddress: string) {
-		const { data } = await httpClient.get<{ nonce: string }>(`/login`, { params: { walletAddress } });
+		const headers = { 'X-Api-Key': _apiKey };
+		const { data } = await httpClient.get<{ nonce: string }>(`/login`, { params: { walletAddress }, headers });
 		return data;
 	}
 
@@ -51,10 +56,6 @@ export function createApiClient() {
 
 		try {
 			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/users`, body, { headers });
-			// set store values
-			userStore.accessToken.set(data.authToken?.token);
-			userStore.userId.set(data.user.id);
-
 			return data;
 		} catch (e: any) {
 			const error = _getErrorFromAxiosError(e);
@@ -65,19 +66,19 @@ export function createApiClient() {
 
 	async function updateUser(userId: string, update: UserUpdate) {
 		const { data } = await httpClient.put<User>(`/users/${userId}`, update, {
-			headers: { 'X-Api-Key': _apiKey, 'Authorization': `Bearer ${_accessToken}` },
+			headers: { 'X-Api-Key': _apiKey },
 		});
 		return data;
 	}
 
 	async function requestEmailVerification(userId: string, email: string) {
 		await httpClient.get(`/users/${userId}/verify-email`, {
-			headers: { 'X-Api-Key': _apiKey, 'Authorization': `Bearer ${_accessToken}` },
+			headers: { 'X-Api-Key': _apiKey },
 			params: { email },
 			timeout: 15 * 60 * 1000 // 15 minutes
 		});
 
-		return
+		return;
 	}
 
 	async function loginUser(nonce: string, signature: string, visitor: VisitorData) {
@@ -90,11 +91,6 @@ export function createApiClient() {
 
 		try {
 			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/login/sign`, body, { headers });
-			// set the access token in the userStore
-			userStore.accessToken.set(data.authToken?.token);
-			// set the user id in the userStore
-			userStore.userId.set(data.user.id);
-
 			return data;
 		} catch (e: any) {
 			console.error("createUser error:", _getErrorFromAxiosError(e));
@@ -103,14 +99,37 @@ export function createApiClient() {
 	}
 
 	async function getUserStatus(userId: string) {
+		if (!userId) throw new Error("userId is required");
+		const headers = { 'X-Api-Key': _apiKey };
 		try {
-			const { data } = await httpClient.get<{ status: string, emailStatus: string }>(`/users/${userId}/status`, {
-				headers: { 'X-Api-Key': _apiKey, 'Authorization': `Bearer ${_accessToken}` },
-			});
-
+			const { data } = await httpClient.get<{ status: string, emailStatus: string }>(`/users/${userId}/status`, { headers });
 			return data;
 		} catch (e: any) {
 			console.error("getUserStatus error:", _getErrorFromAxiosError(e));
+			throw e;
+		}
+	}
+
+	async function getQuote(contractPayload: ContractPayload) {
+		const headers = { 'X-Api-Key': _apiKey };
+		try {
+			const { data } = await httpClient.post<Promise<TransactPayload>>(`/quotes`, contractPayload, { headers });
+			console.log("getQuote data:", data);
+			return data;
+		} catch (e: any) {
+			console.error("getQuote error:", _getErrorFromAxiosError(e));
+			throw e;
+		}
+	};
+
+	async function transact(transactPayload: TransactPayload) {
+		const headers = { 'X-Api-Key': _apiKey };
+		try {
+			const { data } = await httpClient.post<TransactionResponse>(`/transactions`, transactPayload, { headers });
+			console.log("transact data:", data);
+			return data;
+		} catch (e: any) {
+			console.error("transact error:", _getErrorFromAxiosError(e));
 			throw e;
 		}
 	}
@@ -121,7 +140,54 @@ export function createApiClient() {
 		else return e.message;
 	}
 
+	// TODO: Create a Request interceptor to add the X-Api-Key header to every request
+	// httpClient.interceptors.request.use(
+	// 	async (config: any) => {
+	// 		if (!_apiKey) {
+	// 			console.error('---- 1 ::::::: No API key set');
+	// 			return Promise.reject('No API key set');
+	// 		}
+
+	// 		config.headers['X-Api-Key'] = _apiKey;
+	// 		return config;
+	// 	},
+	// 	error => {
+	// 		console.error('---- 2 ::::::: No API key set');
+	// 		return Promise.reject(error);
+	// 	}
+	// );
+
+	// Response interceptor to refresh the access token. Every time a request is made, the interceptor will check if the access token is expired.
+	// If it is, it will try to refresh the token, and then retry the original request.
+	httpClient.interceptors.response.use(
+		response => response,
+		async error => {
+			// TODO: once this is migrated to the sdk, make sure there is a wallet connection before refreshing the token
+
+			if (error.response.status === 401 && error.response.data.code === 'TOKEN_EXPIRED' || error.response.data.code === 'MISSING_TOKEN') {
+				console.log('------- refreshing token....')
+				const originalRequest = error.config;
+				try {
+					const headers = { 'X-Api-Key': _apiKey };
+					const res = await httpClient.post<AuthToken>(`/login/refresh`, { walletAddress: _walletAddress }, { headers });
+					if (!res) throw new Error("no data returned from refresh token request");
+
+					// update the access token in the userStore
+					// retry the original request with the new access token
+					originalRequest.headers['Authorization'] = `Bearer ${res.data.token}`;
+					return httpClient(originalRequest);
+				} catch (e: any) {
+					console.error("refresh token error:", _getErrorFromAxiosError(e));
+					// TODO: logout user. For now, just throw the error
+					return Promise.reject(error);
+				}
+			}
+
+			return Promise.reject(error);
+		});
+
 	return {
+		setApiKey,
 		createApiKey,
 		getApiKeys,
 		validateApiKey,
@@ -131,6 +197,9 @@ export function createApiClient() {
 		requestEmailVerification,
 		loginUser,
 		getUserStatus,
+		getQuote,
+		transact,
+		_setWalletAddress
 	};
 }
 
@@ -143,12 +212,18 @@ interface ApiKeyResponse {
 	updatedAt: string;
 }
 
+interface RefreshToken {
+	token: string;
+	expAt: Date;
+}
+
 interface AuthToken {
 	token: string;
-	refreshToken: string;
+	refreshToken: RefreshToken;
 	issuedAt: string;
 	expAt: string;
 }
+
 
 interface User {
 	id: string;
@@ -172,4 +247,20 @@ interface UserUpdate {
 export interface VisitorData {
 	visitorId?: string;
 	requestId?: string;
+}
+
+export interface ApiClient {
+	setApiKey: (apiKey: string) => void;
+	createApiKey: () => Promise<{ apiKey: string }>;
+	getApiKeys: () => Promise<ApiKeyResponse[]>;
+	validateApiKey: (keyId: string) => Promise<{ Status: string }>;
+	requestLogin: (walletAddress: string) => Promise<{ nonce: string }>;
+	createUser: (email: string, password: string, visitor: VisitorData) => Promise<{ authToken: AuthToken, user: User }>;
+	updateUser: (userId: string, userUpdate: UserUpdate) => Promise<User>;
+	requestEmailVerification: (userId: string, email: string) => Promise<void>;
+	loginUser: (nonce: string, signature: string, visitor: VisitorData) => Promise<{ authToken: AuthToken, user: User }>;
+	getUserStatus: (userId: string) => Promise<{ status: string, emailStatus: string }>;
+	getQuote: (contractPayload: ContractPayload) => Promise<TransactPayload>;
+	transact: (quote: TransactPayload) => Promise<TransactionResponse>;
+	_setWalletAddress: (address: string) => void;
 }

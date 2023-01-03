@@ -6,49 +6,70 @@
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 
-	import { modalManager, contractPayload, accessToken, userId } from '$lib/stores';
-	import { createAnalyticsService, apiClient } from '$lib/services';
+	import { modalManager, userStore, contractPayload } from '$lib/stores';
+	import { createLocationService, apiClient } from '$lib/services';
 	import { onMount } from 'svelte';
 
-	let action = () => {};
+	// default action: Authorize Wallet
+	let action = authorizeWallet;
+	let actionText = 'Authorize Wallet';
 
-	let actionText = 'Pay with String';
+	// store vars
+	let userId = '';
+
+	userStore.userId.subscribe((value) => (userId = value));
+
+	// TODO: Logout function: Make an api call to logout endpoint, clear localStorage, disconnect wallet
+	// TODO: Listen to wallet lock events. On lock call logout function
 
 	onMount(async () => {
-		// get user status
+		// A prerequisite for this modal to be shown is that there is always a wallet connected
+		console.log('--- Wallet is already connected');
 
-		if ($accessToken) {
-			// TODO: get user id from jwt
-
-			// if the user is logged in, check if they have verified their email
-			try {
-				const { status } = await apiClient.getUserStatus($userId);
-				if (status === 'email_verified') {
-					sendToCheckout();
-					return;
-				}
-				action = sendToVerify;
-				actionText = 'Pay with String';
-			} catch (e) {
-				alert('Error getting user status: ' + e.message);
-				action = authorizeWallet;
-				actionText = 'Authorize Wallet';
-			}
-		} else {
-			action = authorizeWallet;
+		if (!(await isUserLoggedIn())) {
 			actionText = 'Authorize Wallet';
+			action = authorizeWallet;
+			return;
 		}
+
+		// user authorized
+		actionText = 'Pay With String';
+		action = payWithString;
+		return;
 	});
 
-	const authorizeWallet = async () => {
+	async function payWithString() {
+		console.log('Pay with String action');
+
+		//This is redundant, we already know the user is logged in
+		let isLoggedIn = await isUserLoggedIn();
+		if (!isLoggedIn) {
+			action = authorizeWallet;
+			actionText = 'Authorize Wallet';
+			return;
+		}
+
+		try {
+			const user = await apiClient.getUserStatus(userId);
+			// get user status
+			if (user.status === 'email_verified') {
+				sendToCheckout();
+				return;
+			}
+
+			sendToVerify();
+		} catch (e) {
+			console.log('----- error', e);
+			alert('TODO: Show an error screen'); // TODO: Use bootstrap notifications instead
+		}
+	}
+	async function authorizeWallet() {
 		try {
 			const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-			// connect wallet
-			await window.ethereum.request({ method: 'eth_requestAccounts' });
-
 			// get nonce from the api
 			const walletAddress = $contractPayload.userAddress;
+			apiClient._setWalletAddress(walletAddress); // this is a temporary fix
 			const { nonce } = await apiClient.requestLogin(walletAddress);
 
 			// sign nonce with wallet
@@ -56,37 +77,41 @@
 			const signature = await signer.signMessage(nonce);
 
 			// get fingerprint data
-			const analyticsService = createAnalyticsService();
-			const visitorData = await analyticsService.getVisitorData();
+			const locationService = createLocationService();
+			const visitorData = await locationService.getVisitorData();
 
 			// try to create user, if user already exists, login
 			try {
 				const { user } = await apiClient.createUser(nonce, signature, visitorData);
 				console.log('----- user created', user);
+				// set user id in store
+				userStore.userId.set(user.id);
 				sendToVerify();
+				return;
 			} catch (e) {
-				if (e.code === 'CONFLICT') {
-					console.log('----- user already exists', e);
-					// user already exists
-					const { user } = await apiClient.loginUser(nonce, signature, visitorData);
-					console.log('----- user logged id', user);
+				if (e.code !== 'CONFLICT') {
+					throw e;
+				}
 
-					if (user.status !== 'email_verified') {
-						sendToVerify();
-						return;
-					}
-
-					sendToCheckout();
+				console.log('----- user already exists', e);
+				// user already exists
+				const { user } = await apiClient.loginUser(nonce, signature, visitorData);
+				console.log('----- user logged id', user);
+				userStore.userId.set(user.id);
+				// this is redundant
+				if (user.status !== 'email_verified') {
+					sendToVerify();
 					return;
 				}
 
-				throw e;
+				sendToCheckout();
+				return;
 			}
 		} catch (e) {
 			console.log('----- error', e);
-			alert('TODO: Show an error screen');
+			alert('TODO: Show an error screen'); // TODO: Use bootstrap notifications instead
 		}
-	};
+	}
 
 	const sendToVerify = () => {
 		modalManager.set(VerifyEmailForm);
@@ -96,6 +121,21 @@
 		//TODO: When not in testing, if a device is known, send them directly to checkout
 		modalManager.set(OrderDetails);
 	};
+
+	async function isUserLoggedIn() {
+		// For now to make sure a user is logged in we sent a request to the api. This is not ideal
+		// because we are making an extra request to the api. We should be able to check the userStore
+		if (userId !== '') {
+			return false;
+		}
+
+		try {
+			await apiClient.getUserStatus(userId);
+			return true;
+		} catch (e) {
+			return false;
+		}
+	}
 </script>
 
 <ModalBase title="Pay with String" size="size-onboard">

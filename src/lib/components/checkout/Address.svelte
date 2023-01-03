@@ -2,7 +2,7 @@
 	import { contractPayload } from '$lib/stores';
 	import { abbrev } from '$lib/utils';
 
-	$: address = $contractPayload.userAddress || "";
+	$: address = $contractPayload.userAddress || 'No Wallet Connected';
 </script>
 
 <div class="addr">
