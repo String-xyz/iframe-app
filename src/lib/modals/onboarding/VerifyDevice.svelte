@@ -28,9 +28,11 @@
 
 			case AuthState.DEVICE_UNVERIFIED:
 				alert("Could not verify device, please check your email again");
-			
+			break;
+
 			case AuthState.EMAIL_UNVERIFIED:
 				sendToVerify();
+			break;
 		}
 	}
 
