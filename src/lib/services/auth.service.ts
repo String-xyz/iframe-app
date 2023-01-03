@@ -1,8 +1,8 @@
 import { ethers } from 'ethers';
-import { createAnalyticsService, apiClient } from '$lib/services';
+import { createLocationService, apiClient } from '$lib/services';
 import type { User } from './apiClient';
 
-const analyticsService = createAnalyticsService();
+const locationService = createLocationService();
 
 const previousAttempt = { signature: "", nonce: "" };
 
@@ -31,10 +31,12 @@ export const requestSignature = async (nonce: string) => {
 }
 
 export const getVisitorData = async () => {
-	const visitorData = await analyticsService.getVisitorData();
+	const visitorData = await locationService.getVisitorData();
 
 	return visitorData;
 }
+
+export 
 
 export const retryLogin = async () => {
 	const visitorData = await getVisitorData();

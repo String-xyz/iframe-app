@@ -11,16 +11,43 @@
 	import { modalManager, contractPayload, userId } from '$lib/stores';
 	import { apiClient, AuthState, login } from '$lib/services';
 
-	let action = () => {};
+	// default action: Authorize Wallet
+	let action: () => void;
+	let actionText = 'Authorize Wallet';
 
-	let actionText = 'Pay with String';
+	// TODO: Logout function: Make an api call to logout endpoint, clear localStorage, disconnect wallet
+	// TODO: Listen to wallet lock events. On lock call logout function
 
 	onMount(async () => {
-		// if the user is logged in, check if they have verified their email
+		// A prerequisite for this modal to be shown is that there is always a wallet connected
+		console.log('--- Wallet is already connected');
+
+		if (!(await isUserLoggedIn())) {
+			actionText = 'Authorize Wallet';
+			action = authorizeWallet;
+			return;
+		}
+
+		// user authorized
+		actionText = 'Pay With String';
+		action = payWithString;
+		return;
+	});
+
+	async function payWithString() {
+
+		//This is redundant, we already know the user is logged in
+		let isLoggedIn = await isUserLoggedIn();
+		if (!isLoggedIn) {
+			action = authorizeWallet;
+			actionText = 'Authorize Wallet';
+			return;
+		}
+
 		try {
-			if (!$userId) throw new Error('User is not logged in');
-			const { status } = await apiClient.getUserStatus($userId);
-			if (status === 'email_verified') {
+			const user = await apiClient.getUserStatus($userId);
+			// get user status
+			if (user.status === 'email_verified') {
 				sendToCheckout();
 				return;
 			}
@@ -53,7 +80,7 @@
 			break;
 
 		}
-	};
+	}
 
 	const sendToVerify = () => {
 		modalManager.set(VerifyEmailForm);
@@ -67,6 +94,20 @@
 		modalManager.set(VerifyDevice);
 	}
 
+	async function isUserLoggedIn() {
+		// For now to make sure a user is logged in we sent a request to the api. This is not ideal
+		// because we are making an extra request to the api. We should be able to check the userStore
+		if ($userId !== '') {
+			return false;
+		}
+
+		try {
+			await apiClient.getUserStatus($userId);
+			return true;
+		} catch (e) {
+			return false;
+		}
+	}
 </script>
 
 <ModalBase title="Pay with String" size="size-onboard">
