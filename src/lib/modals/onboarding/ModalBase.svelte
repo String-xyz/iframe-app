@@ -45,6 +45,6 @@
 
 	.size-resend {
 		width: 600px;
-		height: 320px;
+		height: 350px;
 	}
 </style>

@@ -1,4 +1,4 @@
-import { writable, get as getStore, type Writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 import type { TransactPayload } from '$lib/types';
 
 export const finalQuote: Writable<TransactPayload | null> = writable();

@@ -27,6 +27,7 @@ export const parsePayload = (payload: StringPayload) => {
 	try {
 		payload = PayloadSchema.parse(payload);
 		apiClient.setApiKey(payload.apiKey);
+		apiClient.setWalletAddress(payload.userAddress);
 
 		const item: NFT = {
 			name: payload.name,

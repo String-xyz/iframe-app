@@ -1,25 +1,10 @@
 <script>
 	import ModalBase from './ModalBase.svelte';
 	import BackButton from '$lib/components/shared/BackButton.svelte';
-	import StyledButton from '$lib/components/shared/StyledButton.svelte';
+	// import StyledButton from '$lib/components/shared/StyledButton.svelte';
 
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
-	import OrderDetails from '../checkout/OrderDetails.svelte';
-
 	import { email, modalManager } from '$lib/stores';
-
-	const ENV = import.meta.env.VITE_ENV;
-
-	const resend = () => {
-		// This is temporary
-		if (ENV === 'dev') {
-			next();
-		}
-	};
-
-	const next = () => {
-		modalManager.set(OrderDetails);
-	};
 
 	const back = () => {
 		email.set('');

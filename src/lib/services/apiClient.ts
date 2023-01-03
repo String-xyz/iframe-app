@@ -21,7 +21,7 @@ export function createApiClient(): ApiClient {
 	}
 
 	// this is not ideal, temporary solution until we migrate this file to the sdk
-	function _setWalletAddress(address: string) {
+	function setWalletAddress(address: string) {
 		_walletAddress = address;
 	}
 
@@ -59,7 +59,7 @@ export function createApiClient(): ApiClient {
 			return data;
 		} catch (e: any) {
 			const error = _getErrorFromAxiosError(e);
-			console.error("createUser error:", error);
+			console.log("createUser error:", error);
 			throw error;
 		}
 	}
@@ -93,8 +93,9 @@ export function createApiClient(): ApiClient {
 			const { data } = await httpClient.post<{ authToken: AuthToken, user: User }>(`/login/sign`, body, { headers });
 			return data;
 		} catch (e: any) {
-			console.error("createUser error:", _getErrorFromAxiosError(e));
-			throw e;
+			const error = _getErrorFromAxiosError(e);
+			console.log("loginUser error:", error);
+			throw error;
 		}
 	}
 
@@ -188,6 +189,7 @@ export function createApiClient(): ApiClient {
 
 	return {
 		setApiKey,
+		setWalletAddress,
 		createApiKey,
 		getApiKeys,
 		validateApiKey,
@@ -199,7 +201,6 @@ export function createApiClient(): ApiClient {
 		getUserStatus,
 		getQuote,
 		transact,
-		_setWalletAddress
 	};
 }
 
@@ -224,8 +225,14 @@ interface AuthToken {
 	expAt: string;
 }
 
+interface UserUpdate {
+	walletAddress?: string;
+	firstName?: string;
+	middleName?: string;
+	lastName?: string;
+}
 
-interface User {
+export interface User {
 	id: string;
 	firstName: string;
 	middleName: string;
@@ -237,13 +244,6 @@ interface User {
 	updateAt: string;
 }
 
-interface UserUpdate {
-	walletAddress?: string;
-	firstName?: string;
-	middleName?: string;
-	lastName?: string;
-}
-
 export interface VisitorData {
 	visitorId?: string;
 	requestId?: string;
@@ -251,6 +251,7 @@ export interface VisitorData {
 
 export interface ApiClient {
 	setApiKey: (apiKey: string) => void;
+	setWalletAddress: (address: string) => void;
 	createApiKey: () => Promise<{ apiKey: string }>;
 	getApiKeys: () => Promise<ApiKeyResponse[]>;
 	validateApiKey: (keyId: string) => Promise<{ Status: string }>;
@@ -262,5 +263,4 @@ export interface ApiClient {
 	getUserStatus: (userId: string) => Promise<{ status: string, emailStatus: string }>;
 	getQuote: (contractPayload: ContractPayload) => Promise<TransactPayload>;
 	transact: (quote: TransactPayload) => Promise<TransactionResponse>;
-	_setWalletAddress: (address: string) => void;
 }
