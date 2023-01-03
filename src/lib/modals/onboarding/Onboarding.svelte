@@ -64,8 +64,7 @@
 
 		switch (state) {
 			case AuthState.AUTHORIZED:
-				action = sendToCheckout;
-				actionText = 'Pay with String';
+				sendToCheckout();
 			break;
 
 			case AuthState.USER_CREATED:
