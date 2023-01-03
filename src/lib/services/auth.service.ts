@@ -75,7 +75,7 @@ export const login = async (walletAddress: string) => {
 	try {
 		const { user } = await apiClient.createUser(nonce, signature, visitorData);
 		
-		return { state: "USER_CREATED", user }
+		return { state: AuthState.USER_CREATED, user }
 	} catch (err: any) {
 		switch (err.code) {
 			case "CONFLICT": {
