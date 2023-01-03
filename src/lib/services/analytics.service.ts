@@ -3,7 +3,7 @@ import * as FingerprintJS from '@fingerprintjs/fingerprintjs-pro';
 const CUSTOM_SUBDOMAIN = import.meta.env.VITE_ANALYTICS_SUBDOMAIN_URL || "https://metrics.string.xyz";
 const apiKey = import.meta.env.VITE_ANALYTICS_LIB_PK || ""; // TODO: Make this param required
 
-export function createAnalyticsService(options = {}) {
+export function createLocationService(options = {}) {
 	let fpInstance: FingerprintJS.Agent | undefined;
 
 

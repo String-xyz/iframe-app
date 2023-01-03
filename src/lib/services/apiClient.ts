@@ -4,6 +4,7 @@ import axios from 'axios';
 export function createApiClient(): ApiClient {
 	const baseUrl = import.meta.env.VITE_API_BASE_PATH;
 	let _apiKey = '';
+	let _walletAddress = '';
 
 	const commonHeaders: any = {
 		'Content-Type': 'application/json',
@@ -17,6 +18,11 @@ export function createApiClient(): ApiClient {
 
 	function setApiKey(key: string) {
 		_apiKey = key;
+	}
+
+	// this is not ideal, temporary solution until we find a way to use the store from the api client
+	function _setWalletAddress(address: string) {
+		_walletAddress = address;
 	}
 
 	async function createApiKey() {
@@ -93,6 +99,7 @@ export function createApiClient(): ApiClient {
 	}
 
 	async function getUserStatus(userId: string) {
+		if (!userId) throw new Error("userId is required");
 		const headers = { 'X-Api-Key': _apiKey };
 		try {
 			const { data } = await httpClient.get<{ status: string, emailStatus: string }>(`/users/${userId}/status`, { headers });
@@ -155,12 +162,15 @@ export function createApiClient(): ApiClient {
 	httpClient.interceptors.response.use(
 		response => response,
 		async error => {
+			// user wallet must be connected in order to refresh tokens
+			if (!_walletAddress) return Promise.reject(error);
+
 			if (error.response.status === 401 && error.response.data.code === 'TOKEN_EXPIRED' || error.response.data.code === 'MISSING_TOKEN') {
 				console.log('------- refreshing token....')
 				const originalRequest = error.config;
 				try {
 					const headers = { 'X-Api-Key': _apiKey };
-					const res = await httpClient.post<AuthToken>(`/login/refresh`, {}, { headers });
+					const res = await httpClient.post<AuthToken>(`/login/refresh`, { walletAddress: _walletAddress }, { headers });
 					if (!res) throw new Error("no data returned from refresh token request");
 
 					// update the access token in the userStore
@@ -190,6 +200,7 @@ export function createApiClient(): ApiClient {
 		getUserStatus,
 		getQuote,
 		transact,
+		_setWalletAddress
 	};
 }
 
@@ -252,4 +263,5 @@ export interface ApiClient {
 	getUserStatus: (userId: string) => Promise<{ status: string, emailStatus: string }>;
 	getQuote: (contractPayload: ContractPayload) => Promise<TransactPayload>;
 	transact: (quote: TransactPayload) => Promise<TransactionResponse>;
+	_setWalletAddress: (address: string) => void;
 }
