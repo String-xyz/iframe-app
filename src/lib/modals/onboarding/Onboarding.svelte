@@ -69,6 +69,7 @@
 
 			// get nonce from the api
 			const walletAddress = $contractPayload.userAddress;
+			apiClient._setWalletAddress(walletAddress); // this is a temporary fix
 			const { nonce } = await apiClient.requestLogin(walletAddress);
 
 			// sign nonce with wallet
