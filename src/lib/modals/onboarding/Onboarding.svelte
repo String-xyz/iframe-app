@@ -6,13 +6,13 @@
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 
-	import { modalManager, userStore, userWalletAddress } from '$lib/stores';
-	import { createLocationService, apiClient, walletService } from '$lib/services';
+	import { modalManager, userStore, contractPayload } from '$lib/stores';
+	import { createLocationService, apiClient } from '$lib/services';
 	import { onMount } from 'svelte';
 
 	// default action: Authorize Wallet
 	let action = authorizeWallet;
-	let actionText = 'Connect Wallet';
+	let actionText = 'Authorize Wallet';
 
 	// store vars
 	let userId = '';
@@ -23,15 +23,8 @@
 	// TODO: Listen to wallet lock events. On lock call logout function
 
 	onMount(async () => {
-		if (!(await walletService.isConnected())) {
-			console.log('--- Wallet is NOT connected');
-			actionText = 'Connect Wallet';
-			action = connectWallet;
-			return;
-		}
-
-		// if wallet is connected check if user is already authorized
-		console.log('--- Wallet is connected');
+		// A prerequisite for this modal to be shown is that there is always a wallet connected
+		console.log('--- Wallet is already connected');
 
 		if (!(await isUserLoggedIn())) {
 			actionText = 'Authorize Wallet';
@@ -70,24 +63,13 @@
 			alert('TODO: Show an error screen'); // TODO: Use bootstrap notifications instead
 		}
 	}
-
-	async function connectWallet() {
-		console.log('Connect Wallet action');
-		const address = await walletService.connectWallet();
-		console.log('---------> wallet connected', address);
-
-		userWalletAddress.set(address);
-		apiClient._setWalletAddress(address); // temporary solution until we find a scalable way of using svelte store from the api client
-		actionText = 'Authorize Wallet';
-		action = authorizeWallet;
-	}
-
 	async function authorizeWallet() {
 		try {
 			const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 			// get nonce from the api
-			const { nonce } = await apiClient.requestLogin($userWalletAddress);
+			const walletAddress = $contractPayload.userAddress;
+			const { nonce } = await apiClient.requestLogin(walletAddress);
 
 			// sign nonce with wallet
 			const signer = provider.getSigner();

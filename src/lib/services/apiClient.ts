@@ -20,7 +20,7 @@ export function createApiClient(): ApiClient {
 		_apiKey = key;
 	}
 
-	// this is not ideal, temporary solution until we find a way to use the store from the api client
+	// this is not ideal, temporary solution until we migrate this file to the sdk
 	function _setWalletAddress(address: string) {
 		_walletAddress = address;
 	}
@@ -162,8 +162,7 @@ export function createApiClient(): ApiClient {
 	httpClient.interceptors.response.use(
 		response => response,
 		async error => {
-			// user wallet must be connected in order to refresh tokens
-			if (!_walletAddress) return Promise.reject(error);
+			// TODO: once this is migrated to the sdk, make sure there is a wallet connection before refreshing the token
 
 			if (error.response.status === 401 && error.response.data.code === 'TOKEN_EXPIRED' || error.response.data.code === 'MISSING_TOKEN') {
 				console.log('------- refreshing token....')

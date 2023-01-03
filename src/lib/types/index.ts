@@ -48,7 +48,7 @@ export interface NFT {
 
 export interface ContractPayload {
 	chainID: number;
-	// userAddress: string; // we want to get the wallet address from the connect wallet button
+	userAddress: string;
 	contractAddress: string;
 	contractFunction: string;
 	contractReturn: string,

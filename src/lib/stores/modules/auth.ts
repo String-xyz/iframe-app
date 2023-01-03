@@ -8,7 +8,6 @@ export const userWalletAddress: Writable<string> = writable("No Wallet Connected
 export const userStore = {
 	userId,
 	email,
-	userWalletAddress,
 };
 
 // Make sure we only run this code on the browser

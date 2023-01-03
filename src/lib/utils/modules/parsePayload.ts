@@ -39,7 +39,7 @@ export const parsePayload = (payload: StringPayload) => {
 
 		const contractParams: ContractPayload = {
 			chainID: payload.chainID,
-			// userAddress: payload.userAddress, // do we want to receive the userAddress from the sdk? why?
+			userAddress: payload.userAddress,
 			contractAddress: payload.contractAddress,
 			contractFunction: payload.contractFunction,
 			contractReturn: payload.contractReturn,
