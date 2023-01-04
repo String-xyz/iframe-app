@@ -38,14 +38,6 @@ locals {
           value = local.env
         },
         {
-          name  = "PUBLIC_DIR"
-          value = "./public"
-        },
-        {
-          name  = "TEMPLATE_DIR"
-          value = "./templates/*.html"
-        },
-        {
           name  = "REGION"
           value = local.region
         },

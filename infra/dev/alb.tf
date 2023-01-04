@@ -27,7 +27,7 @@ resource "aws_alb_target_group" "ecs_task_target_group" {
   }
 
   health_check {
-    path                = "/health"
+    path                = "/"
     protocol            = "HTTP"
     matcher             = "200"
     interval            = 60
