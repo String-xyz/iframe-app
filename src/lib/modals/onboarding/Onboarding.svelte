@@ -12,7 +12,7 @@
 	import { apiClient, AuthState, login } from '$lib/services';
 
 	// default action: Authorize Wallet
-	let action: Function;
+	let action: () => void;
 	let actionText = 'Authorize Wallet';
 
 	// TODO: Logout function: Make an api call to logout endpoint, clear localStorage, disconnect wallet
