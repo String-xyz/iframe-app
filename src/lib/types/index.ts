@@ -25,12 +25,6 @@ export interface TransactionResponse {
 	txUrl: string;
 }
 
-/** @deprecated */
-export interface WalletSignaturePayload {
-	nonce: string;
-	signature: string;
-}
-
 export interface Card {
 	token: string;
 	scheme: string;
