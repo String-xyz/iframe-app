@@ -70,7 +70,7 @@ resource "aws_alb_listener_rule" "ecs_alb_listener_rule" {
 
   condition {
     host_header {
-      values = ["${local.service_name}.dev.string-api.xyz"]
+      values = [local.domain]
     }
   }
 }

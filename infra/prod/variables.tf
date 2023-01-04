@@ -1,8 +1,8 @@
 locals {
   cluster_name       = "public-sdk"
-  env                = "dev"
+  env                = "prod"
   service_name       = "iframe-app"
-  root_domain        = "dev.string-api.xyz"
+  domain             = "frames.string-api.xyz"
   container_port     = "3000"
   desired_task_count = "1"
   memory             = 512
@@ -12,7 +12,7 @@ locals {
 
 variable "versioning" {
   type    = string
-  default = "latest"
+  default = "1.0.0"
 }
 
 locals {
@@ -37,7 +37,7 @@ locals {
           name  = "ENV"
           value = local.env
         },
-        {
+         {
           name  = "REGION"
           value = local.region
         },
