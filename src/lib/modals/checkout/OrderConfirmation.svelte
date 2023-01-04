@@ -1,14 +1,18 @@
 <script lang="ts">
 	import ModalBase from './ModalBase.svelte';
-	import { card, quote, finalQuote, modalManager } from '$lib/stores';
+	import BackButton from '$lib/components/shared/BackButton.svelte';
+	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 
 	import PurchaseSummary from '$lib/components/checkout/PurchaseSummary.svelte';
 	import CardSelect from '$lib/components/checkout/CardSelect.svelte';
 	import Address from '$lib/components/checkout/Address.svelte';
+
 	import OrderDetails from './OrderDetails.svelte';
 	import Processing from './Processing.svelte';
 
-	$: disabled = $card?.token == undefined || $quote == undefined;
+	import { card, quote, finalQuote, modalManager } from '$lib/stores';
+
+	$: disabled = $card?.token == undefined || $quote?.totalUSD == undefined;
 
 	const purchase = () => {
 		finalQuote.set($quote);
@@ -25,17 +29,7 @@
 	<CardSelect />
 	<PurchaseSummary />
 	<div class="text-center mt-6">
-		<button on:click={purchase} class="btn btn-wide btn-primary rounded border-2 text-white tracking-wider block font-bold m-auto" {disabled}>Confirm and Pay</button>
-		<span on:click={back} class="inline-block mt-6 cursor-pointer">
-			<img class="inline mr-2" src="/assets/back_arrow.svg" alt="back arrow">
-			Back
-		</span>
+		<StyledButton action={purchase} {disabled}>Confirm and Pay</StyledButton>
+		<BackButton {back} />
 	</div>
 </ModalBase>
-
-<style>
-	.btn[disabled] {
-		background-color: #A8A6FF;
-		color: white;
-	}
-</style>

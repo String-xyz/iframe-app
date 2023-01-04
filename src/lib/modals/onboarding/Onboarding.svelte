@@ -1,0 +1,136 @@
+<script lang='ts'>
+	import ModalBase from './ModalBase.svelte';
+	import StyledButton from '$lib/components/shared/StyledButton.svelte';
+	import Address from '$lib/components/onboarding/Address.svelte';
+
+	import VerifyEmailForm from './VerifyEmailForm.svelte';
+	import OrderDetails from '../checkout/OrderDetails.svelte';
+	import VerifyDevice from './VerifyDevice.svelte';
+
+	import { onMount } from 'svelte';
+	import { modalManager, contractPayload, userId } from '$lib/stores';
+	import { apiClient, AuthState, login } from '$lib/services';
+
+	let action: () => void;
+	let actionText = '';
+
+	// TODO: Logout function: Make an api call to logout endpoint, clear localStorage, disconnect wallet
+	// TODO: Listen to wallet lock events. On lock call logout function
+
+	onMount(async () => {
+		// A prerequisite for this modal to be shown is that there is always a wallet connected
+
+		if (!(await isUserLoggedIn())) {
+			actionText = 'Authorize Wallet';
+			action = authorizeWallet;
+			return;
+		}
+
+		// user authorized
+		actionText = 'Pay With String';
+		action = payWithString;
+	});
+
+	const payWithString = async () => {
+		//This is redundant, we already know the user is logged in
+		let isLoggedIn = await isUserLoggedIn();
+		if (!isLoggedIn) {
+			action = authorizeWallet;
+			actionText = 'Authorize Wallet';
+			return;
+		}
+
+		try {
+			const user = await apiClient.getUserStatus($userId);
+			// get user status
+			if (user.status === 'email_verified') {
+				sendToCheckout();
+				return;
+			}
+			action = sendToVerify;
+			actionText = 'Pay with String';
+		} catch (err: any) {
+			console.log('Could not get user: ' + err.message);
+			action = authorizeWallet;
+			actionText = 'Authorize Wallet';
+		}
+	};
+
+	const authorizeWallet = async () => {
+		const { state } = await login($contractPayload.userAddress);
+
+		switch (state) {
+			case AuthState.AUTHORIZED:
+				sendToCheckout();
+			break;
+
+			case AuthState.USER_CREATED:
+			case AuthState.EMAIL_UNVERIFIED:
+				sendToVerify();
+			break;
+
+			case AuthState.DEVICE_UNVERIFIED:
+				sendToDeviceVerify();
+			break;
+
+		}
+	}
+
+	const sendToVerify = () => {
+		modalManager.set(VerifyEmailForm);
+	};
+
+	const sendToCheckout = () => {
+		modalManager.set(OrderDetails);
+	};
+
+	const sendToDeviceVerify = () => {
+		modalManager.set(VerifyDevice);
+	}
+
+	async function isUserLoggedIn() {
+		// For now to make sure a user is logged in we sent a request to the api. This is not ideal
+		// because we are making an extra request to the api. We should be able to check the userStore
+		if ($userId !== '') {
+			return false;
+		}
+
+		try {
+			await apiClient.getUserStatus($userId);
+			return true;
+		} catch (e) {
+			return false;
+		}
+	}
+</script>
+
+<ModalBase title="Pay with String" size="size-onboard">
+	<p class="mt-3 text-lg">
+		String makes it easy to purchase digital assets with your credit or debit card. Log-in with your
+		wallet to complete your purchase. This is where we are going to send blockchain items when
+		purchased.
+	</p>
+	<div class="wallet mt-5 flex justify-center">
+		<div class="flex flex-col justify-center">
+			<img
+				class="mb-6"
+				width="150px"
+				height="36px"
+				src="/assets/string_text_logo.svg"
+				alt="String"
+			/>
+			<Address />
+		</div>
+	</div>
+	<div class="flex justify-center mt-7">
+		<StyledButton {action}>{actionText}</StyledButton>
+	</div>
+</ModalBase>
+
+<style>
+	.wallet {
+		background-color: #dff1ff;
+		border-radius: 8px;
+		height: 130px;
+	}
+</style>

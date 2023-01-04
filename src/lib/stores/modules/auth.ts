@@ -1,21 +1,25 @@
 import { writable, type Writable } from 'svelte/store';
-// import { post } from '$lib/services/api';
+import { browser } from "$app/environment";
 
-export const isAuthorized: Writable<boolean> = writable(false);
-export const API_KEY: Writable<string> = writable("");
-export const JWT_TOKEN: Writable<string> = writable("");
+export const email: Writable<string> = writable("");
+export const userId: Writable<string> = writable("");
 
-const TEST_JWT_TOKEN = import.meta.env.VITE_TEST_JWT_TOKEN
-const ENV = import.meta.env.VITE_ENV
+export const userStore = {
+	userId,
+	email,
+};
 
-export const login = async () => {
-	try {
-		if (ENV === 'dev' && TEST_JWT_TOKEN) {
-			JWT_TOKEN.set(TEST_JWT_TOKEN)
-		} else {
-			// Login
-		}
-	} catch (e) {
-		console.error("Could not login ")
-	}
+// Make sure we only run this code on the browser
+if (browser) {
+	const getI = (key: string) => localStorage.getItem(key);
+
+	// set initial values from localStorage
+	userId.set(getI("userId") || "");
+	email.set(getI("email") || "");
+
+	// Save svelte store to localStore every time it changes
+	userId.subscribe
+		(value => localStorage.setItem("userId", value));
+	email.subscribe
+		(value => localStorage.setItem("email", value));
 }

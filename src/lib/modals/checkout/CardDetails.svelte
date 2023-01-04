@@ -1,9 +1,13 @@
 <script lang="ts">
 	import ModalBase from './ModalBase.svelte';
+	import BackButton from '$lib/components/shared/BackButton.svelte';
+	import StyledButton from '$lib/components/shared/StyledButton.svelte';
+	
+	import OrderConfirmation from './OrderConfirmation.svelte';
+
 	import { modalManager, card } from '$lib/stores';
 
 	import { onMount } from 'svelte';
-	import OrderConfirmation from './OrderConfirmation.svelte';
 
 	const CHECKOUT_PK = import.meta.env.VITE_CHECKOUT_PUBLIC_KEY;
 
@@ -73,16 +77,8 @@
 			</div>
 		</div>
 		<div class="text-center mt-10">
-			<button
-				class="btn btn-wide btn-primary rounded border-2 tracking-wider "
-				disabled={!isPaymentInfoValid}
-				type="submit">
-				Save
-			</button>
-			<span on:click={back} class="inline-block mt-6 cursor-pointer">
-				<img class="inline mr-2" src="/assets/back_arrow.svg" alt="back">
-				Back
-			</span>
+			<StyledButton disabled={!isPaymentInfoValid} type="submit">Save</StyledButton>
+			<BackButton {back} />
 		</div>
 	</form>
 </ModalBase>
@@ -92,11 +88,5 @@
 		font-size: 14px;
 		line-height: 16px;
 		color: #767676;
-	}
-
-	.btn[disabled] {
-		background-color: #A8A6FF;
-		color: white;
-
 	}
 </style>

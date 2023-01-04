@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { modalManager, isAuthorized } from '$lib/stores';
-	import OrderDetails from '$lib/modals/checkout/OrderDetails.svelte';
+	import { modalManager } from '$lib/stores';
+
 	import { Events, registerEvents, sendEvent } from '$lib/events';
 
 	onMount(async () => {
 		await registerEvents();
-		modalManager.set(OrderDetails);
+		
 		sendEvent(Events.IFRAME_READY)
 	});
 
@@ -21,6 +21,4 @@
 	
 </script>
 
-{#if $isAuthorized}
-	<svelte:component bind:this={modal} this={$modalManager} />
-{/if}
+<svelte:component bind:this={modal} this={$modalManager} />

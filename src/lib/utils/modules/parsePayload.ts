@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { error } from '@sveltejs/kit';
 import type { NFT, ContractPayload, StringPayload } from '$lib/types';
-import { API_KEY } from "$lib/stores";
+import { apiClient } from "$lib/services";
 
 const PayloadSchema = z.object({
 	apiKey: z.string(),
@@ -13,7 +13,7 @@ const PayloadSchema = z.object({
 	price: z.number(),
 	chainID: z.number(),
 	userAddress: z.string(),
-	contractAddress:z.string(),
+	contractAddress: z.string(),
 	contractFunction: z.string(),
 	contractReturn: z.string(),
 	contractParameters: z.string().array(),
@@ -26,8 +26,8 @@ const PayloadSchema = z.object({
 export const parsePayload = (payload: StringPayload) => {
 	try {
 		payload = PayloadSchema.parse(payload);
-
-		API_KEY.set(payload.apiKey)
+		apiClient.setApiKey(payload.apiKey);
+		apiClient.setWalletAddress(payload.userAddress);
 
 		const item: NFT = {
 			name: payload.name,
@@ -48,8 +48,8 @@ export const parsePayload = (payload: StringPayload) => {
 			txValue: payload.txValue,
 			gasLimit: "8000000"
 		}
-		
-		return {item, contractParams}
+
+		return { item, contractParams }
 	} catch (e: any) {
 		throw error(400, "Invalid String-API Payload: " + e);
 	}

@@ -1,4 +1,6 @@
-import { contractPayload, item, isAuthorized, login } from '$lib/stores';
+import Onboarding from '$lib/modals/onboarding/Onboarding.svelte';
+
+import { contractPayload, modalManager, item } from '$lib/stores';
 import { parsePayload } from '$lib/utils';
 
 const CHANNEL = "STRING_PAY"
@@ -28,13 +30,13 @@ const handleEvent = async (event: StringEvent) => {
 	let payload;
 	switch (event.eventName) {
 		case Events.LOAD_PAYLOAD:
+
 			payload = parsePayload(event.data);
 			contractPayload.set(payload.contractParams);
 			item.set(payload.item);
 
-			await login()
+			modalManager.set(Onboarding);
 			
-			isAuthorized.set(true);
 		break;
 	}
 }
