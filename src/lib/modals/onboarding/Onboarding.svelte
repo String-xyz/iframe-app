@@ -11,9 +11,8 @@
 	import { modalManager, contractPayload, userId } from '$lib/stores';
 	import { apiClient, AuthState, login } from '$lib/services';
 
-	// default action: Authorize Wallet
 	let action: () => void;
-	let actionText = 'Authorize Wallet';
+	let actionText = '';
 
 	// TODO: Logout function: Make an api call to logout endpoint, clear localStorage, disconnect wallet
 	// TODO: Listen to wallet lock events. On lock call logout function
@@ -30,7 +29,6 @@
 		// user authorized
 		actionText = 'Pay With String';
 		action = payWithString;
-		return;
 	});
 
 	const payWithString = async () => {
@@ -60,7 +58,6 @@
 
 	const authorizeWallet = async () => {
 		const { state } = await login($contractPayload.userAddress);
-		console.log(state)
 
 		switch (state) {
 			case AuthState.AUTHORIZED:
