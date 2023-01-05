@@ -63,7 +63,7 @@ export const retryLogin = async () => {
 	return { state: AuthState.INVALID }
 }
 
-export const login = async (walletAddress: string) => {
+export const login = async (walletAddress: string, userIdStore: Writable<string>) => {
 	const { nonce } = await apiClient.requestLogin(walletAddress);
 
 	const signature = await requestSignature(nonce)
@@ -75,6 +75,7 @@ export const login = async (walletAddress: string) => {
 
 	try {
 		const { user } = await apiClient.createUser(nonce, signature, visitorData);
+		userIdStore.set(user.id);
 
 		return { state: AuthState.USER_CREATED, user }
 	} catch (err: any) {
@@ -82,6 +83,7 @@ export const login = async (walletAddress: string) => {
 			case "CONFLICT": {
 				try {
 					const { user } = await apiClient.loginUser(nonce, signature, visitorData);
+					userIdStore.set(user.id);
 
 					if (user.status !== 'email_verified') {
 						return { state: AuthState.EMAIL_UNVERIFIED, user }
@@ -115,8 +117,6 @@ export const login = async (walletAddress: string) => {
 	return { state: AuthState.ERROR }
 }
 
-export const logout = async (userIdStore: Writable<string>,) => {
+export const logout = async () => {
 	return apiClient.logoutUser();
-	// delete cookies
-	// delete localStorage
 }

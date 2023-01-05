@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
 	import ModalBase from './ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 	import Address from '$lib/components/onboarding/Address.svelte';
@@ -57,26 +57,25 @@
 	};
 
 	const authorizeWallet = async () => {
-		const { state } = await login($contractPayload.userAddress);
+		const { state } = await login($contractPayload.userAddress, userId);
 
 		switch (state) {
 			case AuthState.AUTHORIZED:
 				sendToCheckout();
-			break;
+				break;
 
 			case AuthState.USER_CREATED:
 			case AuthState.EMAIL_UNVERIFIED:
 				sendToVerify();
-			break;
+				break;
 
 			case AuthState.DEVICE_UNVERIFIED:
 				sendToDeviceVerify();
-			break;
-
+				break;
 		}
-	}
+	};
 
-	const sendToVerify = () => {
+	const sendToVerify = async () => {
 		modalManager.set(VerifyEmailForm);
 	};
 
@@ -86,19 +85,19 @@
 
 	const sendToDeviceVerify = () => {
 		modalManager.set(VerifyDevice);
-	}
+	};
+
+	const getCookieValue = (name: string) =>
+		document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || '';
 
 	async function isUserLoggedIn() {
-		// For now to make sure a user is logged in we sent a request to the api. This is not ideal
-		// because we are making an extra request to the api. We should be able to check the userStore
-		if ($userId !== '') {
-			return false;
-		}
-
+		if (!$userId) return false;
+		// we always request a new access token on iframe load. If the refresh token is invalid, the user is not logged in
 		try {
-			await apiClient.getUserStatus($userId);
+			await apiClient.refreshToken();
 			return true;
 		} catch (e) {
+			console.log('Refresh token is invalid. User is not logged in.');
 			return false;
 		}
 	}

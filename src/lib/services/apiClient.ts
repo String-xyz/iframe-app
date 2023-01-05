@@ -99,6 +99,19 @@ export function createApiClient(): ApiClient {
 		}
 	}
 
+	async function refreshToken() {
+		const headers = { 'X-Api-Key': _apiKey };
+		try {
+			const { data } = await httpClient.post<AuthToken>(`/login/refresh`, { walletAddress: _walletAddress }, { headers });
+			console.log(' - Token was refreshed')
+			return data;
+		} catch (e: any) {
+			const error = _getErrorFromAxiosError(e);
+			console.log("refreshToken error:", error);
+			throw error;
+		}
+	}
+
 	// logout
 	async function logoutUser() {
 		const headers = { 'X-Api-Key': _apiKey };
@@ -184,13 +197,11 @@ export function createApiClient(): ApiClient {
 				console.log('------- refreshing token....')
 				const originalRequest = error.config;
 				try {
-					const headers = { 'X-Api-Key': _apiKey };
-					const res = await httpClient.post<AuthToken>(`/login/refresh`, { walletAddress: _walletAddress }, { headers });
-					if (!res) throw new Error("no data returned from refresh token request");
+					const data = await refreshToken();
 
 					// update the access token in the userStore
 					// retry the original request with the new access token
-					originalRequest.headers['Authorization'] = `Bearer ${res.data.token}`;
+					originalRequest.headers['Authorization'] = `Bearer ${data.token}`;
 					return httpClient(originalRequest);
 				} catch (e: any) {
 					console.error("refresh token error:", _getErrorFromAxiosError(e));
@@ -213,6 +224,7 @@ export function createApiClient(): ApiClient {
 		updateUser,
 		requestEmailVerification,
 		loginUser,
+		refreshToken,
 		logoutUser,
 		getUserStatus,
 		getQuote,
@@ -276,6 +288,7 @@ export interface ApiClient {
 	updateUser: (userId: string, userUpdate: UserUpdate) => Promise<User>;
 	requestEmailVerification: (userId: string, email: string) => Promise<void>;
 	loginUser: (nonce: string, signature: string, visitor: VisitorData) => Promise<{ authToken: AuthToken, user: User }>;
+	refreshToken: () => Promise<AuthToken>;
 	logoutUser: () => Promise<void>;
 	getUserStatus: (userId: string) => Promise<{ status: string, emailStatus: string }>;
 	getQuote: (contractPayload: ContractPayload) => Promise<TransactPayload>;
