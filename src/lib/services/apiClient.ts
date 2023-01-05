@@ -103,8 +103,8 @@ export function createApiClient(): ApiClient {
 	async function logoutUser() {
 		const headers = { 'X-Api-Key': _apiKey };
 		try {
-			const { status } = await httpClient.post(`/logout`, {}, { headers });
-			if (status !== 204) return;
+			const { status } = await httpClient.post(`/login/logout`, {}, { headers });
+			if (status === 204) return;
 			else throw new Error("logout failed");
 		} catch (e: any) {
 			const error = _getErrorFromAxiosError(e);
