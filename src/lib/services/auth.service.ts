@@ -1,3 +1,4 @@
+import type { Writable } from 'svelte/store';
 import { ethers } from 'ethers';
 import { createLocationService, apiClient } from '$lib/services';
 import type { User } from './apiClient';
@@ -26,7 +27,7 @@ export const requestSignature = async (nonce: string) => {
 
 	const signer = provider.getSigner();
 	const signature = await signer.signMessage(nonce);
-	
+
 	return signature;
 }
 
@@ -52,7 +53,7 @@ export const retryLogin = async () => {
 	} catch (err: any) {
 		switch (err.code) {
 			case "UNPROCESSABLE_ENTITY":
-				return { state: AuthState.DEVICE_UNVERIFIED } 
+				return { state: AuthState.DEVICE_UNVERIFIED }
 
 			default:
 				console.error(err);
@@ -74,7 +75,7 @@ export const login = async (walletAddress: string) => {
 
 	try {
 		const { user } = await apiClient.createUser(nonce, signature, visitorData);
-		
+
 		return { state: AuthState.USER_CREATED, user }
 	} catch (err: any) {
 		switch (err.code) {
@@ -92,7 +93,7 @@ export const login = async (walletAddress: string) => {
 					switch (err.code) {
 						case "UNPROCESSABLE_ENTITY":
 							return { state: AuthState.DEVICE_UNVERIFIED }
-						
+
 						// default:
 						// 	throw err;
 					}
@@ -106,10 +107,16 @@ export const login = async (walletAddress: string) => {
 			case "ERR_BAD_REQUEST":
 				return { state: AuthState.INVALID }
 
-			default: 
+			default:
 				throw err;
 		}
 	}
 
 	return { state: AuthState.ERROR }
+}
+
+export const logout = async (userIdStore: Writable<string>,) => {
+	return apiClient.logoutUser();
+	// delete cookies
+	// delete localStorage
 }

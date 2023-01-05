@@ -99,6 +99,21 @@ export function createApiClient(): ApiClient {
 		}
 	}
 
+	// logout
+	async function logoutUser() {
+		const headers = { 'X-Api-Key': _apiKey };
+		try {
+			const { status } = await httpClient.post(`/logout`, {}, { headers });
+			if (status !== 204) return;
+			else throw new Error("logout failed");
+		} catch (e: any) {
+			const error = _getErrorFromAxiosError(e);
+			console.log("logoutUser error:", error);
+			throw error;
+		}
+	}
+
+
 	async function getUserStatus(userId: string) {
 		if (!userId) throw new Error("userId is required");
 		const headers = { 'X-Api-Key': _apiKey };
@@ -198,6 +213,7 @@ export function createApiClient(): ApiClient {
 		updateUser,
 		requestEmailVerification,
 		loginUser,
+		logoutUser,
 		getUserStatus,
 		getQuote,
 		transact,
@@ -260,6 +276,7 @@ export interface ApiClient {
 	updateUser: (userId: string, userUpdate: UserUpdate) => Promise<User>;
 	requestEmailVerification: (userId: string, email: string) => Promise<void>;
 	loginUser: (nonce: string, signature: string, visitor: VisitorData) => Promise<{ authToken: AuthToken, user: User }>;
+	logoutUser: () => Promise<void>;
 	getUserStatus: (userId: string) => Promise<{ status: string, emailStatus: string }>;
 	getQuote: (contractPayload: ContractPayload) => Promise<TransactPayload>;
 	transact: (quote: TransactPayload) => Promise<TransactionResponse>;
