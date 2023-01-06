@@ -9,7 +9,7 @@
 	export let final = false;
 
 	onMount(async () => {
-		if ($item) {
+		if ($item && !final) {
 			await quoteService.startQuote($contractPayload, quote);
 		}
 	});

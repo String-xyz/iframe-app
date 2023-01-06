@@ -25,6 +25,7 @@ export function createQuoteService(apiClient: ApiClient): QuoteService {
 
 	async function stopQuote(quoteStore: Writable<TransactPayload | null>) {
 		clearInterval(interval);
+		interval = undefined;
 		quoteStore.set(null);
 	}
 
