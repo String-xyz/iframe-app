@@ -19,7 +19,6 @@
 
 	onMount(async () => {
 		// A prerequisite for this modal to be shown is that there is always a wallet connected
-
 		if (!(await isUserLoggedIn())) {
 			actionText = 'Authorize Wallet';
 			action = authorizeWallet;
@@ -27,19 +26,10 @@
 		}
 
 		// user authorized
-		actionText = 'Pay With String';
-		action = payWithString;
+		handleUserAuthorized();
 	});
 
-	const payWithString = async () => {
-		//This is redundant, we already know the user is logged in
-		let isLoggedIn = await isUserLoggedIn();
-		if (!isLoggedIn) {
-			action = authorizeWallet;
-			actionText = 'Authorize Wallet';
-			return;
-		}
-
+	const handleUserAuthorized = async () => {
 		try {
 			const user = await apiClient.getUserStatus($userId);
 			// get user status
@@ -47,8 +37,8 @@
 				sendToCheckout();
 				return;
 			}
-			action = sendToVerify;
-			actionText = 'Pay with String';
+
+			sendToVerify();
 		} catch (err: any) {
 			console.log('Could not get user: ' + err.message);
 			action = authorizeWallet;
