@@ -22,12 +22,6 @@ export interface AuthResponse {
 	user?: User;
 }
 
-export const logout = () => {
-	if (browser) {
-		window.localStorage.clear();
-	}
-}
-
 export const requestSignature = async (nonce: string) => {
 	const provider = new ethers.providers.Web3Provider(window.ethereum);
 	await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -125,5 +119,9 @@ export const login = async (walletAddress: string, userIdStore: Writable<string>
 }
 
 export const logout = async () => {
+	if (browser) {
+		window.localStorage.clear();
+	}
+	
 	return apiClient.logoutUser();
 }
