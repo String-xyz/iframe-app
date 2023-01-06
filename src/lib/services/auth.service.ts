@@ -123,5 +123,9 @@ export const logout = async () => {
 		window.localStorage.clear();
 	}
 	
-	return apiClient.logoutUser();
+	try {
+		await apiClient.logoutUser();
+	} catch {
+		return;
+	}
 }

@@ -41,7 +41,8 @@ const handleEvent = async (event: StringEvent) => {
 		break;
 
 		case Events.UPDATE_USER:
-			logout();
+			await logout();
+
 			modalManager.set(null);
 			sendEvent(Events.IFRAME_CLOSE);
 
