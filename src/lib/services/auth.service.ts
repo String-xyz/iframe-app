@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { createLocationService, apiClient } from '$lib/services';
 import type { User } from './apiClient';
+import { browser } from "$app/environment";
 
 const locationService = createLocationService();
 
@@ -18,6 +19,12 @@ export enum AuthState {
 export interface AuthResponse {
 	state: AuthState;
 	user?: User;
+}
+
+export const logout = () => {
+	if (browser) {
+		window.localStorage.clear();
+	}
 }
 
 export const requestSignature = async (nonce: string) => {

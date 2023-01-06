@@ -56,7 +56,6 @@
 			<div class="name mt-1">
 				<input
 					class="input input-bordered border-2 w-full"
-					value="John Smith"
 					placeholder="Name"
 					required
 				/>

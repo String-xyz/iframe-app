@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { modalManager } from '$lib/stores';
-
 	import { Events, registerEvents, sendEvent } from '$lib/events';
 
 	onMount(async () => {
 		await registerEvents();
-		
+
 		sendEvent(Events.IFRAME_READY)
 	});
 
