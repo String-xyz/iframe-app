@@ -72,7 +72,7 @@ export const retryLogin = async () => {
 export const login = async (walletAddress: string) => {
 	const { nonce } = await apiClient.requestLogin(walletAddress);
 
-	const signature = await requestSignature(nonce)
+	const signature = await requestSignature(nonce);
 
 	const visitorData = await getVisitorData();
 

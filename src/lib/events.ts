@@ -21,8 +21,8 @@ export enum Events {
 
 export const sendEvent = (eventName: string, data?: any) => {
 	const message = JSON.stringify({
-	  channel: CHANNEL,
-	  event: { eventName, data },
+		channel: CHANNEL,
+		event: { eventName, data },
 	});
 
 	window.parent.postMessage(message, '*');
@@ -74,5 +74,5 @@ export const registerEvents = async () => {
 		} catch (error) {
 			console.log(error);
 		}
-	}, true);		
+	}, true);
 }
