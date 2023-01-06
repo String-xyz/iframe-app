@@ -2,6 +2,7 @@ import type { Writable } from 'svelte/store';
 import { ethers } from 'ethers';
 import { createLocationService, apiClient } from '$lib/services';
 import type { User } from './apiClient';
+import { browser } from "$app/environment";
 
 const locationService = createLocationService();
 
@@ -66,7 +67,7 @@ export const retryLogin = async () => {
 export const login = async (walletAddress: string, userIdStore: Writable<string>) => {
 	const { nonce } = await apiClient.requestLogin(walletAddress);
 
-	const signature = await requestSignature(nonce)
+	const signature = await requestSignature(nonce);
 
 	const visitorData = await getVisitorData();
 
@@ -118,5 +119,13 @@ export const login = async (walletAddress: string, userIdStore: Writable<string>
 }
 
 export const logout = async () => {
-	return apiClient.logoutUser();
+	if (browser) {
+		window.localStorage.clear();
+	}
+	
+	try {
+		await apiClient.logoutUser();
+	} catch {
+		return;
+	}
 }

@@ -2,6 +2,7 @@ import Onboarding from '$lib/modals/onboarding/Onboarding.svelte';
 
 import { contractPayload, modalManager, item } from '$lib/stores';
 import { parsePayload } from '$lib/utils';
+import { logout } from './services';
 
 const CHANNEL = "STRING_PAY"
 
@@ -12,6 +13,7 @@ interface StringEvent {
 
 export enum Events {
 	LOAD_PAYLOAD = 'load_payload',
+	UPDATE_USER = 'update_user',
 	IFRAME_READY = 'ready',
 	IFRAME_RESIZE = 'resize',
 	IFRAME_CLOSE = 'close',
@@ -19,8 +21,8 @@ export enum Events {
 
 export const sendEvent = (eventName: string, data?: any) => {
 	const message = JSON.stringify({
-	  channel: CHANNEL,
-	  event: { eventName, data },
+		channel: CHANNEL,
+		event: { eventName, data },
 	});
 
 	window.parent.postMessage(message, '*');
@@ -30,13 +32,26 @@ const handleEvent = async (event: StringEvent) => {
 	let payload;
 	switch (event.eventName) {
 		case Events.LOAD_PAYLOAD:
-
 			payload = parsePayload(event.data);
 			contractPayload.set(payload.contractParams);
 			item.set(payload.item);
 
 			modalManager.set(Onboarding);
 			
+		break;
+
+		case Events.UPDATE_USER:
+			await logout();
+
+			modalManager.set(null);
+			sendEvent(Events.IFRAME_CLOSE);
+
+			// In case we want to update the payload instead
+			// payload = parsePayload(event.data);
+			// contractPayload.set(payload.contractParams);
+			// item.set(payload.item);
+
+			// modalManager.set(Onboarding);
 		break;
 	}
 }
@@ -60,5 +75,5 @@ export const registerEvents = async () => {
 		} catch (error) {
 			console.log(error);
 		}
-	}, true);		
+	}, true);
 }
