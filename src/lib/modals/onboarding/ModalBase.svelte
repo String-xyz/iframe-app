@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { modalManager } from '$lib/stores';
+	import { onMount } from 'svelte';
+	import { modalManager, contractPayload } from '$lib/stores';
 	import { Events, sendEvent } from '$lib/events';
 
 	export let title: string;
@@ -8,11 +9,23 @@
 
 	const close = () => {
 		modalManager.set(null);
-		sendEvent(Events.IFRAME_CLOSE)
-	}
+		sendEvent(Events.IFRAME_CLOSE);
+	};
+
+	onMount(() => {
+		contractPayload.subscribe((payload) => {
+			console.log('-- iframe: contractPayload has changed');
+			// TODO: here we can perform logout actions
+		});
+	});
 </script>
 
-<div class="str-modal text-neutral border border-neutral" class:size-onboard="{size === 'size-onboard'}" class:size-form="{size === 'size-form'}" class:size-resend="{size === 'size-resend'}" >
+<div
+	class="str-modal text-neutral border border-neutral"
+	class:size-onboard={size === 'size-onboard'}
+	class:size-form={size === 'size-form'}
+	class:size-resend={size === 'size-resend'}
+>
 	<header class="flex justify-between">
 		<span class="text-3xl font-bold title text-neutral">{title}</span>
 		<button on:click={close}><img src="/assets/close.svg" alt="Close" /></button>

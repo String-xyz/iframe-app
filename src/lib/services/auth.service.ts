@@ -23,8 +23,6 @@ export interface AuthResponse {
 
 export const requestSignature = async (nonce: string) => {
 	const provider = new ethers.providers.Web3Provider(window.ethereum);
-	await window.ethereum.request({ method: 'eth_requestAccounts' });
-
 	const signer = provider.getSigner();
 	const signature = await signer.signMessage(nonce);
 
@@ -66,7 +64,7 @@ export const retryLogin = async () => {
 export const login = async (walletAddress: string, userIdStore: Writable<string>) => {
 	const { nonce } = await apiClient.requestLogin(walletAddress);
 
-	const signature = await requestSignature(nonce)
+	const signature = await requestSignature(nonce);
 
 	const visitorData = await getVisitorData();
 

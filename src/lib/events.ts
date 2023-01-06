@@ -15,12 +15,13 @@ export enum Events {
 	IFRAME_READY = 'ready',
 	IFRAME_RESIZE = 'resize',
 	IFRAME_CLOSE = 'close',
+	PAYLOAD_CHANGED = 'payload_changed',
 }
 
 export const sendEvent = (eventName: string, data?: any) => {
 	const message = JSON.stringify({
-	  channel: CHANNEL,
-	  event: { eventName, data },
+		channel: CHANNEL,
+		event: { eventName, data },
 	});
 
 	window.parent.postMessage(message, '*');
@@ -36,8 +37,13 @@ const handleEvent = async (event: StringEvent) => {
 			item.set(payload.item);
 
 			modalManager.set(Onboarding);
-			
-		break;
+			break;
+
+		case Events.PAYLOAD_CHANGED:
+			payload = parsePayload(event.data);
+			contractPayload.set(payload.contractParams);
+			item.set(payload.item);
+			break;
 	}
 }
 
@@ -60,5 +66,5 @@ export const registerEvents = async () => {
 		} catch (error) {
 			console.log(error);
 		}
-	}, true);		
+	}, true);
 }
