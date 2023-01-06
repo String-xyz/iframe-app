@@ -77,6 +77,9 @@
 		modalManager.set(VerifyDevice);
 	};
 
+	const getCookieValue = (name: string) =>
+		document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || '';
+
 	async function isUserLoggedIn() {
 		if (!$userId) return false;
 		// we always request a new access token on iframe load. If the refresh token is invalid, the user is not logged in
