@@ -2,7 +2,7 @@ locals {
   cluster_name       = "public-sdk"
   env                = "prod"
   service_name       = "iframe-app"
-  domain             = "frames.string-api.xyz"
+  domain             = "iframe.string-api.xyz"
   container_port     = "3000"
   desired_task_count = "1"
   memory             = 512
