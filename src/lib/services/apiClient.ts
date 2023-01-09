@@ -72,13 +72,17 @@ export function createApiClient(): ApiClient {
 	}
 
 	async function requestEmailVerification(userId: string, email: string) {
-		await httpClient.get(`/users/${userId}/verify-email`, {
-			headers: { 'X-Api-Key': _apiKey },
-			params: { email },
-			timeout: 15 * 60 * 1000 // 15 minutes
-		});
-
-		return;
+		try {
+			const { data } = await httpClient.get(`/users/${userId}/verify-email`, {
+				headers: { 'X-Api-Key': _apiKey },
+				params: { email },
+				timeout: 15 * 60 * 1000 // 15 minutes
+			});
+			return data;
+		} catch (e: any) {
+			const error = _getErrorFromAxiosError(e);
+			throw error;
+		}
 	}
 
 	async function loginUser(nonce: string, signature: string, visitor: VisitorData) {
@@ -192,8 +196,9 @@ export function createApiClient(): ApiClient {
 		response => response,
 		async error => {
 			// TODO: once this is migrated to the sdk, make sure there is a wallet connection before refreshing the token
+			if (!error.response || !error.response.data) return Promise.reject(error);
 
-			if (error.response.status === 401 && error.response.data.code === 'TOKEN_EXPIRED' || error.response.data.code === 'MISSING_TOKEN') {
+			if (error.response.status === 401 && error.response.data?.code === 'TOKEN_EXPIRED' || error.response.data?.code === 'MISSING_TOKEN') {
 				console.log('------- refreshing token....')
 				const originalRequest = error.config;
 				try {

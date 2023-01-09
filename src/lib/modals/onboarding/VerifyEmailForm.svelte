@@ -25,28 +25,38 @@
 	const nameSchema = z.string().min(1);
 
 	async function requestEmailVerification(email: string) {
-		modalManager.set(ResendEmailLink);
-		apiClient
-			.requestEmailVerification($userId, email)
-			.then(() => {
-				console.log('email was successfully verified');
-				modalManager.set(OrderDetails);
-				// set user status to email_verified
-			})
-			.catch((err: any) => {
-				console.log('error requesting email verification', err);
-			});
+		/**
+		 * Due to the actual implementation of the email verification, the endpoint waits for the user to click on the link in the email
+		 * This is not ideal and will be change in the future. For now, we immediately redirect the user to the next modal and wait for a response
+		 * If the response is a success, we allow the user to continue with the checkout process
+		 * if the response is an error, we go back to the previous modal
+		 */
+
+		next(); // first go next until we solve the iframe waiting time
+
+		try {
+			await apiClient.requestEmailVerification($userId, email);
+			console.log('email was successfully verified');
+			modalManager.set(OrderDetails);
+		} catch (e: any) {
+			// if there's an error always go back to the previous modal
+			back();
+
+			// TODO: Improve notification system. Use either bootstrap or tailwind or something else
+			if (e.code === 'CONFLICT') {
+				alert('This email is already verified or associated with another account');
+				return;
+			}
+
+			alert('Oops, there seems to be a problem. Please, try again later.');
+		}
 	}
 
 	const handleVerify = async () => {
 		if (!isValidInput()) return;
 
-		try {
-			email.set(emailInput);
-			await requestEmailVerification(emailInput);
-		} catch (e) {
-			console.log('Error requesting email verification', e);
-		}
+		email.set(emailInput);
+		await requestEmailVerification(emailInput);
 	};
 
 	const isValidInput = () => {
@@ -61,20 +71,20 @@
 		return isEmailValid && isFNValid && isLNValid && isTOSValid;
 	};
 
+	function back() {
+		modalManager.set(Onboarding);
+	}
+
+	function next() {
+		modalManager.set(ResendEmailLink);
+	}
+
 	//TODO: We want the error to be removed when the field is empty
 	// const checkEmailEmpty = () => {
 	// 	if (emailInput.length == 0) {
 	// 		isEmailValid = true;
 	// 	}
 	// }
-
-	const back = () => {
-		modalManager.set(Onboarding);
-	};
-
-	const next = () => {
-		modalManager.set(ResendEmailLink);
-	};
 </script>
 
 <ModalBase title="Verify your email" size="size-form">
