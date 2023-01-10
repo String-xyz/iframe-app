@@ -55,10 +55,6 @@ const handleEvent = async (event: StringEvent) => {
 
 			// modalManager.set(Onboarding);
 			break;
-		case Events.RECEIVE_SIGNATURE:
-			// This event is being handled in the auth.service.ts file
-			console.log("User signed");
-			break;
 	}
 }
 
