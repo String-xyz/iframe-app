@@ -9,7 +9,7 @@
 
 	import { onMount } from 'svelte';
 	import { modalManager, contractPayload, userId } from '$lib/stores';
-	import { apiClient, AuthState, loginOrCreateUser } from '$lib/services';
+	import { apiClient, AuthState, login } from '$lib/services';
 
 	let action: () => void;
 	let actionText = '';
@@ -47,7 +47,7 @@
 	};
 
 	const authorizeWallet = async () => {
-		const { state } = await loginOrCreateUser($contractPayload.userAddress, userId);
+		const { state } = await login($contractPayload.userAddress, userId);
 
 		switch (state) {
 			case AuthState.AUTHORIZED:

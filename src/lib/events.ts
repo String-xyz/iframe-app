@@ -4,7 +4,7 @@ import { contractPayload, modalManager, item } from '$lib/stores';
 import { parsePayload } from '$lib/utils';
 import { logout } from './services';
 
-const CHANNEL = "STRING_PAY";
+const CHANNEL = "STRING_PAY"
 
 interface StringEvent {
 	eventName: string;
@@ -17,8 +17,6 @@ export enum Events {
 	IFRAME_READY = 'ready',
 	IFRAME_RESIZE = 'resize',
 	IFRAME_CLOSE = 'close',
-	REQUEST_SIGNATURE = 'request_signature',
-	RECEIVE_SIGNATURE = 'receive_signature',
 }
 
 export const sendEvent = (eventName: string, data?: any) => {
@@ -39,8 +37,8 @@ const handleEvent = async (event: StringEvent) => {
 			item.set(payload.item);
 
 			modalManager.set(Onboarding);
-
-			break;
+			
+		break;
 
 		case Events.UPDATE_USER:
 			await logout();
@@ -54,11 +52,7 @@ const handleEvent = async (event: StringEvent) => {
 			// item.set(payload.item);
 
 			// modalManager.set(Onboarding);
-			break;
-		case Events.RECEIVE_SIGNATURE:
-			// This event is being handled in the auth.service.ts file
-			console.log("User signed");
-			break;
+		break;
 	}
 }
 
@@ -82,30 +76,4 @@ export const registerEvents = async () => {
 			console.log(error);
 		}
 	}, true);
-}
-
-/** Subscribe to a specific string event name */
-export const subscribeEvent = async (eventName: string, callback: (e: StringEvent) => void) => {
-	const listener = async (e: any) => {
-		// Filter Metamask events
-		if (e.data?.data?.name) return;
-
-		// Filter Checkout events
-		if (e.data?.type == "cko-msg") return;
-
-		// Our messages
-		try {
-			const payload = JSON.parse(e.data);
-			const channel = payload.channel;
-			const event: StringEvent = payload.event
-			if (channel == CHANNEL && event.eventName == eventName) {
-				console.log("Iframe :: Event received", event);
-				await callback(event)
-			}
-		} catch (error) {
-			console.log(error);
-		}
-	};
-
-	window.addEventListener('message', listener, true);
 }

@@ -3,7 +3,6 @@ import { ethers } from 'ethers';
 import { createLocationService, apiClient } from '$lib/services';
 import type { User } from './apiClient';
 import { browser } from "$app/environment";
-import { Events, sendEvent, subscribeEvent } from '$lib/events';
 
 const locationService = createLocationService();
 
@@ -21,6 +20,16 @@ export enum AuthState {
 export interface AuthResponse {
 	state: AuthState;
 	user?: User;
+}
+
+export const requestSignature = async (nonce: string) => {
+	const provider = new ethers.providers.Web3Provider(window.ethereum);
+	await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+	const signer = provider.getSigner();
+	const signature = await signer.signMessage(nonce);
+
+	return signature;
 }
 
 export const getVisitorData = async () => {
@@ -55,28 +64,11 @@ export const retryLogin = async () => {
 	return { state: AuthState.INVALID }
 }
 
-async function requestSignature(nonce: string): Promise<string> {
-	console.log('iframe: --- requestSignature', nonce);
-	// 1. send REQUEST_SIGNATURE event to parent
-	sendEvent(Events.REQUEST_SIGNATURE, nonce);
-
-	// 2. wait for RECEIVE_SIGNATURE event from parent
-	return new Promise((resolve, reject) => {
-		subscribeEvent(Events.RECEIVE_SIGNATURE, (event) => {
-			const signature = event.data;
-			resolve(signature);
-		});
-
-		// if this is event is not received within 60 seconds, reject the promise
-		setTimeout(() => {
-			reject();
-		}, 60000);
-	});
-}
-
-export const loginOrCreateUser = async (walletAddress: string, userIdStore: Writable<string>) => {
+export const login = async (walletAddress: string, userIdStore: Writable<string>) => {
 	const { nonce } = await apiClient.requestLogin(walletAddress);
+
 	const signature = await requestSignature(nonce);
+
 	const visitorData = await getVisitorData();
 
 	previousAttempt.signature = signature;
@@ -88,7 +80,6 @@ export const loginOrCreateUser = async (walletAddress: string, userIdStore: Writ
 
 		return { state: AuthState.USER_CREATED, user }
 	} catch (err: any) {
-		// TODO: Improve code readability. We could use a map to map error codes to states instead of using switch statements.
 		switch (err.code) {
 			case "CONFLICT": {
 				try {
@@ -105,6 +96,9 @@ export const loginOrCreateUser = async (walletAddress: string, userIdStore: Writ
 					switch (err.code) {
 						case "UNPROCESSABLE_ENTITY":
 							return { state: AuthState.DEVICE_UNVERIFIED }
+
+						// default:
+						// 	throw err;
 					}
 				}
 				break;
@@ -128,7 +122,7 @@ export const logout = async () => {
 	if (browser) {
 		window.localStorage.clear();
 	}
-
+	
 	try {
 		await apiClient.logoutUser();
 	} catch {
