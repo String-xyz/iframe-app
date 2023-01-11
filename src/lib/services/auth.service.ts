@@ -1,27 +1,12 @@
-import type { Writable } from 'svelte/store';
-import { ethers } from 'ethers';
 import { createLocationService, apiClient } from '$lib/services';
-import type { User } from './apiClient';
+import type { VisitorData } from './apiClient';
 import { browser } from "$app/environment";
 import { Events, sendEvent, subscribeEvent } from '$lib/events';
+import { __nonce, __signature } from '$lib/stores';
 
 const locationService = createLocationService();
 
 const previousAttempt = { signature: "", nonce: "" };
-
-export enum AuthState {
-	USER_CREATED = 'user_created',
-	AUTHORIZED = 'authorized',
-	EMAIL_UNVERIFIED = 'email_unverified',
-	DEVICE_UNVERIFIED = 'device_unverified',
-	INVALID = 'invalid',
-	ERROR = 'error',
-}
-
-export interface AuthResponse {
-	state: AuthState;
-	user?: User;
-}
 
 export const getVisitorData = async () => {
 	const visitorData = await locationService.getVisitorData();
@@ -34,25 +19,11 @@ export const getVisitorData = async () => {
 }
 
 export const retryLogin = async () => {
+	if (!previousAttempt.signature) throw { code: "UNAUTHORIZED" };
+
 	const visitorData = await getVisitorData();
-
-	try {
-		if (previousAttempt.signature) {
-			const { user } = await apiClient.loginUser(previousAttempt.nonce, previousAttempt.signature, visitorData);
-
-			return { state: AuthState.AUTHORIZED, user }
-		}
-	} catch (err: any) {
-		switch (err.code) {
-			case "UNPROCESSABLE_ENTITY":
-				return { state: AuthState.DEVICE_UNVERIFIED }
-
-			default:
-				console.error(err);
-		}
-	}
-
-	return { state: AuthState.INVALID }
+	const data = await apiClient.loginUser(previousAttempt.nonce, previousAttempt.signature, visitorData);
+	return data;
 }
 
 async function requestSignature(nonce: string): Promise<string> {
@@ -74,55 +45,30 @@ async function requestSignature(nonce: string): Promise<string> {
 	});
 }
 
-export const loginOrCreateUser = async (walletAddress: string, userIdStore: Writable<string>) => {
+export const login = async (nonce: string, signature: string, visitorData: VisitorData) => {
+	const data = await apiClient.loginUser(nonce, signature, visitorData);
+	return data;
+};
+
+export const loginOrCreateUser = async (walletAddress: string) => {
 	const { nonce } = await apiClient.requestLogin(walletAddress);
 	const signature = await requestSignature(nonce);
 	const visitorData = await getVisitorData();
 
-	previousAttempt.signature = signature;
-	previousAttempt.nonce = nonce;
+	__nonce.set(nonce);
+	__signature.set(signature);
+	__nonce.subscribe((n) => { previousAttempt.nonce = n; });
+	__signature.subscribe((s) => { previousAttempt.signature = s; });
 
 	try {
-		const { user } = await apiClient.createUser(nonce, signature, visitorData);
-		userIdStore.set(user.id);
-
-		return { state: AuthState.USER_CREATED, user }
+		const data = await apiClient.createUser(nonce, signature, visitorData);
+		return data;
 	} catch (err: any) {
-		// TODO: Improve code readability. We could use a map to map error codes to states instead of using switch statements.
-		switch (err.code) {
-			case "CONFLICT": {
-				try {
-					const { user } = await apiClient.loginUser(nonce, signature, visitorData);
-					userIdStore.set(user.id);
-
-					if (user.status !== 'email_verified') {
-						return { state: AuthState.EMAIL_UNVERIFIED, user }
-					}
-
-					return { state: AuthState.AUTHORIZED, user }
-
-				} catch (err: any) {
-					switch (err.code) {
-						case "UNPROCESSABLE_ENTITY":
-							return { state: AuthState.DEVICE_UNVERIFIED }
-					}
-				}
-				break;
-			}
-
-			case "UNPROCESSABLE_ENTITY":
-				return { state: AuthState.DEVICE_UNVERIFIED }
-
-			case "ERR_BAD_REQUEST":
-				return { state: AuthState.INVALID }
-
-			default:
-				throw err;
-		}
+		// if user already exists, try to login
+		if (err.code === "CONFLICT") return login(nonce, signature, visitorData);
+		throw err;
 	}
-
-	return { state: AuthState.ERROR }
-}
+};
 
 export const logout = async () => {
 	if (browser) {
