@@ -9,13 +9,10 @@
 
 	import { onMount } from 'svelte';
 	import { modalManager, contractPayload, userId } from '$lib/stores';
-	import { apiClient, AuthState, loginOrCreateUser } from '$lib/services';
+	import { apiClient, loginOrCreateUser } from '$lib/services';
 
 	let action: () => void;
 	let actionText = '';
-
-	// TODO: Logout function: Make an api call to logout endpoint, clear localStorage, disconnect wallet
-	// TODO: Listen to wallet lock events. On lock call logout function
 
 	onMount(async () => {
 		// A prerequisite for this modal to be shown is that there is always a wallet connected
@@ -47,23 +44,24 @@
 	};
 
 	const authorizeWallet = async () => {
-		const { state } = await loginOrCreateUser($contractPayload.userAddress, userId);
+		try {
+			const { user } = await loginOrCreateUser($contractPayload.userAddress);
+			userId.set(user.id);
 
-		switch (state) {
-			case AuthState.AUTHORIZED:
-				sendToCheckout();
-				break;
-
-			case AuthState.USER_CREATED:
-			case AuthState.EMAIL_UNVERIFIED:
-				sendToVerify();
-				break;
-
-			case AuthState.DEVICE_UNVERIFIED:
-				sendToDeviceVerify();
-				break;
+			if (user.status !== 'email_verified') return sendToVerify();
+			else return sendToCheckout();
+		} catch (err: any) {
+			console.log('Could not authorize wallet: ' + err.message);
+			handleAuthError(err);
 		}
 	};
+
+	function handleAuthError(err: any) {
+		if (err.code === 'UNPROCESSABLE_ENTITY') return sendToDeviceVerify();
+
+		// unhandled error. Improve the styling of this error message
+		alert('Oops, there seems to be a problem. Please, try again later.');
+	}
 
 	const sendToVerify = async () => {
 		modalManager.set(VerifyEmailForm);

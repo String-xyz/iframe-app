@@ -3,6 +3,8 @@ import { browser } from "$app/environment";
 
 export const email: Writable<string> = writable("");
 export const userId: Writable<string> = writable("");
+export const __nonce = writable("");
+export const __signature = writable("");
 
 export const userStore = {
 	userId,

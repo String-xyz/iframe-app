@@ -289,7 +289,7 @@ export interface ApiClient {
 	getApiKeys: () => Promise<ApiKeyResponse[]>;
 	validateApiKey: (keyId: string) => Promise<{ Status: string }>;
 	requestLogin: (walletAddress: string) => Promise<{ nonce: string }>;
-	createUser: (email: string, password: string, visitor: VisitorData) => Promise<{ authToken: AuthToken, user: User }>;
+	createUser: (nonce: string, signature: string, visitor: VisitorData) => Promise<{ authToken: AuthToken, user: User }>;
 	updateUser: (userId: string, userUpdate: UserUpdate) => Promise<User>;
 	requestEmailVerification: (userId: string, email: string) => Promise<void>;
 	loginUser: (nonce: string, signature: string, visitor: VisitorData) => Promise<{ authToken: AuthToken, user: User }>;
