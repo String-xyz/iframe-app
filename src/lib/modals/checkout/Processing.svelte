@@ -18,14 +18,17 @@
 			...{ cardToken: $card?.token ?? '' }
 		};
 
-		const transaction = await apiClient.transact(quote);
-
-		$txID = transaction?.txID;
-		$txURL = transaction?.txUrl;
+		try {
+			const transaction = await apiClient.transact(quote);
+			$txID = transaction?.txID;
+			$txURL = transaction?.txUrl;
+			modalManager.set(PurchaseSuccess);
+		} catch (e) {
+			console.error('transact error', e);
+			modalManager.set(PurchaseFail);
+		}
 
 		$card = null;
-
-		modalManager.set($txURL ? PurchaseSuccess : PurchaseFail);
 	});
 </script>
 
