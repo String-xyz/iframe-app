@@ -2,12 +2,10 @@ FROM node:18.0.0
 
 # install dependencies
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install
-
 # Copy all local files into the image.
 COPY . .
-
+ 
+RUN yarn
 RUN yarn build
 
 FROM node:18-slim

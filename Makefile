@@ -1,11 +1,10 @@
-include .env
+include .env.deploy
 export
 AWS_DEFAULT_PROFILE=${env}-string
 SERVICE_NAME=iframe-app
 ECS_CLUSTER=public-sdk
-SERVICE_TAG=latest
-AWS_REGION=us-west-2
-ECR_REPO_URL=${AWS_ACCT_ID}.dkr.ecr.us-west-2.amazonaws.com/${SERVICE_NAME}
+SERVICE_TAG=${tag}
+ECR_REPO_URL=${${env}_AWS_ACCT}.dkr.ecr.us-west-2.amazonaws.com/${SERVICE_NAME}
 
 all: docker-build push deploy
 
