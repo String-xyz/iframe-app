@@ -1,0 +1,53 @@
+{
+	"name": "iframe-app",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev --host --port 4040",
+		"build": "vite build",
+		"preview": "vite preview",
+		"test:unit": "vitest run --coverage",
+		"coverage": "c8 report --check-coverage",
+		"test": "vitest",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --plugin-search-dir . --check . && eslint .",
+		"format": "prettier --plugin-search-dir . --write ."
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-node": "^1.0.0-next.95",
+		"@sveltejs/kit": "^1.0.0-next.505",
+		"@testing-library/jest-dom": "^5.16.5",
+		"@testing-library/svelte": "^3.2.2",
+		"@typescript-eslint/eslint-plugin": "^5.27.0",
+		"@typescript-eslint/parser": "^5.27.0",
+		"@vitest/coverage-c8": "^0.24.1",
+		"autoprefixer": "^10.4.12",
+		"cssnano": "^5.1.13",
+		"daisyui": "^2.31.0",
+		"eslint": "^8.16.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-svelte3": "^4.0.0",
+		"jsdom": "^20.0.1",
+		"postcss": "^8.4.16",
+		"prettier": "^2.6.2",
+		"prettier-plugin-svelte": "^2.7.0",
+		"svelte": "^3.44.0",
+		"svelte-check": "^2.7.1",
+		"svelte-preprocess": "^4.10.6",
+		"tailwindcss": "^3.1.8",
+		"tslib": "^2.3.1",
+		"typescript": "^4.7.4",
+		"vite": "^3.1.0",
+		"vitest": "^0.24.1"
+	},
+	"type": "module",
+	"dependencies": {
+		"@fingerprintjs/fingerprintjs-pro": "^3.8.1",
+		"@fontsource/lora": "^4.5.12",
+		"axios": "^1.2.1",
+		"buffer": "^6.0.3",
+		"ethers": "^5.7.2",
+		"zod": "^3.19.1"
+	}
+}
