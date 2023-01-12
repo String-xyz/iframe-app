@@ -9,7 +9,7 @@
 	import VerifyDevice from './VerifyDevice.svelte';
 
 	import { modalManager, contractPayload, userId } from '$lib/stores';
-	import { apiClient, loginOrCreateUser } from '$lib/services';
+	import { sdkService } from '$lib/services';
 
 	let action: () => void;
 	let actionText = '';
@@ -34,7 +34,6 @@
 				sendToCheckout();
 				return;
 			}
-
 			sendToVerify();
 		} catch (err: any) {
 			console.log('Could not get user: ' + err.message);
@@ -44,8 +43,10 @@
 	};
 
 	const authorizeWallet = async () => {
+		console.log('1. authorizeWallet');
 		try {
-			const { user } = await loginOrCreateUser($contractPayload.userAddress);
+			console.log('2. authorizeWallet');
+			const { user } = await sdkService.requestAuthorization($contractPayload.userAddress);
 			userId.set(user.id);
 			if (user.status !== 'email_verified') return sendToVerify();
 			else return sendToCheckout();

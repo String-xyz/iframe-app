@@ -8,7 +8,7 @@
 
 	import { userId, email, modalManager } from '$lib/stores';
 	import { z } from 'zod';
-	import { apiClient } from '$lib/services';
+	import { sdkService } from '$lib/services';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 
 	let tosAgreement = false;
@@ -35,7 +35,7 @@
 		next(); // first go next until we solve the iframe waiting time
 
 		try {
-			await apiClient.requestEmailVerification($userId, email);
+			await sdkService.requestEmailVerification($userId, email);
 			console.log('email was successfully verified');
 			modalManager.set(OrderDetails);
 		} catch (e: any) {

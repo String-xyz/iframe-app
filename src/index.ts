@@ -2,7 +2,6 @@ import Onboarding from './lib/modals/onboarding/Onboarding.svelte';
 import { Events, sendEvent, registerEvents, sdkEvents, type StringEvent } from '$lib/events/events';
 import { contractPayload, modalManager, item } from '$lib/stores';
 import { parsePayload } from '$lib/utils';
-import { logout } from '$lib/services';
 
 export const startIframe = async () => {
 	await registerEvents();
@@ -14,12 +13,13 @@ export const startIframe = async () => {
 		modalManager.set(Onboarding);
 	});
 
-	sdkEvents.on(Events.UPDATE_USER, async (event: StringEvent) => {
-		console.log("Iframe :: Event received ", event);
-		await logout();
-		modalManager.set(null);
-		sendEvent(Events.IFRAME_CLOSE);
-	});
+	// logout should happen in the sdk now
+	// sdkEvents.on(Events.UPDATE_USER, async (event: StringEvent) => {
+	// 	console.log("Iframe :: Event received ", event);
+	// 	await logout();
+	// 	modalManager.set(null);
+	// 	sendEvent(Events.IFRAME_CLOSE);
+	// });
 
 	sendEvent(Events.IFRAME_READY);
 }

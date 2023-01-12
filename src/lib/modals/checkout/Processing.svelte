@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ModalBase from './ModalBase.svelte';
 	import { card, finalQuote, modalManager, txID, txURL } from '$lib/stores';
-	import { apiClient } from '$lib/services';
+	import { sdkService } from '$lib/services';
 
 	import { onMount } from 'svelte';
 
@@ -19,7 +19,8 @@
 		};
 
 		try {
-			const transaction = await apiClient.transact(quote);
+			const transaction = await sdkService.transact(quote);
+
 			$txID = transaction?.txID;
 			$txURL = transaction?.txUrl;
 			modalManager.set(PurchaseSuccess);

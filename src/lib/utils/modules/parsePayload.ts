@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { error } from '@sveltejs/kit';
 import type { NFT, ContractPayload, StringPayload } from '$lib/types';
-import { apiClient } from "$lib/services";
 
 const PayloadSchema = z.object({
 	apiKey: z.string(),

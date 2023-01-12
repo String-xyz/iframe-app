@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { item, txID, txURL, finalQuote, contractPayload, quote } from '$lib/stores';
-	import { quoteService } from '$lib/services';
+	import { sdkService } from '$lib/services';
 	import { abbrev } from '$lib/utils';
 
 	import { onMount, onDestroy } from 'svelte';

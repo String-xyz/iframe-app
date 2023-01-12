@@ -8,7 +8,7 @@
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
 
 	import { email, modalManager } from '$lib/stores';
-	import { retryLogin } from '$lib/services';
+	import { sdkService } from '$lib/services';
 
 	const sendToCheckout = () => {
 		modalManager.set(OrderDetails);
@@ -20,7 +20,7 @@
 
 	const retry = async () => {
 		try {
-			const { user } = await retryLogin();
+			const { user } = await sdkService.retryLogin();
 			if (user.status !== 'email_verified') return sendToVerify();
 			else return sendToCheckout();
 		} catch (err: any) {
