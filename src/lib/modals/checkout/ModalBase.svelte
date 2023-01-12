@@ -6,8 +6,8 @@
 
 	const close = () => {
 		modalManager.set(null);
-		sendEvent(Events.IFRAME_CLOSE)
-	}
+		sendEvent(Events.IFRAME_CLOSE);
+	};
 </script>
 
 <div class="str-modal text-neutral border border-neutral">
@@ -20,7 +20,9 @@
 	</div>
 	<footer class="footer footer-center my-6 select-none text-xs">
 		<div class="inline">
-			<span class="">Powered by <img class="inline" src="/assets/string_text_logo.svg" alt="String" /></span>
+			<span class=""
+				>Powered by <img class="inline" src="/assets/string_text_logo.svg" alt="String" /></span
+			>
 		</div>
 	</footer>
 </div>

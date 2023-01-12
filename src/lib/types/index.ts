@@ -67,3 +67,8 @@ export interface StringPayload {
 	contractParameters: string[];
 	txValue: string;
 }
+
+export interface VisitorData {
+	visitorId?: string;
+	requestId?: string;
+}

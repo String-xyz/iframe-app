@@ -1,7 +1,7 @@
-import { createLocationService, apiClient } from '$lib/services';
-import type { VisitorData } from './apiClient';
+import { createLocationService, apiClient, } from '$lib/services';
+import type { VisitorData } from '../types';
 import { browser } from "$app/environment";
-import { Events, sendEvent, subscribeEvent } from '$lib/events';
+import { Events, sendEvent } from '$lib/events/events';
 import { __nonce, __signature } from '$lib/stores';
 
 const locationService = createLocationService();
@@ -26,25 +26,6 @@ export const retryLogin = async () => {
 	return data;
 }
 
-async function requestSignature(nonce: string): Promise<string> {
-	console.log('iframe: --- requestSignature', nonce);
-	// 1. send REQUEST_SIGNATURE event to parent
-	sendEvent(Events.REQUEST_SIGNATURE, nonce);
-
-	// 2. wait for RECEIVE_SIGNATURE event from parent
-	return new Promise((resolve, reject) => {
-		subscribeEvent(Events.RECEIVE_SIGNATURE, (event) => {
-			const signature = event.data;
-			resolve(signature);
-		});
-
-		// if this is event is not received within 60 seconds, reject the promise
-		setTimeout(() => {
-			reject();
-		}, 60000);
-	});
-}
-
 export const login = async (nonce: string, signature: string, visitorData: VisitorData) => {
 	const data = await apiClient.loginUser(nonce, signature, visitorData);
 	return data;
@@ -52,7 +33,7 @@ export const login = async (nonce: string, signature: string, visitorData: Visit
 
 export const loginOrCreateUser = async (walletAddress: string) => {
 	const { nonce } = await apiClient.requestLogin(walletAddress);
-	const signature = await requestSignature(nonce);
+	const { signature } = await apiClient.requestSignature(nonce);
 	const visitorData = await getVisitorData();
 
 	__nonce.set(nonce);

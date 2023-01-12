@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import ModalBase from './ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 	import Address from '$lib/components/onboarding/Address.svelte';
@@ -7,7 +8,6 @@
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 	import VerifyDevice from './VerifyDevice.svelte';
 
-	import { onMount } from 'svelte';
 	import { modalManager, contractPayload, userId } from '$lib/stores';
 	import { apiClient, loginOrCreateUser } from '$lib/services';
 
@@ -47,7 +47,6 @@
 		try {
 			const { user } = await loginOrCreateUser($contractPayload.userAddress);
 			userId.set(user.id);
-
 			if (user.status !== 'email_verified') return sendToVerify();
 			else return sendToCheckout();
 		} catch (err: any) {
