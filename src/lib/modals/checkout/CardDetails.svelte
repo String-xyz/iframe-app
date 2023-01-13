@@ -2,7 +2,7 @@
 	import ModalBase from './ModalBase.svelte';
 	import BackButton from '$lib/components/shared/BackButton.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
-	
+
 	import OrderConfirmation from './OrderConfirmation.svelte';
 
 	import { modalManager, card } from '$lib/stores';
@@ -14,6 +14,17 @@
 	let isPaymentInfoValid = false;
 	let checkout: any;
 
+	const acceptedPaymentMethods = [
+		'Visa',
+		'Maestro',
+		'Mastercard',
+		'American Express',
+		'Diners Club',
+		'Discover',
+		'JCB',
+		'Mada'
+	];
+
 	onMount(async () => {
 		if (!CHECKOUT_PK) return;
 		// @ts-ignore
@@ -21,7 +32,9 @@
 		checkout.init({
 			publicKey: CHECKOUT_PK,
 			cardTokenized: onCardTokenized,
-			cardValidationChanged: validateInfo
+			cardValidationChanged: validateInfo,
+			acceptedPaymentMethods,
+			debug: true
 		});
 	});
 
@@ -54,11 +67,7 @@
 		<div class="mt-4">
 			<label for="name">Name on card</label>
 			<div class="name mt-1">
-				<input
-					class="input input-bordered border-2 w-full"
-					placeholder="Name"
-					required
-				/>
+				<input class="input input-bordered border-2 w-full" placeholder="Name" required />
 			</div>
 		</div>
 		<div class="flex justify-center">
