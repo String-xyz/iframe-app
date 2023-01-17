@@ -14,13 +14,5 @@ export const startIframe = async () => {
 		modalManager.set(Onboarding);
 	});
 
-	// logout should happen in the sdk now
-	// sdkEvents.on(Events.UPDATE_USER, async (event: StringEvent) => {
-	// 	console.log("Iframe :: Event received ", event);
-	// 	await logout();
-	// 	modalManager.set(null);
-	// 	sendEvent(Events.IFRAME_CLOSE);
-	// });
-
 	sendEvent(Events.IFRAME_READY);
 }
