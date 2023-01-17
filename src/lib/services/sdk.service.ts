@@ -19,10 +19,12 @@ export function createSdkService(): SdkService {
 	}
 
 	async function requestQuoteStart() {
+		console.debug("✅ Quote started");
 		sendEvent(Events.REQUEST_QUOTE_START, {});
 	}
 
 	async function requestQuoteStop() {
+		console.debug("❌ Quote stopped");
 		sendEvent(Events.REQUEST_QUOTE_STOP, {});
 	}
 
