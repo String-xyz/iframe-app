@@ -1,15 +1,16 @@
 import Onboarding from './lib/modals/onboarding/Onboarding.svelte';
 import { Events, sendEvent, registerEvents, sdkEvents, type StringEvent } from '$lib/events/events';
-import { contractPayload, modalManager, item } from '$lib/stores';
+import { __user, modalManager, item } from '$lib/stores';
 import { parsePayload } from '$lib/utils';
 
 export const startIframe = async () => {
 	await registerEvents();
 	sdkEvents.on(Events.LOAD_PAYLOAD, (event: StringEvent) => {
-		console.log("Iframe :: Event received ", event);
 		const payload = parsePayload(event.data);
+		if (!payload) return;
+
 		item.set(payload.item);
-		contractPayload.set(payload.contractParams);
+		__user.set(payload.user);
 		modalManager.set(Onboarding);
 	});
 

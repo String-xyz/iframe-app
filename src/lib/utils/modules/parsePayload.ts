@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { error } from '@sveltejs/kit';
-import type { NFT, ContractPayload, StringPayload } from '$lib/types';
+import type { NFT, StringPayload } from '$lib/types';
+import type { UserStore } from "$lib/stores";
 
 const PayloadSchema = z.object({
 	apiKey: z.string(),
@@ -16,7 +16,13 @@ const PayloadSchema = z.object({
 	contractFunction: z.string(),
 	contractReturn: z.string(),
 	contractParameters: z.string().array(),
-	txValue: z.string()
+	txValue: z.string(),
+	user: z.object({
+		walletAddress: z.string(),
+		id: z.string().optional(),
+		email: z.string().optional(),
+		status: z.string().optional()
+	}),
 });
 
 // export type Payload = z.infer<typeof PayloadSchema>;
@@ -33,21 +39,17 @@ export const parsePayload = (payload: StringPayload) => {
 			collection: payload.collection,
 			imageSrc: payload.imageSrc,
 			imageAlt: payload?.imageAlt ?? "NFT"
-		}
+		};
 
-		const contractParams: ContractPayload = {
-			chainID: payload.chainID,
-			userAddress: payload.userAddress,
-			contractAddress: payload.contractAddress,
-			contractFunction: payload.contractFunction,
-			contractReturn: payload.contractReturn,
-			contractParameters: payload.contractParameters,
-			txValue: payload.txValue,
-			gasLimit: "8000000"
-		}
+		const user: UserStore = {
+			walletAddress: payload.user.walletAddress,
+			id: payload?.user?.id ?? "",
+			email: payload?.user?.email ?? "",
+			status: payload.user.status ?? ""
+		};
 
-		return { item, contractParams }
+		return { item, user }
 	} catch (e: any) {
-		throw error(400, "Invalid String-API Payload: " + e);
+		alert("Oops! Something went wrong. Please try again.");
 	}
 }

@@ -6,7 +6,7 @@
 	import ResendEmailLink from './ResendEmailLink.svelte';
 	import Onboarding from './Onboarding.svelte';
 
-	import { userId, email, modalManager } from '$lib/stores';
+	import { __user, modalManager } from '$lib/stores';
 	import { z } from 'zod';
 	import { sdkService } from '$lib/services';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
@@ -32,17 +32,17 @@
 		 * if the response is an error, we go back to the previous modal
 		 */
 
-		next(); // first go next until we solve the iframe waiting time
+		next(); // first go next until we solve the endpoint waiting time
 
 		try {
-			await sdkService.requestEmailVerification($userId, email);
-			console.log('email was successfully verified');
+			if (!$__user.id) throw new Error('User ID is not defined');
+
+			await sdkService.requestEmailVerification($__user.id, email);
 			modalManager.set(OrderDetails);
 		} catch (e: any) {
 			// if there's an error always go back to the previous modal
 			back();
 
-			// TODO: Improve notification system. Use either bootstrap or tailwind or something else
 			if (e.code === 'CONFLICT') {
 				alert('This email is already verified or associated with another account');
 				return;
@@ -55,17 +55,14 @@
 	const handleVerify = async () => {
 		if (!isValidInput()) return;
 
-		email.set(emailInput);
 		await requestEmailVerification(emailInput);
+		__user.set({ ...$__user, email: emailInput });
 	};
 
 	const isValidInput = () => {
 		isEmailValid = emailSchema.safeParse(emailInput).success;
-
 		isFNValid = nameSchema.safeParse(firstNameInput).success;
-
 		isLNValid = nameSchema.safeParse(lastNameInput).success;
-
 		isTOSValid = tosAgreement;
 
 		return isEmailValid && isFNValid && isLNValid && isTOSValid;

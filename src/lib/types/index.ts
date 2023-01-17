@@ -40,17 +40,6 @@ export interface NFT {
 	imageAlt?: string;
 }
 
-export interface ContractPayload {
-	chainID: number;
-	userAddress: string;
-	contractAddress: string;
-	contractFunction: string;
-	contractReturn: string,
-	contractParameters: string[];
-	txValue: string;
-	gasLimit: string;
-}
-
 export interface StringPayload {
 	apiKey: string;
 	name: string;
@@ -66,4 +55,10 @@ export interface StringPayload {
 	contractReturn: string,
 	contractParameters: string[];
 	txValue: string;
+	user: {
+		walletAddress: string; /** @duplicated can we get rid of userAddress? */
+		id?: string;
+		email?: string;
+		status?: string;
+	};
 }

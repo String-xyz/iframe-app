@@ -1,12 +1,10 @@
-import type { ContractPayload, TransactionResponse } from '$lib/types';
+import type { TransactPayload, TransactionResponse } from '$lib/types';
 import { Events, sendEvent, promisifyEvent } from '../events';
 
 export function createSdkService(): SdkService {
 
 	async function requestAuthorization(walletAddress: string) {
-		console.log('3. authorizeWallet');
 		sendEvent(Events.REQUEST_AUTHORIZE_USER, { walletAddress });
-		console.log('5. authorizeWallet');
 		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 60000 });
 	}
 
@@ -20,15 +18,26 @@ export function createSdkService(): SdkService {
 		return promisifyEvent<void>(Events.RECEIVE_EMAIL_VERIFICATION);
 	}
 
-	async function transact(payload: ContractPayload) {
-		sendEvent(Events.REQUEST_CONFIRM_TRANSACTION, { payload });
+	async function requestQuoteStart() {
+		sendEvent(Events.REQUEST_QUOTE_START, {});
+	}
+
+	async function requestQuoteStop() {
+		sendEvent(Events.REQUEST_QUOTE_STOP, {});
+	}
+
+	async function transact(payload: TransactPayload) {
+		sendEvent(Events.REQUEST_CONFIRM_TRANSACTION, payload);
 		return promisifyEvent<TransactionResponse>(Events.RECEIVE_CONFIRM_TRANSACTION);
 	}
+
 
 	return {
 		requestAuthorization,
 		retryLogin,
 		requestEmailVerification,
+		requestQuoteStart,
+		requestQuoteStop,
 		transact
 	};
 }
@@ -37,7 +46,9 @@ interface SdkService {
 	requestAuthorization: (walletAddress: string) => Promise<{ user: User }>;
 	retryLogin: () => Promise<{ user: User }>;
 	requestEmailVerification: (userId: string, email: string) => Promise<void>;
-	transact: (payload: ContractPayload) => Promise<TransactionResponse>;
+	requestQuoteStart: () => Promise<void>;
+	requestQuoteStop: () => Promise<void>;
+	transact: (payload: TransactPayload) => Promise<TransactionResponse>;
 }
 
 export interface User {

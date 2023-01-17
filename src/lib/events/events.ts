@@ -22,17 +22,18 @@ export enum Events {
 	REQUEST_EMAIL_VERIFICATION = "REQUEST_EMAIL_VERIFICATION",
 	RECEIVE_EMAIL_VERIFICATION = "RECEIVE_EMAIL_VERIFICATION",
 	REQUEST_CONFIRM_TRANSACTION = "REQUEST_CONFIRM_TRANSACTION",
-	RECEIVE_CONFIRM_TRANSACTION = "RECEIVE_CONFIRM_TRANSACTION"
-}
+	RECEIVE_CONFIRM_TRANSACTION = "RECEIVE_CONFIRM_TRANSACTION",
+	REQUEST_QUOTE_START = "REQUEST_QUOTE_START",
+	QUOTE_CHANGED = "QUOTE_CHANGED",
+	REQUEST_QUOTE_STOP = "REQUEST_QUOTE_STOP"
+};
 
 export const sendEvent = (eventName: string, data?: any) => {
-	console.log('4. authorizeWallet', eventName, data);
 	const message = JSON.stringify({
 		channel: CHANNEL,
 		event: { eventName, data },
 	});
 
-	console.log('5. authorizeWallet', message);
 	window.parent.postMessage(message, '*');
 };
 
@@ -49,8 +50,6 @@ export const registerEvents = async () => {
 			const payload = JSON.parse(e.data);
 			const event = payload.event
 			if (payload.channel == CHANNEL) {
-				// await handleEvent(event)
-				console.log("Iframe :: Event received ", event);
 				// propagate events
 				sdkEvents.emit(event.eventName, event);
 			}
@@ -61,26 +60,22 @@ export const registerEvents = async () => {
 }
 
 export function promisifyEvent<T = any>(eventName: Events, { timeout = 60000 } = {}): Promise<T> {
-	console.log('6. authorizeWallet');
-
 	return new Promise((resolve, reject) => {
-		console.log('7. authorizeWallet');
-
 		sdkEvents.once(eventName, (event: StringEvent<T>) => {
-			console.log('8. authorizeWallet', event.error);
+			try {
+				if (event.error) return reject(event.error);
 
-			if (event.error) return reject(event.error);
-			console.log('9. authorizeWallet');
+				// check for nil values but allow boolean false
+				if (event.data === undefined || event.data == null || event.data === '' || Object.keys(event.data).length === 0) return reject({ code: 'EVENT_NO_DATA' })
 
-			if (!event.data) return reject({ code: 'EVENT_NO_DATA' })
-			console.log('10. authorizeWallet');
-
-			return resolve(event.data);
+				return resolve(event.data);
+			} catch (e) {
+				return reject(e);
+			}
 		});
 
 		// if this is event is not received within 60 seconds, reject the promise
 		setTimeout(() => {
-			console.log('11. authorizeWallet');
 			reject({ code: 'EVENT_TIMEOUT' });
 		}, timeout);
 	});

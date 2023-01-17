@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { contractPayload } from '$lib/stores';
+	import { __user } from '$lib/stores';
 	import { abbrev } from '$lib/utils';
 
-	$: address = $contractPayload.userAddress || 'No Wallet Connected';
+	$: address = $__user.walletAddress || 'No Wallet Connected';
 </script>
 
 <div class="addr">
