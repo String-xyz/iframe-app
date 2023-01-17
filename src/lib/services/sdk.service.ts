@@ -5,7 +5,7 @@ export function createSdkService(): SdkService {
 
 	async function requestAuthorization(walletAddress: string) {
 		sendEvent(Events.REQUEST_AUTHORIZE_USER, { walletAddress });
-		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 60000 });
+		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 120 }); // wait 2 minutes for user to authorize
 	}
 
 	async function retryLogin() {
@@ -15,7 +15,7 @@ export function createSdkService(): SdkService {
 
 	async function requestEmailVerification(userId: string, email: string) {
 		sendEvent(Events.REQUEST_EMAIL_VERIFICATION, { userId, email });
-		return promisifyEvent<void>(Events.RECEIVE_EMAIL_VERIFICATION);
+		return promisifyEvent<void>(Events.RECEIVE_EMAIL_VERIFICATION, { timeout: 20 }); // wait 15 minutes for user to verify email
 	}
 
 	async function requestQuoteStart() {

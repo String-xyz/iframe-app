@@ -2,7 +2,6 @@
 	import ModalBase from './ModalBase.svelte';
 	import BackButton from '$lib/components/shared/BackButton.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
-
 	import ResendEmailLink from './ResendEmailLink.svelte';
 	import Onboarding from './Onboarding.svelte';
 
@@ -43,10 +42,8 @@
 			// if there's an error always go back to the previous modal
 			back();
 
-			if (e.code === 'CONFLICT') {
-				alert('This email is already verified or associated with another account');
-				return;
-			}
+			if (e.code === 'CONFLICT') return alert('This email is already verified');
+			if (e.code === 'LINK_EXPIRED') return alert('The link has expired. Please, try again.');
 
 			alert('Oops, there seems to be a problem. Please, try again later.');
 		}

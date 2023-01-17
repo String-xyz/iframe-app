@@ -59,7 +59,14 @@ export const registerEvents = async () => {
 	}, true);
 }
 
-export function promisifyEvent<T = any>(eventName: Events, { timeout = 60000 } = {}): Promise<T> {
+// document this function
+/**
+ * Promisify an event. This function will return a promise that will resolve when the event is emitted.
+ * @param eventName The name of the event to listen for
+ * @param {timeout} The number of seconds to wait before rejecting the promise
+ * @returns A promise that will resolve with the event data
+ */
+export function promisifyEvent<T = any>(eventName: Events, { timeout = 60 } = {}): Promise<T> {
 	return new Promise((resolve, reject) => {
 		sdkEvents.once(eventName, (event: StringEvent<T>) => {
 			try {
@@ -77,6 +84,6 @@ export function promisifyEvent<T = any>(eventName: Events, { timeout = 60000 } =
 		// if this is event is not received within 60 seconds, reject the promise
 		setTimeout(() => {
 			reject({ code: 'EVENT_TIMEOUT' });
-		}, timeout);
+		}, timeout * 1000);
 	});
 }
