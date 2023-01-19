@@ -32,7 +32,7 @@
 		padding-top: 36px;
 		border-radius: 8px;
 		max-width: 374px;
-		overflow: hidden;
+		overflow-y: hidden;
 		background: white;
 		user-select: none;
 	}

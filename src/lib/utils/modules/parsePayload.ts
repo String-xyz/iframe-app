@@ -6,7 +6,7 @@ import { apiClient } from "$lib/services";
 const PayloadSchema = z.object({
 	apiKey: z.string(),
 	name: z.string(),
-	collection: z.string(),
+	collection: z.string().optional(),
 	imageSrc: z.string(),
 	imageAlt: z.string().optional(),
 	currency: z.string(),

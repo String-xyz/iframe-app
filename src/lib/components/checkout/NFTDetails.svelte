@@ -8,7 +8,7 @@
 	<img class="item" src={$item.imageSrc} alt={$item.imageAlt} />
 	<div class="ml-4">
 		<div class="text-bold">{$item.name}</div>
-		<div class="text-bold text-sm mb-2">{$item.collection}</div>
+		<div class="text-bold text-sm mb-2">{$item?.collection ?? ""}</div>
 
 		<Price />
 	</div>

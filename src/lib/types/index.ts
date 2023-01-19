@@ -35,7 +35,7 @@ export interface NFT {
 	name: string;
 	price: number;
 	currency: string;
-	collection: string;
+	collection?: string;
 	imageSrc: string;
 	imageAlt?: string;
 }
@@ -54,7 +54,7 @@ export interface ContractPayload {
 export interface StringPayload {
 	apiKey: string;
 	name: string;
-	collection: string;
+	collection?: string;
 	currency: string;
 	price: number;
 	imageSrc: string;
