@@ -27,7 +27,6 @@ export const retryLogin = async () => {
 }
 
 async function requestSignature(nonce: string): Promise<string> {
-	console.log('iframe: --- requestSignature', nonce);
 	// 1. send REQUEST_SIGNATURE event to parent
 	sendEvent(Events.REQUEST_SIGNATURE, nonce);
 

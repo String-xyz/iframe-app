@@ -95,7 +95,6 @@ export const subscribeEvent = async (eventName: string, callback: (e: StringEven
 			const channel = payload.channel;
 			const event: StringEvent = payload.event
 			if (channel == CHANNEL && event.eventName == eventName) {
-				console.log("Iframe :: Event received", event);
 				await callback(event)
 			}
 		} catch (error) {

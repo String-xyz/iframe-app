@@ -147,7 +147,6 @@ export function createApiClient(): ApiClient {
 		const headers = { 'X-Api-Key': _apiKey };
 		try {
 			const { data } = await httpClient.post<Promise<TransactPayload>>(`/quotes`, contractPayload, { headers });
-			console.log("getQuote data:", data);
 			return data;
 		} catch (e: any) {
 			console.error("getQuote error:", _getErrorFromAxiosError(e));
@@ -159,7 +158,6 @@ export function createApiClient(): ApiClient {
 		const headers = { 'X-Api-Key': _apiKey };
 		try {
 			const { data } = await httpClient.post<TransactionResponse>(`/transactions`, transactPayload, { headers });
-			console.log("transact data:", data);
 			return data;
 		} catch (e: any) {
 			console.error("transact error:", _getErrorFromAxiosError(e));
@@ -199,7 +197,6 @@ export function createApiClient(): ApiClient {
 			if (!error.response || !error.response.data) return Promise.reject(error);
 
 			if (error.response.status === 401 && error.response.data?.code === 'TOKEN_EXPIRED' || error.response.data?.code === 'MISSING_TOKEN') {
-				console.log('------- refreshing token....')
 				const originalRequest = error.config;
 				try {
 					const data = await refreshToken();
