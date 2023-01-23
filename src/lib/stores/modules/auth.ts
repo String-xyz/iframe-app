@@ -1,11 +1,5 @@
-import { writable, type Writable } from 'svelte/store';
-
-export interface UserStore {
-	walletAddress: string;
-	id?: string;
-	email?: string;
-	status?: string;
-}
+import { writable } from 'svelte/store';
+import type { UserStore } from '$lib/types';
 
 export const __user = writable<UserStore>({
 	walletAddress: "",

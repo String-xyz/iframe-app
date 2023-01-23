@@ -14,7 +14,6 @@
 		if ($item && !final) {
 			await sdkService.requestQuoteStart();
 			sdkEvents.on(Events.QUOTE_CHANGED, (event: StringEvent) => {
-				console.log('>> quote changed', event.data);
 				const _quote = <TransactPayload>event.data.quote;
 				quote.set(_quote);
 			});
