@@ -14,7 +14,9 @@
 		if ($item && !final) {
 			await sdkService.requestQuoteStart();
 
+			sdkEvents.removeAllListeners(Events.QUOTE_CHANGED);
 			sdkEvents.on(Events.QUOTE_CHANGED, (event: StringEvent) => {
+				console.log('QUOTE_CHANGED', event.data.quote);
 				const _quote = <TransactPayload>event.data.quote;
 				quote.set(_quote);
 			});
@@ -23,7 +25,6 @@
 
 	onDestroy(() => {
 		sdkService.requestQuoteStop();
-		sdkEvents.removeAllListeners(Events.QUOTE_CHANGED);
 	});
 </script>
 
