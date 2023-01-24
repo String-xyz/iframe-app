@@ -73,7 +73,7 @@ export function promisifyEvent<T = any>(eventName: Events, { timeout = 60 } = {}
 				if (event.error) return reject(event.error);
 
 				// check for nil values but allow boolean false
-				if (event.data === undefined || event.data == null || event.data === '' || Object.keys(event.data).length === 0) return reject({ code: 'EVENT_NO_DATA' })
+				if (event.data === undefined || event.data == null || event.data === '') return reject({ code: 'EVENT_NO_DATA' })
 
 				return resolve(event.data);
 			} catch (e) {

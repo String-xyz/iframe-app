@@ -53,7 +53,7 @@
 		if (!isValidInput()) return;
 
 		await requestEmailVerification(emailInput);
-		__user.set({ ...$__user, email: emailInput });
+		$__user.email = emailInput;
 	};
 
 	const isValidInput = () => {

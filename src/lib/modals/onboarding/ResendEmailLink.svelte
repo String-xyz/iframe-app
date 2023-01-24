@@ -6,7 +6,7 @@
 	import { __user, modalManager } from '$lib/stores';
 
 	const back = () => {
-		__user.set({ ...$__user, email: '' });
+		$__user.email = '';
 		modalManager.set(VerifyEmailForm);
 	};
 </script>

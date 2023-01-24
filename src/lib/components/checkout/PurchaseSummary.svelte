@@ -13,6 +13,7 @@
 	onMount(async () => {
 		if ($item && !final) {
 			await sdkService.requestQuoteStart();
+
 			sdkEvents.on(Events.QUOTE_CHANGED, (event: StringEvent) => {
 				const _quote = <TransactPayload>event.data.quote;
 				quote.set(_quote);

@@ -21,6 +21,7 @@
 	const retry = async () => {
 		try {
 			const { user } = await sdkService.retryLogin();
+
 			if (user.status !== 'email_verified') return sendToVerify();
 			else return sendToCheckout();
 		} catch (err: any) {
