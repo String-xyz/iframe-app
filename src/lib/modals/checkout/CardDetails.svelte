@@ -1,13 +1,13 @@
 <script lang="ts">
+	import { onMount, onDestroy } from 'svelte';
 	import ModalBase from './ModalBase.svelte';
 	import BackButton from '$lib/components/shared/BackButton.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
-	
+
 	import OrderConfirmation from './OrderConfirmation.svelte';
 
 	import { modalManager, card } from '$lib/stores';
-
-	import { onMount } from 'svelte';
+	import { sdkService } from '$lib/services';
 
 	const CHECKOUT_PK = import.meta.env.VITE_CHECKOUT_PUBLIC_KEY;
 
@@ -23,6 +23,12 @@
 			cardTokenized: onCardTokenized,
 			cardValidationChanged: validateInfo
 		});
+
+		await sdkService.requestQuoteStart();
+	});
+
+	onDestroy(() => {
+		sdkService.requestQuoteStop();
 	});
 
 	const validateInfo = (info: any) => {
@@ -54,11 +60,7 @@
 		<div class="mt-4">
 			<label for="name">Name on card</label>
 			<div class="name mt-1">
-				<input
-					class="input input-bordered border-2 w-full"
-					placeholder="Name"
-					required
-				/>
+				<input class="input input-bordered border-2 w-full" placeholder="Name" required />
 			</div>
 		</div>
 		<div class="flex justify-center">

@@ -1,8 +1,6 @@
-export * from './analytics.service';
-export * from './auth.service';
+import { createSdkService } from './sdk.service';
 
-import { createApiClient } from './apiClient';
-import { createQuoteService } from './quote.service';
+export const sdkService = createSdkService();
 
-export const apiClient = createApiClient();
-export const quoteService = createQuoteService(apiClient);
+
+

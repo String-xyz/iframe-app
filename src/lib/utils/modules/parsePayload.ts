@@ -1,56 +1,14 @@
-import { z } from "zod";
-import { error } from '@sveltejs/kit';
-import type { NFT, ContractPayload, StringPayload } from '$lib/types';
-import { apiClient } from "$lib/services";
-
-const PayloadSchema = z.object({
-	apiKey: z.string(),
-	name: z.string(),
-	collection: z.string().optional(),
-	imageSrc: z.string(),
-	imageAlt: z.string().optional(),
-	currency: z.string(),
-	price: z.number(),
-	chainID: z.number(),
-	userAddress: z.string(),
-	contractAddress: z.string(),
-	contractFunction: z.string(),
-	contractReturn: z.string(),
-	contractParameters: z.string().array(),
-	txValue: z.string()
-});
-
-// export type Payload = z.infer<typeof PayloadSchema>;
+import { type IframePayload, zNFT, zUser } from '$lib/types';
 
 // Validate payload before it reaches the API so nothing breaks
-export const parsePayload = (payload: StringPayload) => {
+export const parsePayload = (payload: IframePayload) => {
 	try {
-		payload = PayloadSchema.parse(payload);
-		apiClient.setApiKey(payload.apiKey);
-		apiClient.setWalletAddress(payload.userAddress);
+		const nft = zNFT.parse(payload.nft);
+		const user = zUser.parse(payload.user);
 
-		const item: NFT = {
-			name: payload.name,
-			price: payload.price,
-			currency: payload.currency,
-			collection: payload.collection,
-			imageSrc: payload.imageSrc,
-			imageAlt: payload?.imageAlt ?? "NFT"
-		}
-
-		const contractParams: ContractPayload = {
-			chainID: payload.chainID,
-			userAddress: payload.userAddress,
-			contractAddress: payload.contractAddress,
-			contractFunction: payload.contractFunction,
-			contractReturn: payload.contractReturn,
-			contractParameters: payload.contractParameters,
-			txValue: payload.txValue,
-			gasLimit: "8000000"
-		}
-
-		return { item, contractParams }
+		return { item: nft, user }
 	} catch (e: any) {
-		throw error(400, "Invalid String-API Payload: " + e);
+		console.debug("Error parsing payload", e);
+		alert("Oops! Something went wrong. Please try again.");
 	}
 }
