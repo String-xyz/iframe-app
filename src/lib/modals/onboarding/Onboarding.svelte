@@ -30,7 +30,8 @@
 		try {
 			const { user } = await sdkService.requestAuthorization($__user.walletAddress);
 			// set user store
-			__user.set({ ...$__user, id: user.id, status: user.status });
+			$__user.id = user.id;
+			$__user.status = user.status;
 
 			if (user.status !== 'email_verified') return sendToVerify();
 			else return sendToCheckout();
