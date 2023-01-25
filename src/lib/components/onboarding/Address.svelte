@@ -1,10 +1,8 @@
 <script>
 	import { abbrev } from '$lib/utils';
-	import { contractPayload } from '$lib/stores';
+	import { __user } from '$lib/stores';
 
-	$: address = $contractPayload.userAddress
-		? abbrev($contractPayload.userAddress)
-		: 'No Wallet Connected';
+	$: address = $__user.walletAddress ? abbrev($__user.walletAddress) : 'No Wallet Connected';
 </script>
 
 <p>

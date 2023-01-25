@@ -5,6 +5,12 @@
 	import OrderConfirmation from './OrderConfirmation.svelte';
 
 	import { modalManager } from '$lib/stores';
+	import { onMount } from 'svelte';
+	import { sdkService } from '$lib/services';
+
+	onMount(() => {
+		sdkService.requestQuoteStop();
+	});
 
 	const back = () => {
 		modalManager.set(OrderConfirmation);
@@ -16,8 +22,11 @@
 	<div class="divider" />
 	<p class="text-red-500">We are unable to complete your purchase due to an API error</p>
 	<div class="text-center mt-6">
-		<button class="btn btn-wide btn-primary rounded border-2 normal-case" on:click={back}>Try Again</button>
-		<button class="btn btn-wide btn-outline btn-primary rounded border-2 normal-case mt-3">Pay w/ Crypto</button>
+		<button class="btn btn-wide btn-primary rounded border-2 normal-case" on:click={back}
+			>Try Again</button
+		>
+		<button class="btn btn-wide btn-outline btn-primary rounded border-2 normal-case mt-3"
+			>Pay w/ Crypto</button
+		>
 	</div>
-	
 </ModalBase>
