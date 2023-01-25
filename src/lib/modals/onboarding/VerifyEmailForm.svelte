@@ -52,8 +52,8 @@
 	const handleVerify = async () => {
 		if (!isValidInput()) return;
 
-		await requestEmailVerification(emailInput);
 		$__user.email = emailInput;
+		await requestEmailVerification(emailInput);
 	};
 
 	const isValidInput = () => {

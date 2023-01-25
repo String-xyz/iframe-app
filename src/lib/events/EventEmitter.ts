@@ -1,7 +1,8 @@
+/* eslint-disable no-prototype-builtins */
 export class EventEmitter {
 	private listeners: any = {};
 
-	on(event: string, callback: Function) {
+	on(event: string, callback: Callback) {
 		if (!this.listeners.hasOwnProperty(event)) {
 			this.listeners[event] = [];
 		}
@@ -11,7 +12,7 @@ export class EventEmitter {
 		return this;
 	}
 
-	once(event: string, callback: Function) {
+	once(event: string, callback: Callback) {
 		if (!this.listeners.hasOwnProperty(event)) {
 			this.listeners[event] = [];
 		}
@@ -38,7 +39,7 @@ export class EventEmitter {
 		}
 	}
 
-	removeListener(event: string, callback: Function) {
+	removeListener(event: string, callback: Callback) {
 		if (!this.listeners.hasOwnProperty(event)) {
 			return null;
 		}
@@ -78,3 +79,6 @@ export class EventEmitter {
 		return this.listeners[event].length;
 	}
 }
+
+// create callback type
+type Callback = (...args: any[]) => void;
