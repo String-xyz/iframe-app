@@ -37,7 +37,7 @@ export const zNFT = z.object({
 	name: z.string(),
 	price: z.number(),
 	currency: z.string(),
-	collection: z.string(),
+	collection: z.string().optional(),
 	imageSrc: z.string(),
 	imageAlt: z.string().optional()
 });
