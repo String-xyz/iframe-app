@@ -33,7 +33,7 @@
 		padding-right: 36px;
 		padding-top: 36px;
 		border-radius: 8px;
-		overflow: hidden;
+		overflow-y: hidden;
 		background: white;
 		user-select: none;
 	}
