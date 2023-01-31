@@ -1,8 +1,9 @@
 import { writable } from 'svelte/store';
-import type { UserStore } from '$lib/types';
+import type { User } from '$lib/types';
 
-export const __user = writable<UserStore>({
+export const __user = writable<User>({
 	walletAddress: "",
 	id: "",
-	status: ""
+	status: "",
+	email: "",
 });

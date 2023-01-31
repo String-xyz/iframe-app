@@ -45,7 +45,8 @@ export const zNFT = z.object({
 export const zUser = z.object({
 	walletAddress: z.string(),
 	id: z.string().optional(),
-	status: z.string().optional()
+	status: z.string().optional(),
+	email: z.string().optional(),
 });
 
 export type NFT = z.infer<typeof zNFT>;
@@ -54,8 +55,4 @@ export type User = z.infer<typeof zUser>;
 export interface IframePayload {
 	nft: NFT;
 	user: User
-}
-
-export interface UserStore extends User {
-	email?: string;
 }

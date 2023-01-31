@@ -23,7 +23,7 @@
 
 	const handleUserAuthorized = async () => {
 		if ($__user.status === 'email_verified') return sendToCheckout();
-		else sendToVerify();
+		else sendToEmailVerify();
 	};
 
 	async function authorizeWallet() {
@@ -33,7 +33,7 @@
 			$__user.id = user.id;
 			$__user.status = user.status;
 
-			if (user.status !== 'email_verified') return sendToVerify();
+			if (user.status !== 'email_verified') return sendToEmailVerify();
 			else return sendToCheckout();
 		} catch (err: any) {
 			handleAuthError(err);
@@ -41,13 +41,14 @@
 	}
 
 	function handleAuthError(err: any) {
+		if (err.code === 'INVALID_EMAIL') return sendToEmailVerify();
 		if (err.code === 'UNPROCESSABLE_ENTITY') return sendToDeviceVerify();
 
 		// unhandled error. Improve the styling of this error message
 		alert('Oops, there seems to be a problem. Please, try again later.');
 	}
 
-	const sendToVerify = async () => {
+	const sendToEmailVerify = async () => {
 		modalManager.set(VerifyEmailForm);
 	};
 
