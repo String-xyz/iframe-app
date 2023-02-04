@@ -4,11 +4,15 @@
 @tailwind utilities;
 
 html {
-    font-family: 'Lora';
-    background-color: transparent !important;
+	font-family: 'Lora';
+	background-color: transparent !important;
 }
 
 body {
-    display: flex;
-    justify-content: center;
+	display: flex;
+	justify-content: center;
+}
+
+img {
+	pointer-events: none;
 }
