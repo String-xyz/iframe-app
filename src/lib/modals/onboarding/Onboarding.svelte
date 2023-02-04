@@ -18,7 +18,7 @@
 		// By default, the component shows the Authorize Wallet button
 		// If the user is logged in, the user is sent to the next step
 		// The SDK loads the iframe with the user id set if the user is logged in
-		if ($__user.id) return handleUserAuthorized();
+		// if ($__user.id) return handleUserAuthorized();
 	});
 
 	const handleUserAuthorized = async () => {
@@ -61,7 +61,7 @@
 	};
 </script>
 
-<ModalBase title="Pay with String" size="size-onboard">
+<ModalBase title="Pay with String">
 	<p class="mt-3 text-lg">
 		String makes it easy to purchase digital assets with your credit or debit card. Log-in with your
 		wallet to complete your purchase. This is where we are going to send blockchain items when
@@ -79,7 +79,7 @@
 			<Address />
 		</div>
 	</div>
-	<div class="flex justify-center mt-7">
+	<div class="flex justify-center mt-7 mb-3">
 		<StyledButton {action}>{actionText}</StyledButton>
 	</div>
 </ModalBase>

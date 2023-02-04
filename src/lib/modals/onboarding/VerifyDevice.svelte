@@ -30,7 +30,7 @@
 		}
 	};
 
-	function handleAuthError(err: any) {
+	const handleAuthError = (err: any) => {
 		if (err.code === 'UNPROCESSABLE_ENTITY')
 			return alert('Could not verify device, please check your email again');
 
@@ -42,11 +42,11 @@
 	};
 </script>
 
-<ModalBase title="Verify this Device" size="size-resend">
+<ModalBase title="Verify this Device">
 	<div class="text-xl mt-5">
-		<span>We need to verify this device to keep your account secure.</span>
-		<span>We've sent you an email.</span>
-		<p>Open the link in the email and click the button below to continue.</p>
+		<p>We detected that you are using a new device.</p>
+		<p class="mb-5">We've sent an email to {$__user.email}</p>
+		<p>Follow the instructions in the email and click the button below to continue.</p>
 	</div>
 	<p class="mt-5">Haven’t received the email? Check your spam folder</p>
 	<div class="float-right mt-7">

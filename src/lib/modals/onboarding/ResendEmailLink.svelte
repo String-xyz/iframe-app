@@ -11,13 +11,13 @@
 	};
 </script>
 
-<ModalBase title="Verify your Email" size="size-resend">
+<ModalBase title="Verify your Email">
 	<div class="text-xl mt-5">
 		<span>We sent an email to <span class="font-bold">{$__user.email}</span></span>
 		<p class="mt-2">Follow the instructions to verify your credentials.</p>
 	</div>
 	<p class="mt-5">Haven’t received the email? Check your spam folder</p>
-	<div class="float-right mt-7">
+	<div class="float-right mt-7 mb-11">
 		<BackButton {back} />
 	</div>
 </ModalBase>

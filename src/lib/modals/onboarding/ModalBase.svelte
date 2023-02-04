@@ -4,19 +4,13 @@
 
 	export let title: string;
 
-	export let size = '';
-
 	const close = () => {
 		modalManager.set(null);
 		sendEvent(Events.IFRAME_CLOSE);
 	}
 </script>
 
-<div 
-	class="str-modal text-neutral border border-neutral"
-	class:size-onboard="{size === 'size-onboard'}"
-	class:size-resend="{size === 'size-resend'}"
->
+<div class="str-modal text-neutral border border-neutral">
 	<header class="flex justify-between">
 		<span class="text-3xl font-bold title text-neutral">{title}</span>
 		<button on:click={close}><img src="/assets/close.svg" alt="Close" /></button>
@@ -35,13 +29,5 @@
 		width: 600px;
 		overflow-y: hidden;
 		background: white;
-	}
-
-	.size-onboard {
-		height: 450px;
-	}
-
-	.size-resend {
-		height: 350px;
 	}
 </style>
