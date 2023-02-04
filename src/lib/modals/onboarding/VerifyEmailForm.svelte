@@ -114,11 +114,11 @@
 				type="email"
 				bind:val={emailInput}
 				className="mt-5"
-				borderError={!isEmailValid}
+				borderError={!isEmailValid && emailInput !== ""}
 				placeholder="example@string.xyz" 
 				required
 			/>
-			{#if !isEmailValid}
+			{#if !isEmailValid && emailInput !== ""}
 				<p class="text-error mt-2">Invalid email address</p>
 			{/if}
 

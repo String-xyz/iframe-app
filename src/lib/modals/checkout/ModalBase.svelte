@@ -19,7 +19,7 @@
 		<slot />
 	</div>
 	<footer class="flex flex-col justify-center items-center my-6 pr-9 text-xs">
-		<span class="">Powered by <img class="inline" src="/assets/string_text_logo.svg" alt="String" /></span>
+		<span>Powered by <img class="inline" src="/assets/string_text_logo.svg" alt="String" /></span>
 	</footer>
 </div>
 
