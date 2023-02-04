@@ -15,9 +15,9 @@
 
 </script>
 
-<div class={"str-modal text-neutral border border-neutral " + type}>
+<div class={"str-modal text-neutral border border-neutral " + type} role="dialog" aria-modal="true">
 	<header class="flex flex-col justify-between">
-		<button class="ml-auto pr-6" on:click={close}><img src="/assets/close.svg" alt="Close" /></button>
+		<button class="ml-auto mr-6" on:click={close}><img src="/assets/close.svg" alt="Close" /></button>
 		<span class="text-2xl font-bold title pr-9 mt-1">{title}</span>
 	</header>
 	<div class="content pr-9">
