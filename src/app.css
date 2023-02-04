@@ -6,6 +6,7 @@
 html {
 	font-family: 'Lora';
 	background-color: transparent !important;
+	user-select: none !important;
 }
 
 body {
