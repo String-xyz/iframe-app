@@ -18,7 +18,7 @@
 
 </script>
 
-<fieldset class={'group ' + className} class:!border-primary={focused} class:!border-error={borderError}>
+<fieldset class={'group ' + className} class:!border-primary={focused} class:!border-error={borderError && !focused}>
 	{#if label}
 		<legend class="ml-3 px-2 text-sm font-medium" class:text-primary={focused}>
 			{label}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ModalBase from './ModalBase.svelte';
+	import ModalBase from '../ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 
 	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
@@ -19,7 +19,7 @@
 	};
 </script>
 
-<ModalBase title="Pay with Card">
+<ModalBase title="Pay with Card" type="checkout">
 	<NFTDetails />
 	<PurchaseSummary />
 	<div class="text-center mt-6">

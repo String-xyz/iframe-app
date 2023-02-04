@@ -1,4 +1,5 @@
 import Onboarding from './lib/modals/onboarding/Onboarding.svelte';
+
 import { Events, sendEvent, registerEvents, sdkEvents, type StringEvent } from '$lib/events/events';
 import { __user, modalManager, item } from '$lib/stores';
 import { parsePayload } from '$lib/utils';

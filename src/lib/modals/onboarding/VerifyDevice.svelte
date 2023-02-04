@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ModalBase from './ModalBase.svelte';
+	import ModalBase from '../ModalBase.svelte';
 	import BackButton from '$lib/components/shared/BackButton.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 
@@ -22,10 +22,13 @@
 		try {
 			const { user } = await sdkService.retryLogin();
 
-			if (user.status !== 'email_verified') return sendToVerify();
-			else return sendToCheckout();
+			if (user.status !== 'email_verified') {
+				return sendToVerify();
+			} else {
+				return sendToCheckout();
+			}
 		} catch (err: any) {
-			console.log('Could verify device: ' + err.code);
+			console.log('Could not verify device: ' + err.code);
 			handleAuthError(err);
 		}
 	};
@@ -39,10 +42,11 @@
 
 	const back = () => {
 		modalManager.set(Onboarding);
-	};
+	}
+
 </script>
 
-<ModalBase title="Verify this Device">
+<ModalBase title="Verify this Device" type="onboarding">
 	<div class="text-xl mt-5">
 		<p>We detected that you are using a new device.</p>
 		<p class="mb-5">We've sent an email to {$__user.email}</p>

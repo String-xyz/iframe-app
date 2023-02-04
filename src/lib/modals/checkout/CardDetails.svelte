@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ModalBase from './ModalBase.svelte';
+	import ModalBase from '../ModalBase.svelte';
 	import BackButton from '$lib/components/shared/BackButton.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 
@@ -58,7 +58,7 @@
 	};
 </script>
 
-<ModalBase title="Add card details">
+<ModalBase title="Add card details" type="checkout">
 	<form on:submit|preventDefault={submitCard}>
 		<div class="mt-4">
 			<label for="card-number">Card number</label>

@@ -1,14 +1,14 @@
 <script lang="ts">
-	import ModalBase from './ModalBase.svelte';
-	import { card, finalQuote, modalManager, txID, txURL } from '$lib/stores';
-	import { sdkService } from '$lib/services';
-
-	import { onMount } from 'svelte';
-
+	import ModalBase from '../ModalBase.svelte';
 	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
 	import Spinner from '$lib/components/checkout/Spinner.svelte';
+
 	import PurchaseSuccess from './PurchaseSuccess.svelte';
 	import PurchaseFailed from './PurchaseFailed.svelte';
+
+	import { onMount } from 'svelte';
+	import { sdkService } from '$lib/services';
+	import { card, finalQuote, modalManager, txID, txURL } from '$lib/stores';
 
 	onMount(async () => {
 		if (!$finalQuote) return;
@@ -31,9 +31,10 @@
 
 		$card = null;
 	});
+
 </script>
 
-<ModalBase title="Processing">
+<ModalBase title="Processing" type="checkout">
 	<NFTDetails />
 	<div class="mt-9" />
 	<Spinner />

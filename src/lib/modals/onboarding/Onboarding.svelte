@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import ModalBase from './ModalBase.svelte';
+	import ModalBase from '../ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 	import Address from '$lib/components/onboarding/Address.svelte';
 
@@ -8,6 +7,7 @@
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 	import VerifyDevice from './VerifyDevice.svelte';
 
+	import { onMount } from 'svelte';
 	import { modalManager, __user } from '$lib/stores';
 	import { sdkService } from '$lib/services';
 
@@ -61,7 +61,7 @@
 	};
 </script>
 
-<ModalBase title="Pay with String">
+<ModalBase title="Pay with String" type="onboarding">
 	<p class="mt-3 text-lg">
 		String makes it easy to purchase digital assets with your credit or debit card. Log-in with your
 		wallet to complete your purchase. This is where we are going to send blockchain items when
