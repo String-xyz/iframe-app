@@ -8,7 +8,7 @@
 	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
 	import Spinner from '$lib/components/checkout/Spinner.svelte';
 	import PurchaseSuccess from './PurchaseSuccess.svelte';
-	import PurchaseFail from './PurchaseFail.svelte';
+	import PurchaseFailed from './PurchaseFailed.svelte';
 
 	onMount(async () => {
 		if (!$finalQuote) return;
@@ -26,7 +26,7 @@
 			modalManager.set(PurchaseSuccess);
 		} catch (e) {
 			console.error('transact error', e);
-			modalManager.set(PurchaseFail);
+			modalManager.set(PurchaseFailed);
 		}
 
 		$card = null;

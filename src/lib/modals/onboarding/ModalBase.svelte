@@ -4,7 +4,7 @@
 
 	export let title: string;
 
-	export let size: string;
+	export let size = '';
 
 	const close = () => {
 		modalManager.set(null);
@@ -15,7 +15,6 @@
 <div 
 	class="str-modal text-neutral border border-neutral"
 	class:size-onboard="{size === 'size-onboard'}"
-	class:size-form="{size === 'size-form'}"
 	class:size-resend="{size === 'size-resend'}"
 >
 	<header class="flex justify-between">
@@ -33,23 +32,16 @@
 		padding-right: 36px;
 		padding-top: 36px;
 		border-radius: 8px;
+		width: 600px;
 		overflow-y: hidden;
 		background: white;
-		user-select: none;
 	}
 
 	.size-onboard {
-		width: 600px;
 		height: 450px;
 	}
 
-	.size-form {
-		width: 600px;
-		height: 540px;
-	}
-
 	.size-resend {
-		width: 600px;
 		height: 350px;
 	}
 </style>

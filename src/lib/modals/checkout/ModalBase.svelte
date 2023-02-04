@@ -36,6 +36,5 @@
 		max-width: 374px;
 		overflow-y: hidden;
 		background: white;
-		user-select: none;
 	}
 </style>

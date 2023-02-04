@@ -29,7 +29,7 @@
 
 {#if final}
 	<span class="text-xl font-bold mt-9">Purchase summary</span>
-	<p class="text-sm mt-2">We’ve sent a receipt to your email</p>
+	<p class="text-sm mt-2">We’ve sent a receipt to your email.</p>
 	<div class="flex justify-between mt-5">
 		<span>Transaction</span>
 		<span>

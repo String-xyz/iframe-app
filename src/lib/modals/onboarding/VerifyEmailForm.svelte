@@ -1,14 +1,17 @@
 <script lang="ts">
 	import ModalBase from './ModalBase.svelte';
+
 	import BackButton from '$lib/components/shared/BackButton.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
+	import StyledInput from '$lib/components/shared/StyledInput.svelte';
+
 	import ResendEmailLink from './ResendEmailLink.svelte';
 	import Onboarding from './Onboarding.svelte';
+	import OrderDetails from '../checkout/OrderDetails.svelte';
 
 	import { __user, modalManager } from '$lib/stores';
 	import { z } from 'zod';
 	import { sdkService } from '$lib/services';
-	import OrderDetails from '../checkout/OrderDetails.svelte';
 
 	let tosAgreement = false;
 	let firstNameInput = '';
@@ -81,56 +84,44 @@
 	// }
 </script>
 
-<ModalBase title="Verify your email" size="size-form">
+<ModalBase title="Verify your email">
 	<form on:submit|preventDefault={handleVerify}>
 		<p class="text-xl mt-5">
 			To proceed, we'll need a bit of information and to verify your email.
 		</p>
 		<div class="mt-5">
 			<div class="flex justify-between">
-				<div class="mt-4">
-					<label for="name">First name</label>
-					<div class="name mt-1">
-						<!-- svelte-ignore a11y-autofocus -->
-						<input
-							bind:value={firstNameInput}
-							class="input input-bordered border-2 w-64"
-							class:border-error={!isFNValid}
-							placeholder="First name"
-							autofocus
-							required
-						/>
-					</div>
-				</div>
-				<div class="mt-4">
-					<label for="name">Last name</label>
-					<div class="name mt-1">
-						<input
-							bind:value={lastNameInput}
-							class="input input-bordered border-2 w-64"
-							class:border-error={!isLNValid}
-							placeholder="Last name"
-							required
-						/>
-					</div>
-				</div>
+				<StyledInput
+					label="First Name"
+					bind:val={firstNameInput}
+					className="w-64"
+					borderError={!isFNValid}
+					placeholder="First name" 
+					autofocus
+					required
+				/>
+				<StyledInput
+					label="Last Name"
+					bind:val={lastNameInput}
+					className="w-64"
+					borderError={!isLNValid}
+					placeholder="Last name" 
+					required
+				/>
 			</div>
-			<div class="mt-5">
-				<label for="email">Email address</label>
-				<div class="email mt-1">
-					<input
-						bind:value={emailInput}
-						class="input input-bordered border-2 w-full"
-						class:border-error={!isEmailValid}
-						placeholder="test@string.xyz"
-						required
-					/>
+			<StyledInput
+				label="Email"
+				type="email"
+				bind:val={emailInput}
+				className="mt-5"
+				borderError={!isEmailValid}
+				placeholder="example@string.xyz" 
+				required
+			/>
+			{#if !isEmailValid}
+				<p class="text-error mt-2">Invalid email address</p>
+			{/if}
 
-					{#if !isEmailValid}
-						<p class="text-error mt-2">Invalid email address</p>
-					{/if}
-				</div>
-			</div>
 			<div class="flex justify-start mt-9">
 				<input
 					type="checkbox"
@@ -155,7 +146,7 @@
 					>
 				</span>
 			</div>
-			<div class="mt-7 float-right">
+			<div class="mt-7 mb-8 float-right">
 				<BackButton {back} />
 				<StyledButton type="submit" wide={false}>Send Link</StyledButton>
 			</div>
