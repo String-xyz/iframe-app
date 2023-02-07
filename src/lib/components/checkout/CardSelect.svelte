@@ -10,15 +10,22 @@
 	const showAddCard = () => {
 		modalManager.set(CardDetails);
 	};
+	
+	const assetPath = "/assets/card/";
 
+	const acceptedVendors = ["visa", "mastercard", "discover", "amex"];
+
+	const getCardIcon = (scheme: string) => {
+		return (acceptedVendors.includes(scheme.toLowerCase()) ? scheme : "card") + ".svg";
+	}
 </script>
 
 {#if $card?.token}
 	<div class="flex justify-between mt-3">
 		<span>Card number</span>
-		<span>
-			{$card.scheme} *{$card.last4}
-			<img on:click={changeCard} class="inline ml-2 cursor-pointer" src="/assets/edit.svg" alt="change">
+		<span class="">
+			<img src={assetPath + getCardIcon($card.scheme)} alt={$card.scheme} width="30px" height="20px" class="inline mr-1"> *{$card.last4}
+			<button on:click={changeCard} class="ml-2"><img src="/assets/edit.svg" alt="change" class="inline"></button>
 		</span>
 	</div>
 {:else}

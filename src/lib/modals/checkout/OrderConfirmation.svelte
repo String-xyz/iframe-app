@@ -1,11 +1,11 @@
 <script lang="ts">
-	import ModalBase from './ModalBase.svelte';
+	import ModalBase from '../ModalBase.svelte';
+
 	import BackButton from '$lib/components/shared/BackButton.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
-
+	import Address from '$lib/components/checkout/Address.svelte';
 	import PurchaseSummary from '$lib/components/checkout/PurchaseSummary.svelte';
 	import CardSelect from '$lib/components/checkout/CardSelect.svelte';
-	import Address from '$lib/components/checkout/Address.svelte';
 
 	import OrderDetails from './OrderDetails.svelte';
 	import Processing from './Processing.svelte';
@@ -24,7 +24,7 @@
 	};
 </script>
 
-<ModalBase title="Order confirmation">
+<ModalBase title="Order confirmation" type="checkout">
 	<Address />
 	<CardSelect />
 	<PurchaseSummary />
