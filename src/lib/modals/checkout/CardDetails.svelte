@@ -1,17 +1,19 @@
 <script lang="ts">
-	import ModalBase from './ModalBase.svelte';
+	import ModalBase from '../ModalBase.svelte';
 	import BackButton from '$lib/components/shared/BackButton.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
-	
+
 	import OrderConfirmation from './OrderConfirmation.svelte';
 
+	import { onMount, onDestroy } from 'svelte';
 	import { modalManager, card } from '$lib/stores';
-
-	import { onMount } from 'svelte';
+	import { sdkService } from '$lib/services';
 
 	const CHECKOUT_PK = import.meta.env.VITE_CHECKOUT_PUBLIC_KEY;
 
 	let isPaymentInfoValid = false;
+	let isCardVendorAccepted = true;
+	let cardVendor = "";
 	let checkout: any;
 
 	onMount(async () => {
@@ -20,14 +22,27 @@
 		checkout = window.Frames;
 		checkout.init({
 			publicKey: CHECKOUT_PK,
+			acceptedPaymentMethods: ["Visa", "Mastercard", "American Express", "Discover"],
 			cardTokenized: onCardTokenized,
-			cardValidationChanged: validateInfo
+			cardValidationChanged: validateInfo,
+			paymentMethodChanged: onVendorChanged
 		});
+
+		await sdkService.requestQuoteStart();
+	});
+
+	onDestroy(() => {
+		sdkService.requestQuoteStop();
 	});
 
 	const validateInfo = (info: any) => {
 		isPaymentInfoValid = info.isValid;
 	};
+
+	const onVendorChanged = (data: any) => {
+		isCardVendorAccepted = data.isPaymentMethodAccepted;
+		cardVendor = data.paymentMethod;
+	}
 
 	const onCardTokenized = async (data: any) => {
 		card.set({ token: data.token, scheme: data.scheme, last4: data.last4 });
@@ -43,7 +58,7 @@
 	};
 </script>
 
-<ModalBase title="Add card details">
+<ModalBase title="Add card details" type="checkout">
 	<form on:submit|preventDefault={submitCard}>
 		<div class="mt-4">
 			<label for="card-number">Card number</label>
@@ -51,14 +66,12 @@
 				<div class="input input-bordered input-primary border-2 card-number-frame" />
 			</div>
 		</div>
+		<p class="text-sm text-red-500" class:hidden={!cardVendor || isCardVendorAccepted}>Sorry. We don't accept {cardVendor}</p>
+
 		<div class="mt-4">
 			<label for="name">Name on card</label>
 			<div class="name mt-1">
-				<input
-					class="input input-bordered border-2 w-full"
-					placeholder="Name"
-					required
-				/>
+				<input class="input input-bordered border-2 w-full" placeholder="Name" required />
 			</div>
 		</div>
 		<div class="flex justify-center">
@@ -76,7 +89,7 @@
 			</div>
 		</div>
 		<div class="text-center mt-10">
-			<StyledButton disabled={!isPaymentInfoValid} type="submit">Save</StyledButton>
+			<StyledButton disabled={!isCardVendorAccepted || !isPaymentInfoValid} type="submit">Save</StyledButton>
 			<BackButton {back} />
 		</div>
 	</form>

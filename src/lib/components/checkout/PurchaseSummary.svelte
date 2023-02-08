@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { item, txID, txURL, finalQuote, contractPayload, quote } from '$lib/stores';
-	import { quoteService } from '$lib/services';
+	import type { TransactPayload } from '$lib/types';
+	import { item, txID, txURL, finalQuote, quote } from '$lib/stores';
+	import { Events, sdkEvents, type StringEvent } from '$lib/events/events';
+	import { sdkService } from '$lib/services';
 	import { abbrev } from '$lib/utils';
 
 	import { onMount, onDestroy } from 'svelte';
@@ -10,18 +12,24 @@
 
 	onMount(async () => {
 		if ($item && !final) {
-			await quoteService.startQuote($contractPayload, quote);
+			await sdkService.requestQuoteStart();
+
+			sdkEvents.removeAllListeners(Events.QUOTE_CHANGED);
+			sdkEvents.on(Events.QUOTE_CHANGED, (event: StringEvent) => {
+				const _quote = <TransactPayload>event.data.quote;
+				quote.set(_quote);
+			});
 		}
 	});
 
 	onDestroy(() => {
-		quoteService.stopQuote(quote);
+		sdkService.requestQuoteStop();
 	});
 </script>
 
 {#if final}
 	<span class="text-xl font-bold mt-9">Purchase summary</span>
-	<p class="text-sm mt-2">We’ve sent a receipt to your email</p>
+	<p class="text-sm mt-2">We’ve sent a receipt to your email.</p>
 	<div class="flex justify-between mt-5">
 		<span>Transaction</span>
 		<span>

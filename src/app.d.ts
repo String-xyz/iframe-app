@@ -8,7 +8,9 @@ declare namespace App {
 	// interface Platform {}
 }
 
-
-interface Window {
-	ethereum: any;
+declare global {
+	interface Window {
+		ethereum: any;
+		Frames: any;
+	}
 }

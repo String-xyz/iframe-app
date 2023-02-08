@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ModalBase from './ModalBase.svelte';
+	import ModalBase from '../ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 	import Address from '$lib/components/onboarding/Address.svelte';
 
@@ -8,62 +8,47 @@
 	import VerifyDevice from './VerifyDevice.svelte';
 
 	import { onMount } from 'svelte';
-	import { modalManager, contractPayload, userId } from '$lib/stores';
-	import { apiClient, loginOrCreateUser } from '$lib/services';
+	import { modalManager, __user } from '$lib/stores';
+	import { sdkService } from '$lib/services';
 
-	let action: () => void;
-	let actionText = '';
+	let action = authorizeWallet; // default component behavior: Show Authorize Wallet button
+	let actionText = 'Authorize Wallet';
 
 	onMount(async () => {
-		// A prerequisite for this modal to be shown is that there is always a wallet connected
-		if (!(await isUserLoggedIn())) {
-			actionText = 'Authorize Wallet';
-			action = authorizeWallet;
-			return;
-		}
-
-		// user authorized
-		handleUserAuthorized();
+		// By default, the component shows the Authorize Wallet button
+		// If the user is logged in, the user is sent to the next step
+		// The SDK loads the iframe with the user id set if the user is logged in
+		// if ($__user.id) return handleUserAuthorized();
 	});
 
 	const handleUserAuthorized = async () => {
-		try {
-			const user = await apiClient.getUserStatus($userId);
-			// get user status
-			if (user.status === 'email_verified') {
-				sendToCheckout();
-				return;
-			}
-
-			sendToVerify();
-		} catch (err: any) {
-			console.log('Could not get user: ' + err.message);
-			action = authorizeWallet;
-			actionText = 'Authorize Wallet';
-		}
+		if ($__user.status === 'email_verified') return sendToCheckout();
+		else sendToEmailVerify();
 	};
 
-	const authorizeWallet = async () => {
+	async function authorizeWallet() {
 		try {
-			const { user } = await loginOrCreateUser($contractPayload.userAddress);
-			userId.set(user.id);
+			const { user } = await sdkService.requestAuthorization($__user.walletAddress);
+			// set user store
+			$__user.id = user.id;
+			$__user.status = user.status;
 
-			if (user.status !== 'email_verified') return sendToVerify();
+			if (user.status !== 'email_verified') return sendToEmailVerify();
 			else return sendToCheckout();
 		} catch (err: any) {
-			console.log('Could not authorize wallet: ' + err.message);
 			handleAuthError(err);
 		}
-	};
+	}
 
 	function handleAuthError(err: any) {
+		if (err.code === 'INVALID_EMAIL') return sendToEmailVerify();
 		if (err.code === 'UNPROCESSABLE_ENTITY') return sendToDeviceVerify();
 
 		// unhandled error. Improve the styling of this error message
 		alert('Oops, there seems to be a problem. Please, try again later.');
 	}
 
-	const sendToVerify = async () => {
+	const sendToEmailVerify = async () => {
 		modalManager.set(VerifyEmailForm);
 	};
 
@@ -74,21 +59,9 @@
 	const sendToDeviceVerify = () => {
 		modalManager.set(VerifyDevice);
 	};
-
-	async function isUserLoggedIn() {
-		if (!$userId) return false;
-		// we always request a new access token on iframe load. If the refresh token is invalid, the user is not logged in
-		try {
-			await apiClient.refreshToken();
-			return true;
-		} catch (e) {
-			console.log('Refresh token is invalid. User is not logged in.');
-			return false;
-		}
-	}
 </script>
 
-<ModalBase title="Pay with String" size="size-onboard">
+<ModalBase title="Pay with String" type="onboarding">
 	<p class="mt-3 text-lg">
 		String makes it easy to purchase digital assets with your credit or debit card. Log-in with your
 		wallet to complete your purchase. This is where we are going to send blockchain items when
@@ -106,7 +79,7 @@
 			<Address />
 		</div>
 	</div>
-	<div class="flex justify-center mt-7">
+	<div class="flex justify-center mt-7 mb-3">
 		<StyledButton {action}>{actionText}</StyledButton>
 	</div>
 </ModalBase>

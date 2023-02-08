@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export interface Quote {
 	timestamp: number;
 	baseUSD: number;
@@ -31,39 +33,26 @@ export interface Card {
 	last4: number;
 }
 
-export interface NFT {
-	name: string;
-	price: number;
-	currency: string;
-	collection: string;
-	imageSrc: string;
-	imageAlt?: string;
-}
+export const zNFT = z.object({
+	name: z.string(),
+	price: z.number(),
+	currency: z.string(),
+	collection: z.string().optional(),
+	imageSrc: z.string(),
+	imageAlt: z.string().optional()
+});
 
-export interface ContractPayload {
-	chainID: number;
-	userAddress: string;
-	contractAddress: string;
-	contractFunction: string;
-	contractReturn: string,
-	contractParameters: string[];
-	txValue: string;
-	gasLimit: string;
-}
+export const zUser = z.object({
+	walletAddress: z.string(),
+	id: z.string().optional(),
+	status: z.string().optional(),
+	email: z.string().optional(),
+});
 
-export interface StringPayload {
-	apiKey: string;
-	name: string;
-	collection: string;
-	currency: string;
-	price: number;
-	imageSrc: string;
-	imageAlt?: string;
-	chainID: number;
-	userAddress: string;
-	contractAddress: string;
-	contractFunction: string;
-	contractReturn: string,
-	contractParameters: string[];
-	txValue: string;
+export type NFT = z.infer<typeof zNFT>;
+export type User = z.infer<typeof zUser>;
+
+export interface IframePayload {
+	nft: NFT;
+	user: User
 }
