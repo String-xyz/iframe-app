@@ -38,7 +38,7 @@ export const sendEvent = (eventName: string, data?: any) => {
 };
 
 export const registerEvents = async () => {
-	window.addEventListener('message', async (e) => {
+	const eventHandler = async (e: any) => {
 		// Filter Metamask events
 		if (e.data?.data?.name) return;
 
@@ -56,7 +56,10 @@ export const registerEvents = async () => {
 		} catch (error) {
 			console.log(error);
 		}
-	}, true);
+	}
+
+	window.removeEventListener('message', eventHandler, true);
+	window.addEventListener('message', eventHandler, true);
 }
 
 // document this function
