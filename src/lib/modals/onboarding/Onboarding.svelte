@@ -18,7 +18,7 @@
 		// By default, the component shows the Authorize Wallet button
 		// If the user is logged in, the user is sent to the next step
 		// The SDK loads the iframe with the user id set if the user is logged in
-		// if ($__user.id) return handleUserAuthorized();
+		if ($__user.id) return handleUserAuthorized();
 	});
 
 	const handleUserAuthorized = async () => {
