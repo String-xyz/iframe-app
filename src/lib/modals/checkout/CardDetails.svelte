@@ -16,6 +16,8 @@
 	let cardVendor = "";
 	let checkout: any;
 
+	let nameInput: string;
+
 	onMount(async () => {
 		if (!CHECKOUT_PK) return;
 		// @ts-ignore
@@ -50,6 +52,9 @@
 	};
 
 	const submitCard = () => {
+		checkout.cardholder = {
+			name: nameInput
+		}
 		checkout.submitCard();
 	};
 
@@ -71,7 +76,7 @@
 		<div class="mt-4">
 			<label for="name">Name on card</label>
 			<div class="name mt-1">
-				<input class="input input-bordered border-2 w-full" placeholder="Name" required />
+				<input class="input input-bordered border-2 w-full" placeholder="Name" bind:value={nameInput} required />
 			</div>
 		</div>
 		<div class="flex justify-center">
