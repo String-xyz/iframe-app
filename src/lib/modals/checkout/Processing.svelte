@@ -21,7 +21,7 @@
 		try {
 			const transaction = await sdkService.transact(quote);
 
-			$txID = transaction?.txID;
+			$txID = transaction?.txId;
 			$txURL = transaction?.txUrl;
 			modalManager.set(PurchaseSuccess);
 		} catch (e) {
