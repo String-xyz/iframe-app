@@ -2,11 +2,11 @@ import { z } from "zod";
 
 export interface Quote {
 	timestamp: number;
-	baseUSD: number;
-	gasUSD: number;
-	tokenUSD: number;
-	serviceUSD: number;
-	totalUSD: number;
+	baseUSD: string;
+	gasUSD: string;
+	tokenUSD: string;
+	serviceUSD: string;
+	totalUSD: string;
 	signature: string;
 }
 
@@ -23,7 +23,7 @@ export interface TransactPayload extends Quote {
 }
 
 export interface TransactionResponse {
-	txID: string;
+	txId: string;
 	txUrl: string;
 }
 
