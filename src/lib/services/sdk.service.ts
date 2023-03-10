@@ -18,6 +18,11 @@ export function createSdkService(): SdkService {
 		return promisifyEvent<void>(Events.RECEIVE_EMAIL_VERIFICATION, { timeout: 15 * 60 }); // wait 15 minutes for user to verify email
 	}
 
+	async function updateUserName(userId: string, update: UserUpdate) {
+		sendEvent(Events.REQUEST_UPDATE_USER, { userId, update });
+		return promisifyEvent<{ user: User }>(Events.RECEIVE_UPDATE_USER);
+	}
+
 	async function requestQuoteStart() {
 		console.debug("✅ Quote started");
 		sendEvent(Events.REQUEST_QUOTE_START, {});
@@ -37,6 +42,7 @@ export function createSdkService(): SdkService {
 	return {
 		requestAuthorization,
 		retryLogin,
+		updateUserName,
 		requestEmailVerification,
 		requestQuoteStart,
 		requestQuoteStop,
@@ -47,10 +53,18 @@ export function createSdkService(): SdkService {
 interface SdkService {
 	requestAuthorization: (walletAddress: string) => Promise<{ user: User }>;
 	retryLogin: () => Promise<{ user: User }>;
+	updateUserName: (userId: string, update: UserUpdate) => Promise<{user: User}>
 	requestEmailVerification: (userId: string, email: string) => Promise<void>;
 	requestQuoteStart: () => Promise<void>;
 	requestQuoteStop: () => Promise<void>;
 	transact: (payload: TransactPayload) => Promise<TransactionResponse>;
+}
+
+interface UserUpdate {
+	walletAddress?: string;
+	firstName?: string;
+	middleName?: string;
+	lastName?: string;
 }
 
 export interface User {
