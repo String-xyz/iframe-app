@@ -20,7 +20,6 @@ export function createSdkService(): SdkService {
 
 	async function updateUserName(userId: string, update: UserUpdate) {
 		sendEvent(Events.REQUEST_UPDATE_USER, { userId, update });
-		return promisifyEvent<{ user: User }>(Events.RECEIVE_UPDATE_USER);
 	}
 
 	async function requestQuoteStart() {
@@ -53,7 +52,7 @@ export function createSdkService(): SdkService {
 interface SdkService {
 	requestAuthorization: (walletAddress: string) => Promise<{ user: User }>;
 	retryLogin: () => Promise<{ user: User }>;
-	updateUserName: (userId: string, update: UserUpdate) => Promise<{user: User}>
+	updateUserName: (userId: string, update: UserUpdate) => Promise<void>
 	requestEmailVerification: (userId: string, email: string) => Promise<void>;
 	requestQuoteStart: () => Promise<void>;
 	requestQuoteStop: () => Promise<void>;
