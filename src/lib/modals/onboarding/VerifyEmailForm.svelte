@@ -54,6 +54,15 @@
 
 	const handleVerify = async () => {
 		if (!isValidInput()) return;
+		if (!$__user.id) return;
+
+		const userUpdate = {
+			walletAddress: $__user.walletAddress,
+			firstName: firstNameInput,
+			lastName: lastNameInput
+		}
+
+		await sdkService.updateUserName($__user.id, userUpdate);
 
 		$__user.email = emailInput;
 		await requestEmailVerification(emailInput);
