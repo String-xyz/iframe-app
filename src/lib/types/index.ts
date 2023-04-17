@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export interface TransactionRequest {
     userAddress: string;
+	assetName: string;
     chainID: number;
     contractAddress: string;
     contractFunction: string;
@@ -49,7 +50,7 @@ export interface Card {
 }
 
 export const zNFT = z.object({
-	name: z.string(),
+	assetName: z.string(),
 	price: z.number(),
 	currency: z.string(),
 	collection: z.string().optional(),
