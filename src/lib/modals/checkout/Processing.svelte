@@ -9,17 +9,20 @@
 	import { onMount } from 'svelte';
 	import { sdkService } from '$lib/services';
 	import { card, finalQuote, modalManager, txID, txURL } from '$lib/stores';
+	import type { ExecutionRequest } from '$lib/types';
 
 	onMount(async () => {
 		if (!$finalQuote) return;
 
-		const quote = {
-			...$finalQuote,
-			...{ cardToken: $card?.token ?? '' }
-		};
-
 		try {
-			const transaction = await sdkService.transact(quote);
+			let executionRequest: ExecutionRequest = {
+				quote: $finalQuote,
+				paymentInfo: {
+					cardToken: $card?.token ?? ''
+				}
+
+			}
+			const transaction = await sdkService.transact(executionRequest);
 
 			$txID = transaction?.txId;
 			$txURL = transaction?.txUrl;

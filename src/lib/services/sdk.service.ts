@@ -1,4 +1,4 @@
-import type { TransactPayload, TransactionResponse } from '$lib/types';
+import type { ExecutionRequest, TransactionResponse } from '$lib/types';
 import { Events, sendEvent, promisifyEvent } from '../events';
 
 export function createSdkService(): SdkService {
@@ -32,7 +32,7 @@ export function createSdkService(): SdkService {
 		sendEvent(Events.REQUEST_QUOTE_STOP, {});
 	}
 
-	async function transact(payload: TransactPayload) {
+	async function transact(payload: ExecutionRequest) {
 		sendEvent(Events.REQUEST_CONFIRM_TRANSACTION, payload);
 		return promisifyEvent<TransactionResponse>(Events.RECEIVE_CONFIRM_TRANSACTION);
 	}
@@ -56,7 +56,7 @@ interface SdkService {
 	requestEmailVerification: (userId: string, email: string) => Promise<void>;
 	requestQuoteStart: () => Promise<void>;
 	requestQuoteStop: () => Promise<void>;
-	transact: (payload: TransactPayload) => Promise<TransactionResponse>;
+	transact: (payload: ExecutionRequest) => Promise<TransactionResponse>;
 }
 
 interface UserUpdate {

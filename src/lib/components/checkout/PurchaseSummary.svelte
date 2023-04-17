@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TransactPayload } from '$lib/types';
+	import type { Quote } from '$lib/types';
 	import { item, txID, txURL, finalQuote, quote } from '$lib/stores';
 	import { Events, sdkEvents, type StringEvent } from '$lib/events/events';
 	import { sdkService } from '$lib/services';
@@ -16,7 +16,7 @@
 
 			sdkEvents.removeAllListeners(Events.QUOTE_CHANGED);
 			sdkEvents.on(Events.QUOTE_CHANGED, (event: StringEvent) => {
-				const _quote = <TransactPayload>event.data.quote;
+				const _quote = <Quote>event.data.quote;
 				quote.set(_quote);
 			});
 		}
@@ -43,35 +43,35 @@
 		<span>Date</span><span>{new Date().toLocaleString('en-US')}</span>
 	</div>
 	<div class="flex justify-between mt-2 mb-6">
-		<span>Total</span><span>$ {$finalQuote?.totalUSD}</span>
+		<span>Total</span><span>$ {$finalQuote?.estimate.totalUSD}</span>
 	</div>
 {:else}
 	<div class="flex justify-between mt-9">
 		<span class="text-xl font-bold">Purchase summary</span>
 	</div>
-	{#if $quote?.totalUSD}
+	{#if $quote?.estimate.totalUSD}
 		{#key $quote}
 			<div class="text-sm mt-5">
 				<div class="flex justify-between">
 					<span>Item price</span><span in:fade={{ duration: 1000 }}
-						>$ {$quote?.baseUSD}</span
+						>$ {$quote?.estimate.baseUSD}</span
 					>
 				</div>
 				<div class="flex justify-between mt-2">
 					<span>Network fee</span><span in:fade={{ duration: 1000 }}
-						>$ {$quote?.gasUSD}</span
+						>$ {$quote?.estimate.gasUSD}</span
 					>
 				</div>
 				<div class="flex justify-between mt-2">
 					<span>Service fee</span><span in:fade={{ duration: 1000 }}
-						>$ {$quote?.serviceUSD}</span
+						>$ {$quote?.estimate.serviceUSD}</span
 					>
 				</div>
 			</div>
 			<div class="divider" />
 			<div class="flex justify-between mb-4 text-xl">
 				<span class="font-bold">Total</span><span in:fade={{ duration: 1000 }}
-					>$ {$quote?.totalUSD}</span
+					>$ {$quote?.estimate.totalUSD}</span
 				>
 			</div>
 		{/key}

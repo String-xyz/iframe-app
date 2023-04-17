@@ -1,25 +1,40 @@
 import { z } from "zod";
 
-export interface Quote {
-	timestamp: number;
-	baseUSD: string;
-	gasUSD: string;
-	tokenUSD: string;
-	serviceUSD: string;
-	totalUSD: string;
-	signature: string;
+export interface TransactionRequest {
+    userAddress: string;
+    chainID: number;
+    contractAddress: string;
+    contractFunction: string;
+    contractReturn: string;
+    contractParameters: string[];
+    txValue: string;
+    gasLimit: string;
 }
 
-export interface TransactPayload extends Quote {
-	userAddress: string;
-	chainID: number;
-	contractAddress: string;
-	contractFunction: string;
-	contractReturn: string;
-	contractParameters: string[];
-	txValue: string;
-	gasLimit: string;
-	cardToken: string;
+export interface Estimate {
+    timestamp: number;
+    baseUSD: string;
+    gasUSD: string;
+    tokenUSD: string;
+    serviceUSD: string;
+    totalUSD: string;
+}
+
+export interface Quote {
+    transactionRequest: TransactionRequest;
+    estimate: Estimate;
+    signature: string;
+}
+
+export interface PaymentInfo {
+    cardToken?: string;
+    cardId?: string;
+    cvv?: string;
+}
+
+export interface ExecutionRequest {
+    quote: Quote;
+    paymentInfo: PaymentInfo;
 }
 
 export interface TransactionResponse {
