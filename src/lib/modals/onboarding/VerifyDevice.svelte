@@ -37,7 +37,7 @@
 		if (err.code === 'UNPROCESSABLE_ENTITY')
 			return alert('Could not verify device, please check your email again');
 
-		alert('Oops, something went wrong. Please try again later.');
+		alert('An unexpected error has occurred. Please try again.');
 	}
 
 	const back = () => {
