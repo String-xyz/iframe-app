@@ -12,7 +12,7 @@
 
 	import { card, quote, finalQuote, modalManager } from '$lib/stores';
 
-	$: disabled = $card?.token == undefined || $quote?.totalUSD == undefined;
+	$: disabled = $card?.token == undefined || $quote?.estimate.totalUSD == undefined;
 
 	const purchase = () => {
 		finalQuote.set($quote);
