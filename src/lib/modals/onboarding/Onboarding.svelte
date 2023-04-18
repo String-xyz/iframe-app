@@ -45,7 +45,7 @@
 		if (err.code === 'UNPROCESSABLE_ENTITY') return sendToDeviceVerify();
 
 		// unhandled error. Improve the styling of this error message
-		alert('Oops, there seems to be a problem. Please, try again later.');
+		alert('An unexpected error has occurred. Please try again.');
 	}
 
 	const sendToEmailVerify = async () => {

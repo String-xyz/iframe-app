@@ -22,7 +22,7 @@
 <ModalBase title="Purchase failed" type="checkout">
 	<NFTDetails />
 	<div class="divider" />
-	<p class="text-red-500 mb-8 text-center">We are unable to complete your purchase due to an API error</p>
+	<p class="text-red-500 mb-8 text-center">An unexpected error has occurred with your transaction. You will not be charged. Please try again.</p>
 	<div class="text-center">
 		<StyledButton action={back}>Try again</StyledButton>
 	</div>

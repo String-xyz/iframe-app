@@ -9,6 +9,6 @@ export const parsePayload = (payload: IframePayload) => {
 		return { item: nft, user }
 	} catch (e: any) {
 		console.debug("Error parsing payload", e);
-		alert("Oops! Something went wrong. Please try again.");
+		alert("An unexpected error has occurred. Please try again.");
 	}
 }

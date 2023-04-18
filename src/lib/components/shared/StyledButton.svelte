@@ -1,7 +1,7 @@
-<script>
+<script lang='ts'>
 	export let action = () => {};
 	export let disabled = false;
-	export let type = "button";
+	export let type: "button" | "submit" = "button";
 	export let wide = true;
 </script>
 

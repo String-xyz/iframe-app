@@ -48,7 +48,7 @@
 			if (e.code === 'CONFLICT') return alert('This email is already verified');
 			if (e.code === 'LINK_EXPIRED') return alert('The link has expired. Please, try again.');
 
-			alert('Oops, there seems to be a problem. Please, try again later.');
+			alert('An unexpected error has occurred. Please try again.');
 		}
 	}
 
