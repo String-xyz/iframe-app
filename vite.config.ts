@@ -3,11 +3,6 @@ import type { UserConfig } from 'vite';
 
 const config: UserConfig = {
 	plugins: [sveltekit()],
-	resolve: {  
-		alias: {
-			buffer: 'buffer/'
-		}
-	}
 };
 
 export default config;
