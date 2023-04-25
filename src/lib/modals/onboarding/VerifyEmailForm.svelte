@@ -39,14 +39,16 @@
 		try {
 			if (!$__user.id) throw new Error('User ID is not defined');
 
-			await sdkService.requestEmailVerification($__user.id, email);
-			modalManager.set(OrderDetails);
+			const { status } = await sdkService.requestEmailVerification($__user.id, email);
+			
+			if (status === 'email_verified') {
+				modalManager.set(OrderDetails);
+			}
 		} catch (e: any) {
 			// if there's an error always go back to the previous modal
 			back();
 
 			if (e.code === 'CONFLICT') return alert('This email is already verified');
-			if (e.code === 'LINK_EXPIRED') return alert('The link has expired. Please, try again.');
 
 			alert('An unexpected error has occurred. Please try again.');
 		}
