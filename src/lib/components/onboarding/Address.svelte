@@ -7,7 +7,7 @@
 
 <p>
 	<span class="dot" />
-	<span class="ml-2">{address}</span>
+	<span class="ml-1">{address}</span>
 </p>
 
 <!-- TODO: Dinamically change the  dot color. If wallet is not connected show a red dot  -->

@@ -25,7 +25,7 @@
 	</div>
 	{#if type === "checkout"}
 		<footer class="flex flex-col justify-center items-center my-6 pr-9 text-xs">
-			<span>Powered by <img class="inline" src="/assets/string_text_logo.svg" alt="String" /></span>
+			<span>Powered by <img class="inline ml-1" src="/assets/string_text_logo.svg" alt="String" width=70 height=15 /></span>
 		</footer>
 	{/if}
 </div>
