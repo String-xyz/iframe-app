@@ -46,7 +46,7 @@
 
 </script>
 
-<ModalBase title="Verify this Device" type="onboarding">
+<ModalBase title="Verify this device" type="onboarding">
 	<div class="text-xl mt-5">
 		<p>We detected that you are using a new device.</p>
 		<p class="mb-5">We’ve sent an email to the email on file.</p>

@@ -19,7 +19,7 @@
 	};
 </script>
 
-<ModalBase title="Buy with Card" type="checkout">
+<ModalBase title="Buy with card" type="checkout">
 	<NFTDetails />
 	<PurchaseSummary />
 	<div class="text-center mt-6">

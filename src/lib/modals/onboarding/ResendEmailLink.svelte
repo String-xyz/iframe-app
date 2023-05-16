@@ -13,7 +13,7 @@
 
 </script>
 
-<ModalBase title="Verify your Email" type="onboarding">
+<ModalBase title="Verify your email" type="onboarding">
 	<div class="text-xl mt-5">
 		<span>We sent an email to <span class="font-bold">{$__user.email}</span></span>
 		<p class="mt-2">Follow the instructions to verify your credentials.</p>

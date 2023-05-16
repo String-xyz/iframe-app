@@ -31,9 +31,9 @@
 {:else}
 	<div class="flex justify-between mt-3">
 		<span>Card number</span>
-		<span class="text-primary text-sm cursor-pointer" on:click={showAddCard}>
+		<button class="text-primary text-sm cursor-pointer" on:click={showAddCard}>
 			<img class="inline mr-3" src="/assets/card_icon.svg" alt="card_icon" />
 			Add Card
-		</span>
+		</button>
 	</div>
 {/if}
