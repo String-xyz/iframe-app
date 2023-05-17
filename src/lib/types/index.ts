@@ -51,7 +51,7 @@ export interface Card {
 
 export const zNFT = z.object({
 	assetName: z.string(),
-	price: z.number(),
+	price: z.string(),
 	currency: z.string(),
 	collection: z.string().optional(),
 	imageSrc: z.string(),

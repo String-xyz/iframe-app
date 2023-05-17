@@ -19,7 +19,7 @@
 	};
 </script>
 
-<ModalBase title="Pay with Card" type="checkout">
+<ModalBase title="Buy with card" type="checkout">
 	<NFTDetails />
 	<PurchaseSummary />
 	<div class="text-center mt-6">
@@ -27,6 +27,7 @@
 			Next
 			<img class="ml-2" src="/assets/next_arrow.svg" alt="next" /> 
 		</StyledButton>
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<span on:click={back} class="inline-block cursor-pointer">
 			Cancel
 		</span>

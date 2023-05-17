@@ -71,8 +71,8 @@
 		<div class="flex flex-col justify-center">
 			<img
 				class="mb-6"
-				width="150px"
-				height="36px"
+				width="140px"
+				height="26px"
 				src="/assets/string_text_logo.svg"
 				alt="String"
 			/>
