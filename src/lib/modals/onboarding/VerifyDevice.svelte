@@ -7,7 +7,7 @@
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
 
-	import { modalManager } from '$lib/stores';
+	import { modalManager, userEmailPreview } from '$lib/stores';
 	import { sdkService } from '$lib/services';
 
 	const sendToCheckout = () => {
@@ -49,7 +49,7 @@
 <ModalBase title="Verify this device" type="onboarding">
 	<div class="text-xl mt-5">
 		<p>We detected that you are using a new device.</p>
-		<p class="mb-5">We’ve sent an email to the email on file.</p>
+		<p class="mb-5">We’ve sent an email to {$userEmailPreview ?? "the email on file"}</p>
 		<p>Follow the instructions in the email and click the button below to continue.</p>
 	</div>
 	<p class="mt-5">Haven’t received the email? Check your spam folder</p>

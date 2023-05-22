@@ -7,3 +7,5 @@ export const __user = writable<User>({
 	status: "",
 	email: "",
 });
+
+export const userEmailPreview = writable("");

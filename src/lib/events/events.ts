@@ -10,24 +10,26 @@ export interface StringEvent<T = any> {
 }
 
 export enum Events {
-	LOAD_PAYLOAD = 'load_payload',
-	IFRAME_READY = 'ready',
-	IFRAME_RESIZE = 'resize',
-	IFRAME_CLOSE = 'close',
-	REQUEST_AUTHORIZE_USER = 'request_authorize_user',
-	RECEIVE_AUTHORIZE_USER = 'receive_authorize_user',
-	REQUEST_RETRY_LOGIN = 'request_retry_login',
-	RECEIVE_RETRY_LOGIN = 'receive_retry_login',
-	REQUEST_UPDATE_USER = 'request_update_user',
-	RECEIVE_UPDATE_USER = 'receive_update_user',
-	REQUEST_EMAIL_VERIFICATION = "request_email_verification",
-	RECEIVE_EMAIL_VERIFICATION = "receive_email_verification",
+	LOAD_PAYLOAD                = "load_payload",
+	IFRAME_READY                = "ready",
+	IFRAME_RESIZE               = "resize",
+	IFRAME_CLOSE                = "close",
+	REQUEST_AUTHORIZE_USER      = "request_authorize_user",
+	RECEIVE_AUTHORIZE_USER      = "receive_authorize_user",
+	REQUEST_RETRY_LOGIN         = "request_retry_login",
+	RECEIVE_RETRY_LOGIN         = "receive_retry_login",
+	REQUEST_UPDATE_USER         = 'request_update_user',
+	RECEIVE_UPDATE_USER         = 'receive_update_user',
+	REQUEST_EMAIL_VERIFICATION  = "request_email_verification",
+	RECEIVE_EMAIL_VERIFICATION  = "receive_email_verification",
+	REQUEST_EMAIL_PREVIEW       = "request_email_preview",
+	RECEIVE_EMAIL_PREVIEW       = "receive_email_preview",
 	REQUEST_CONFIRM_TRANSACTION = "request_confirm_transaction",
 	RECEIVE_CONFIRM_TRANSACTION = "receive_confirm_transaction",
-	REQUEST_QUOTE_START = "request_quote_start",
-	QUOTE_CHANGED = "quote_changed",
-	REQUEST_QUOTE_STOP = "request_quote_stop"
-};
+	REQUEST_QUOTE_START         = "request_quote_start",
+	QUOTE_CHANGED               = "quote_changed",
+	REQUEST_QUOTE_STOP          = "request_quote_stop",
+}
 
 export const sendEvent = (eventName: string, data?: any) => {
 	const message = JSON.stringify({
