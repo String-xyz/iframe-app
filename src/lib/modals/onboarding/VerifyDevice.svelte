@@ -3,32 +3,8 @@
 	import BackButton from '$lib/components/shared/BackButton.svelte';
 
 	import Onboarding from './Onboarding.svelte';
-	import OrderDetails from '../checkout/OrderDetails.svelte';
 
-	import { onMount } from 'svelte';
-	import { sdkService } from '$lib/services';
 	import { modalManager, userEmailPreview, __user } from '$lib/stores';
-
-	onMount(async () => {
-		await requestDeviceVerification();
-	});
-
-	const sendToCheckout = () => {
-		modalManager.set(OrderDetails);
-	};
-
-	const requestDeviceVerification = async () => {
-		try {
-			const { status } = await sdkService.requestDeviceVerification($__user.walletAddress);
-				
-			if (status === 'verified') {
-				sendToCheckout();
-			}
-		} catch (e: any) {
-			console.error(e);
-			alert("Something went wrong. Please try again.")
-		}
-	}
 
 	const back = () => {
 		modalManager.set(Onboarding);

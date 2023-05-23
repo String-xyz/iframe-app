@@ -48,6 +48,19 @@
 		alert('An unexpected error has occurred. Please try again.');
 	}
 
+	const requestDeviceVerification = async () => {
+		try {
+			const { status } = await sdkService.requestDeviceVerification($__user.walletAddress);
+				
+			if (status === 'verified') {
+				sendToCheckout();
+			}
+		} catch (e: any) {
+			console.error(e);
+			alert("Something went wrong. Please try again.")
+		}
+	}
+
 	const sendToEmailVerify = async () => {
 		modalManager.set(VerifyEmailForm);
 	};
@@ -59,6 +72,8 @@
 	const sendToDeviceVerify = async () => {
 		const { email } = await sdkService.getUserEmailPreview($__user.walletAddress);
 		$userEmailPreview = email;
+
+		requestDeviceVerification();
 
 		modalManager.set(VerifyDevice);
 	};
