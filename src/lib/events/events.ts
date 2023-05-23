@@ -25,7 +25,7 @@ export enum Events {
 	REQUEST_EMAIL_PREVIEW       = "request_email_preview",
 	RECEIVE_EMAIL_PREVIEW       = "receive_email_preview",
 	REQUEST_DEVICE_VERIFICATION = "request_device_verification",
-    RECEIVE_DEVICE_VERIFICATION = "receive_device_verification",
+	RECEIVE_DEVICE_VERIFICATION = "receive_device_verification",
 	REQUEST_CONFIRM_TRANSACTION = "request_confirm_transaction",
 	RECEIVE_CONFIRM_TRANSACTION = "receive_confirm_transaction",
 	REQUEST_QUOTE_START         = "request_quote_start",
