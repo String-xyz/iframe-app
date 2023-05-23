@@ -5,7 +5,7 @@
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 	import StyledInput from '$lib/components/shared/StyledInput.svelte';
 
-	import ResendEmailLink from './ResendEmailLink.svelte';
+	import CheckEmail from './CheckEmail.svelte';
 	import Onboarding from './Onboarding.svelte';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
 
@@ -84,7 +84,7 @@
 	}
 
 	function next() {
-		modalManager.set(ResendEmailLink);
+		modalManager.set(CheckEmail);
 	}
 
 	//TODO: We want the error to be removed when the field is empty

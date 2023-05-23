@@ -1,43 +1,28 @@
 <script lang="ts">
 	import ModalBase from '../ModalBase.svelte';
 	import BackButton from '$lib/components/shared/BackButton.svelte';
-	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 
 	import Onboarding from './Onboarding.svelte';
 	import OrderDetails from '../checkout/OrderDetails.svelte';
-	import VerifyEmailForm from './VerifyEmailForm.svelte';
 
-	import { modalManager, userEmailPreview } from '$lib/stores';
+	import { onMount } from 'svelte';
 	import { sdkService } from '$lib/services';
+	import { modalManager, userEmailPreview, __user } from '$lib/stores';
+
+	onMount(async () => {
+		await requestDeviceVerification();
+	});
 
 	const sendToCheckout = () => {
 		modalManager.set(OrderDetails);
 	};
 
-	const sendToVerify = () => {
-		modalManager.set(VerifyEmailForm);
-	};
-
-	const retry = async () => {
-		try {
-			const { user } = await sdkService.retryLogin();
-
-			if (user.status !== 'email_verified') {
-				return sendToVerify();
-			} else {
-				return sendToCheckout();
-			}
-		} catch (err: any) {
-			console.log('Could not verify device: ' + err.code);
-			handleAuthError(err);
+	const requestDeviceVerification = async () => {
+		const { status } = await sdkService.requestDeviceVerification($__user.walletAddress);
+			
+		if (status === 'verified') {
+			sendToCheckout();
 		}
-	};
-
-	const handleAuthError = (err: any) => {
-		if (err.code === 'UNPROCESSABLE_ENTITY')
-			return alert('Could not verify device, please check your email again');
-
-		alert('An unexpected error has occurred. Please try again.');
 	}
 
 	const back = () => {
@@ -55,6 +40,6 @@
 	<p class="mt-5">Haven’t received the email? Check your spam folder</p>
 	<div class="float-right mt-7">
 		<BackButton {back} />
-		<StyledButton action={retry} wide={false}>Retry Login</StyledButton>
+		<!-- <StyledButton action={resendVerify} wide={false}>Resend Email</StyledButton> -->
 	</div>
 </ModalBase>
