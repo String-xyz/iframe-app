@@ -8,7 +8,7 @@
 	import VerifyDevice from './VerifyDevice.svelte';
 
 	import { onMount } from 'svelte';
-	import { modalManager, __user } from '$lib/stores';
+	import { modalManager, __user, userEmailPreview } from '$lib/stores';
 	import { sdkService } from '$lib/services';
 
 	let action = authorizeWallet; // default component behavior: Show Authorize Wallet button
@@ -36,16 +36,29 @@
 			if (user.status !== 'email_verified') return sendToEmailVerify();
 			else return sendToCheckout();
 		} catch (err: any) {
-			handleAuthError(err);
+			await handleAuthError(err);
 		}
 	}
 
-	function handleAuthError(err: any) {
+	async function handleAuthError(err: any) {
 		if (err.code === 'INVALID_EMAIL') return sendToEmailVerify();
-		if (err.code === 'UNPROCESSABLE_ENTITY') return sendToDeviceVerify();
+		if (err.code === 'UNPROCESSABLE_ENTITY') return await sendToDeviceVerify();
 
 		// unhandled error. Improve the styling of this error message
 		alert('An unexpected error has occurred. Please try again.');
+	}
+
+	const requestDeviceVerification = async () => {
+		try {
+			const { status } = await sdkService.requestDeviceVerification($__user.walletAddress);
+				
+			if (status === 'verified') {
+				sendToCheckout();
+			}
+		} catch (e: any) {
+			console.error(e);
+			alert("Something went wrong. Please try again.")
+		}
 	}
 
 	const sendToEmailVerify = async () => {
@@ -56,7 +69,12 @@
 		modalManager.set(OrderDetails);
 	};
 
-	const sendToDeviceVerify = () => {
+	const sendToDeviceVerify = async () => {
+		const { email } = await sdkService.getUserEmailPreview($__user.walletAddress);
+		$userEmailPreview = email;
+
+		requestDeviceVerification();
+
 		modalManager.set(VerifyDevice);
 	};
 </script>

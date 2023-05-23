@@ -8,14 +8,19 @@ export function createSdkService(): SdkService {
 		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 120 }); // wait 2 minutes for user to authorize
 	}
 
-	async function retryLogin() {
-		sendEvent(Events.REQUEST_RETRY_LOGIN);
-		return promisifyEvent<{ user: User }>(Events.RECEIVE_RETRY_LOGIN);
-	}
-
 	async function requestEmailVerification(userId: string, email: string) {
 		sendEvent(Events.REQUEST_EMAIL_VERIFICATION, { userId, email });
-		return promisifyEvent<{status: string}>(Events.RECEIVE_EMAIL_VERIFICATION, { timeout: 15 * 60 }); // wait 15 minutes for user to verify email
+		return promisifyEvent<{ status: string }>(Events.RECEIVE_EMAIL_VERIFICATION, { timeout: 15 * 60 }); // wait 15 minutes for user to verify email
+	}
+
+	async function requestDeviceVerification(walletAddress: string) {
+		sendEvent(Events.REQUEST_DEVICE_VERIFICATION, { walletAddress });
+		return promisifyEvent<{ status: string }>(Events.RECEIVE_DEVICE_VERIFICATION, { timeout: 15 * 60 }); // wait 15 minutes for user to verify email
+	}
+
+	async function getUserEmailPreview(walletAddress: string) {
+		sendEvent(Events.REQUEST_EMAIL_PREVIEW, { walletAddress });
+		return promisifyEvent<{ email: string }>(Events.RECEIVE_EMAIL_PREVIEW);
 	}
 
 	async function updateUserName(userId: string, update: UserUpdate) {
@@ -40,9 +45,10 @@ export function createSdkService(): SdkService {
 
 	return {
 		requestAuthorization,
-		retryLogin,
-		updateUserName,
 		requestEmailVerification,
+		requestDeviceVerification,
+		getUserEmailPreview,
+		updateUserName,
 		requestQuoteStart,
 		requestQuoteStop,
 		transact
@@ -51,9 +57,10 @@ export function createSdkService(): SdkService {
 
 interface SdkService {
 	requestAuthorization: (walletAddress: string) => Promise<{ user: User }>;
-	retryLogin: () => Promise<{ user: User }>;
+	getUserEmailPreview: (walletAddress: string) => Promise<{ email: string }>;
 	updateUserName: (userId: string, update: UserUpdate) => Promise<void>
 	requestEmailVerification: (userId: string, email: string) => Promise<{ status: string }>;
+	requestDeviceVerification: (walletAddress: string) => Promise<{ status: string }>;
 	requestQuoteStart: () => Promise<void>;
 	requestQuoteStop: () => Promise<void>;
 	transact: (payload: ExecutionRequest) => Promise<TransactionResponse>;
