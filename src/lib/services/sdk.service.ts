@@ -8,11 +8,6 @@ export function createSdkService(): SdkService {
 		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 120 }); // wait 2 minutes for user to authorize
 	}
 
-	async function retryLogin() {
-		sendEvent(Events.REQUEST_RETRY_LOGIN);
-		return promisifyEvent<{ user: User }>(Events.RECEIVE_RETRY_LOGIN);
-	}
-
 	async function requestEmailVerification(userId: string, email: string) {
 		sendEvent(Events.REQUEST_EMAIL_VERIFICATION, { userId, email });
 		return promisifyEvent<{ status: string }>(Events.RECEIVE_EMAIL_VERIFICATION, { timeout: 15 * 60 }); // wait 15 minutes for user to verify email
@@ -50,7 +45,6 @@ export function createSdkService(): SdkService {
 
 	return {
 		requestAuthorization,
-		retryLogin,
 		requestEmailVerification,
 		requestDeviceVerification,
 		getUserEmailPreview,
@@ -63,7 +57,6 @@ export function createSdkService(): SdkService {
 
 interface SdkService {
 	requestAuthorization: (walletAddress: string) => Promise<{ user: User }>;
-	retryLogin: () => Promise<{ user: User }>;
 	getUserEmailPreview: (walletAddress: string) => Promise<{ email: string }>;
 	updateUserName: (userId: string, update: UserUpdate) => Promise<void>
 	requestEmailVerification: (userId: string, email: string) => Promise<{ status: string }>;
