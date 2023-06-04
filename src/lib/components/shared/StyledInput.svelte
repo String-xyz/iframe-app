@@ -6,7 +6,6 @@
 	export let className = '';
 	export let borderError = false;
 	export let autofocus = false;
-	export let starred = false;
 	export let val = '';
 
 	let focused = false;

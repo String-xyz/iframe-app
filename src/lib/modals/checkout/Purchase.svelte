@@ -74,7 +74,7 @@
 <ModalBase>
 	<div class="main flex flex-col justify-center items-center">
 		<header class="grid grid-cols-4 items-center w-full mb-3">
-			<img src="/assets/headers/back_arrow.svg" alt="back" class="inline" />
+			<img src="/assets/back_arrow.svg" alt="back" class="inline" />
 			<h1 class="text-2xl whitespace-nowrap font-semibold">Complete your Purchase</h1>
 		</header>
 

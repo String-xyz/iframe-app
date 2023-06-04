@@ -10,7 +10,7 @@
 	on:click={action}
 	class:btn-wide={wide}
 	class:w-40={!wide}
-	class={"btn btn-secondary font-semibold text-lg text-white capitalize h-14 w-full " + className}
+	class={"btn btn-secondary font-semibold normal-case text-lg text-white h-14 w-full " + className}
 	{disabled}
 	{type}
 >
