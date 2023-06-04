@@ -1,29 +1,60 @@
 <script lang="ts">
+	import { modalManager } from '$lib/stores';
+	import { sendEvent, Events } from '$lib/events';
+	import type { NFT } from '$lib/types';
+
 	import ModalBase from '../ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
-	import NFTDetails from '$lib/components/checkout/NFTDetails.svelte';
+	import ItemSummary from '$lib/components/checkout/ItemSummary.svelte';
 
-	import OrderConfirmation from './OrderConfirmation.svelte';
+	let item: NFT = {
+		assetName: "String Test NFT [AVAX]",
+		collection: "String Demo",
+		imageSrc: "https://bafybeieqi56p6vlxofj6wkoort2m5r72ajhtikpzo53wnyze5isvn34fze.ipfs.nftstorage.link/Demo_Character_1.png",
+		imageAlt: "String NFT",
+		price: "0.08",
+		currency: "AVAX",
+	}
 
-	import { onMount } from 'svelte';
-	import { modalManager } from '$lib/stores';
-	import { sdkService } from '$lib/services';
+	const retryTransaction = () => {
 
-	onMount(() => {
-		sdkService.requestQuoteStop();
-	});
+	}
 
-	const back = () => {
-		modalManager.set(OrderConfirmation);
+	const close = () => {
+		modalManager.set(null);
+		sendEvent(Events.IFRAME_CLOSE);
+	}
+
+	const handleKeyboard = (e: KeyboardEvent) => {
+		if (e.key == "Escape") {
+			close();
+		}
 	}
 
 </script>
 
-<ModalBase title="Purchase failed" type="checkout">
-	<NFTDetails />
-	<div class="divider" />
-	<p class="text-red-500 mb-8 text-center">An unexpected error has occurred with your transaction. You will not be charged. Please try again.</p>
-	<div class="text-center">
-		<StyledButton action={back}>Try again</StyledButton>
+<svelte:window on:keydown={(e) => handleKeyboard(e)} />
+
+<ModalBase>
+	<header class="flex justify-end w-full mb-8">
+		<button on:click={close}>
+			<img src="/assets/headers/close.svg" alt="close" />
+		</button>
+	</header>
+	<div class="main flex flex-col justify-center items-center">
+		<img src="/assets/headers/failure.svg" alt="failure" class="mb-5" />
+		<h1 class="text-3xl font-semibold mb-4">Transaction Failed</h1>
+		<p class="text-gray-blue-60 text-lg text-center font-medium mb-12">
+			An unexpected error has occurred with your transaction. You will not be charged. Please try again.
+		</p>
+
+		<ItemSummary {item} />
+
+		<StyledButton
+			className="mt-12"
+			action={retryTransaction}
+		>
+			Retry Transaction
+		</StyledButton>
 	</div>
 </ModalBase>

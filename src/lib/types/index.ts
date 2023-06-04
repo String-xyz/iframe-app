@@ -3,7 +3,7 @@ import { z } from "zod";
 export interface TransactionRequest {
     userAddress: string;
 	assetName: string;
-    chainID: number;
+    chainId: number;
     contractAddress: string;
     contractFunction: string;
     contractReturn: string;
@@ -22,7 +22,7 @@ export interface Estimate {
 }
 
 export interface Quote {
-    transactionRequest: TransactionRequest;
+    request: TransactionRequest;
     estimate: Estimate;
     signature: string;
 }
