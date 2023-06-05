@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import ModalBase from '../ModalBase.svelte';
 
 	import BackButton from '$lib/components/shared/BackButton.svelte';
@@ -7,7 +7,7 @@
 
 	import CheckEmail from './CheckEmail.svelte';
 	import Onboarding from './Onboarding.svelte';
-	import OrderDetails from '../checkout/OrderDetails.svelte';
+	// import OrderDetails from '../checkout/OrderDetails.svelte';
 
 	import { z } from 'zod';
 	import { __user, modalManager } from '$lib/stores';
@@ -95,7 +95,7 @@
 	// }
 </script>
 
-<ModalBase title="Verify your email" type="onboarding">
+<ModalBase title="Verify your email" type="onboarding"> 
 	<form on:submit|preventDefault={handleVerify}>
 		<p class="text-xl mt-5">
 			To proceed, we'll need a bit of information and to verify your email.
@@ -163,4 +163,4 @@
 			</div>
 		</div>
 	</form>
-</ModalBase>
+</ModalBase> -->

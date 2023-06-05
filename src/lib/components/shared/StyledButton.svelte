@@ -26,4 +26,16 @@
 		@apply bg-gray-blue-10;
 		@apply text-gray-blue-40;
 	}
+
+	.btn-primary-special {
+		@apply btn-primary;
+		@apply text-primary;
+		@apply bg-opacity-10;
+		@apply border-none;
+		@apply text-base;
+	}
+
+	.btn-primary-special:hover {
+		@apply bg-opacity-40;
+	}
 </style>

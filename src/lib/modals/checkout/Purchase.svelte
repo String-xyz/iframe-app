@@ -9,12 +9,6 @@
 	import PaymentSelect from '$lib/components/checkout/PaymentSelect.svelte';
 	import type { NFT, Quote } from '$lib/types';
 
-	// import BackButton from '$lib/components/shared/BackButton.svelte';
-	// import Address from '$lib/components/checkout/Address.svelte';
-	// import PurchaseSummary from '$lib/components/checkout/PurchaseSummary.svelte';
-	// import CardSelect from '$lib/components/checkout/CardSelect.svelte';
-
-
 	// $: disabled = $card?.token == undefined || $quote?.estimate.totalUSD == undefined;
 
 	let disabled = true;
@@ -84,7 +78,7 @@
 			<QuoteSummary {quote} />
 		</div>
 
-		<div class="mb-12 mr-auto">
+		<div class="mb-12 mr-auto w-full">
 			<h2 class="text-gray-blue-100 text-xl font-semibold mb-2">Payment Method:</h2>
 			<PaymentSelect />
 		</div>

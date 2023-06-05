@@ -1,10 +1,10 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import ModalBase from '../ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 	import Address from '$lib/components/onboarding/Address.svelte';
 
 	import VerifyEmailForm from './VerifyEmailForm.svelte';
-	import OrderDetails from '../checkout/OrderDetails.svelte';
+	// import OrderDetails from '../checkout/OrderDetails.svelte';
 	import VerifyDevice from './VerifyDevice.svelte';
 
 	import { onMount } from 'svelte';
@@ -108,4 +108,4 @@
 		border-radius: 8px;
 		height: 130px;
 	}
-</style>
+</style> -->

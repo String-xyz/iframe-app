@@ -7,6 +7,8 @@
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 	import ItemSummary from '$lib/components/checkout/ItemSummary.svelte';
 
+	import Purchase from './Purchase.svelte';
+
 	let item: NFT = {
 		assetName: "String Test NFT [AVAX]",
 		collection: "String Demo",
@@ -17,7 +19,7 @@
 	}
 
 	const retryTransaction = () => {
-
+		modalManager.set(Purchase);
 	}
 
 	const close = () => {
