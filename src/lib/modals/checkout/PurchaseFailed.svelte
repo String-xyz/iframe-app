@@ -1,22 +1,12 @@
 <script lang="ts">
 	import { modalManager } from '$lib/stores';
 	import { sendEvent, Events } from '$lib/events';
-	import type { NFT } from '$lib/types';
 
 	import ModalBase from '../ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 	import ItemSummary from '$lib/components/checkout/ItemSummary.svelte';
 
 	import Purchase from './Purchase.svelte';
-
-	let item: NFT = {
-		assetName: "String Test NFT [AVAX]",
-		collection: "String Demo",
-		imageSrc: "https://bafybeieqi56p6vlxofj6wkoort2m5r72ajhtikpzo53wnyze5isvn34fze.ipfs.nftstorage.link/Demo_Character_1.png",
-		imageAlt: "String NFT",
-		price: "0.08",
-		currency: "AVAX",
-	}
 
 	const retryTransaction = () => {
 		modalManager.set(Purchase);
@@ -50,7 +40,7 @@
 			An unexpected error has occurred with your transaction. You will not be charged. Please try again.
 		</p>
 
-		<ItemSummary {item} />
+		<ItemSummary />
 
 		<StyledButton
 			className="mt-12"

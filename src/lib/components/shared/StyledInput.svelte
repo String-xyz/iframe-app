@@ -4,8 +4,10 @@
 	export let label = '';
 	export let id = '';
 	export let className = '';
+	export let inputClassName = '';
 	export let borderError = false;
 	export let autofocus = false;
+	export let keypress = (e: KeyboardEvent) => {};
 	export let val = '';
 
 	let focused = false;
@@ -23,10 +25,11 @@
 	<label for={id} class="text-gray-blue-60 font-medium ml-1 my-2 whitespace-nowrap">{label}</label>
 	<input
 		{id}
-		class="text-gray-blue-100 border border-gray-blue-20 rounded-lg px-4 h-14"
+		class={"text-gray-blue-100 border border-gray-blue-20 rounded-lg px-4 h-14 " + inputClassName}
 		class:!border-error={borderError && !focused}
 		on:focus={() => focused = true}
 		on:blur={() => focused = false}
+		on:keypress={keypress}
 		bind:this={inputElm}
 		bind:value={val}
 		{...$$restProps}

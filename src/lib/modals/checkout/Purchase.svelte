@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { card, finalQuote, modalManager } from '$lib/stores';
+	import { onDestroy, onMount } from 'svelte';
+	import { sdkService } from '$lib/services';
+	import { Events, sdkEvents, type StringEvent } from '$lib/events';
+	import { modalManager, quote, finalQuote, selectedCard, txResponse } from '$lib/stores';
+	import type { Quote, TransactionRequest } from '$lib/types';
 
 	import ModalBase from '../ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
@@ -7,17 +11,49 @@
 	import ItemSummary from '$lib/components/checkout/ItemSummary.svelte';
 	import QuoteSummary from '$lib/components/checkout/QuoteSummary.svelte';
 	import PaymentSelect from '$lib/components/checkout/PaymentSelect.svelte';
+	import Spinner from '$lib/components/checkout/Spinner.svelte';
 
-	// $: disabled = $card?.token == undefined || $quote?.estimate.totalUSD == undefined;
+	import PurchaseSuccess from './PurchaseSuccess.svelte';
+	import PurchaseFailed from './PurchaseFailed.svelte';
 
-	let disabled = true;
-	// const purchase = () => {
-	// 	finalQuote.set($quote);
-	// 	modalManager.set(Processing);
-	// };
+	$: disabled = $selectedCard?.token == undefined || $quote?.estimate.totalUSD == undefined;
 
-	const handlePurchase = () => {
+	let isProcessing = false;
 
+	onMount(async () => {
+		await sdkService.requestQuoteStart();
+		sdkEvents.removeAllListeners(Events.QUOTE_CHANGED);
+		sdkEvents.on(Events.QUOTE_CHANGED, (event: StringEvent) => {
+			const _quote = <Quote>event.data.quote;
+			quote.set(_quote);
+		});
+	});
+
+	onDestroy(() => {
+		sdkService.requestQuoteStop();
+	});
+
+	const handlePurchase = async () => {
+		finalQuote.set($quote);
+		if (!$finalQuote) return;
+
+		isProcessing = true;
+
+		try {
+			let txRequest: TransactionRequest = {
+				quote: $finalQuote,
+				paymentInfo: {
+					cardToken: $selectedCard?.token ?? ''
+				}
+			}
+			const tx = await sdkService.transact(txRequest);
+			$txResponse = tx;
+
+			modalManager.set(PurchaseSuccess);
+		} catch (e) {
+			console.error('transact error', e);
+			modalManager.set(PurchaseFailed);
+		}
 	}
 
 </script>
@@ -40,11 +76,20 @@
 			<PaymentSelect />
 		</div>
 
-		<StyledButton
-			action={handlePurchase}
-			{disabled}
-		>
-			Buy Now
-		</StyledButton>
+		{#if !isProcessing}
+			<StyledButton
+				action={handlePurchase}
+				{disabled}
+			>
+				Buy Now
+			</StyledButton>
+		{:else}
+			<StyledButton>
+				<Spinner />
+				<span class="ml-2">
+					Processing Transaction
+				</span>
+			</StyledButton>
+		{/if}
 	</div>
 </ModalBase>

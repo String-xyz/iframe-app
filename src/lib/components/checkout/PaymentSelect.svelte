@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { modalManager } from "$lib/stores";
+	import { numericFilter } from "$lib/utils";
 
 	import StyledButton from "../shared/StyledButton.svelte";
 
@@ -32,12 +33,6 @@
 		modalManager.set(AddCard);
 	}
 
-	const filterNumbers = (e: KeyboardEvent) => {
-		if (e.key < '0' || e.key > '9' || cvvInput.length >= 4) {
-        	e.preventDefault();
-    	}
-	}
-
 </script>
 
 <div class="flex justify-between w-full">
@@ -60,7 +55,7 @@
 				placeholder="CVV"
 				pattern="[0-9]"
 				bind:value={cvvInput}
-				on:keypress={(e) => filterNumbers(e)}
+				on:keypress={(e) => numericFilter(e, cvvInput, 4)}
 				on:paste|preventDefault={() => false}
 				on:focus={() => cvvFocused = true}
 				on:blur={() => cvvFocused = false}

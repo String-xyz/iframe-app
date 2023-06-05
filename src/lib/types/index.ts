@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export interface TransactionRequest {
+export interface ExecutionRequest {
     userAddress: string;
 	assetName: string;
     chainId: number;
@@ -31,9 +31,10 @@ export interface PaymentInfo {
     cardToken?: string;
     cardId?: string;
     cvv?: string;
+    saveCard?: boolean;
 }
 
-export interface ExecutionRequest {
+export interface TransactionRequest {
     quote: Quote;
     paymentInfo: PaymentInfo;
 }
@@ -44,10 +45,25 @@ export interface TransactionResponse {
     txTimestamp: string;
 }
 
+// TODO: Saved cards needs to be working on backend first
+// To find the response fields
+export interface SavedCard {
+    token: string 
+}
+
 export interface Card {
 	token: string;
 	scheme: string;
 	last4: number;
+    exp_month: number;
+    exp_year: number;
+    isSavedCard: boolean;
+    shouldSaveCard: boolean;
+}
+
+export interface USState {
+    name: string;
+    abbrev: string;
 }
 
 export const zNFT = z.object({

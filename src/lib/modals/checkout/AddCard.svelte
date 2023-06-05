@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { modalManager, card } from '$lib/stores';
+	import { modalManager, selectedCard } from '$lib/stores';
+	import { numericFilter, capInputLength } from '$lib/utils';
 
 	import ModalBase from '../ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
@@ -16,7 +17,15 @@
 	let cardHeader = "Pay with a Debit or Credit Card";
 	let billingHeader = "Billing Address";
 
-	$: disabled = false;
+	let disabled = true;
+
+	$: {
+		if (stage === "card") {
+			disabled = !isPaymentInfoValid;
+		} else {
+			disabled = !isValidBillingInfo;
+		}
+	}
 
 	$: currentHeader = stage === "card" ? cardHeader : billingHeader;
 
@@ -39,6 +48,8 @@
 	let zipInput: string;
 	let stateInput: string;
 
+	$: isValidBillingInfo = addressInput != "" && cityInput != "" && zipInput != "" && stateInput != "";
+
 	const CHECKOUT_PK = import.meta.env.VITE_CHECKOUT_PUBLIC_KEY;
 
 	onMount(async () => {
@@ -50,12 +61,31 @@
 			acceptedPaymentMethods: ["Visa", "Mastercard", "American Express", "Discover"],
 			cardTokenized: onCardTokenized,
 			cardValidationChanged: validateCardInfo,
-			paymentMethodChanged: onVendorChanged
+			paymentMethodChanged: onVendorChanged,
+			style: {
+				base: {
+					color: "#0C1116",
+					fontSize: "16px",
+					fontFamily: "sans-serif",
+					letterSpacing: "0.025em",
+				},
+				invalid: {
+					color: "#E25950",
+				},
+				autofill: {
+					backgroundColor: "#FFFFFF",
+				},
+				placeholder: {
+					base: {
+						color: "#8A98A9",
+					}
+				}
+			}
 		});
 	});
 
 	const validateCardInfo = (info: any) => {
-		isPaymentInfoValid = info.isValid;
+		isPaymentInfoValid = info.isValid && nameInput != "" && isCardVendorAccepted;
 	}
 
 	const onVendorChanged = (data: any) => {
@@ -65,18 +95,20 @@
 
 	const submitCard = () => {
 		checkout.cardholder = {
-			name: nameInput
+			name: nameInput,
+			billingAddress: {
+				addressLine1: addressInput,
+				city: cityInput,
+				zip: zipInput,
+				state: stateInput,
+				country: "US"
+			}
 		}
 		checkout.submitCard();
 	}
 
 	const onCardTokenized = async (data: any) => {
-		card.set({ token: data.token, scheme: data.scheme, last4: data.last4 });
-		back();
-	}
-
-	const isValidBillingInfo = () => {
-		return true;
+		// selectedCard.set({ token: data.token, scheme: data.scheme, last4: data.last4 });
 	}
 
 	const handleCardDetails = () => {
@@ -84,8 +116,10 @@
 	}
 
 	const finishAddCard = () => {
-		if (!isValidBillingInfo()) return;
+		if (!isValidBillingInfo) return;
+		
 		try {
+			submitCard();
 			modalManager.set(Purchase);
 		} catch (e) {
 			modalManager.set(CardFailed);
@@ -112,26 +146,29 @@
 			<p class="text-gray-blue-100 text-lg whitespace-nowrap font-semibold mb-4">{currentHeader}</p>
 			{#if stage === "card"}
 				<div class="text-gray-blue-60 font-medium mb-6">
-					<div class="mb-2">
-						<label class="ml-1 my-2" for="card-number-frame">Card number</label>
-						<div id="card-number-frame" class="input input-bordered border-2 card-number-frame" />
+					<div class="mb-2 pt-2">
+						<label class="ml-1" for="card-number-frame">Card number</label>
+						<div id="card-number-frame" class="input input-bordered border-2 mt-2 card-number-frame" />
 						<p class="text-sm text-red-500" class:hidden={!cardVendor || isCardVendorAccepted}>Sorry. We don't accept {cardVendor}</p>
 					</div>
-					<StyledInput
-						label="Name on card"
-						placeholder="Name"
-						className="mb-2"
-						bind:val={nameInput}
-						required
-					/>
+					<div class="flex flex-col mb-2 pt-2">
+						<label class="ml-1" for="name-input">Name on card</label>
+						<input
+							id="name-input"
+							class="input input-bordered border-2 text-gray-blue-100 focus:outline-none mt-2 h-12"
+							placeholder="Name"
+							bind:value={nameInput}
+							required
+						/>
+					</div>
 					<div class="flex justify-between">
-						<div class="mr-4">
-							<label class="ml-1 my-2" for="expiry-date-frame">Expiry date</label>
-							<div id="expiry-date-frame" class="input input-bordered border-2 expiry-date-frame" />
+						<div class="mr-4 pt-2">
+							<label class="ml-1" for="expiry-date-frame">Expiry date</label>
+							<div id="expiry-date-frame" class="input input-bordered border-2 mt-2 expiry-date-frame" />
 						</div>
-						<div>
-							<label class="ml-1 my-2" for="cvv-frame">Security code</label>
-							<div id="cvv-frame" class="input input-bordered border-2 cvv-frame" />
+						<div class="pt-2">
+							<label class="ml-1" for="cvv-frame">Security code</label>
+							<div id="cvv-frame" class="input input-bordered border-2 mt-2 cvv-frame" />
 						</div>
 					</div>
 				</div>
@@ -142,6 +179,8 @@
 						placeholder="Address Line 1"
 						className="mb-2"
 						bind:val={addressInput}
+						keypress={(e) => capInputLength(e, addressInput, 100)}
+						autocomplete="address-line1"
 						required
 					/>
 					<div class="flex justify-between mb-2">
@@ -150,13 +189,18 @@
 							placeholder="City"
 							className="w-1/2 mr-2"
 							bind:val={cityInput}
+							keypress={(e) => capInputLength(e, cityInput, 100)}
+							autocomplete="address-level2"
 							required
 						/>
 						<StyledInput
 							label="Zip code"
 							placeholder="Zip code"
+							pattern="[0-9]"
 							className="w-1/2"
 							bind:val={zipInput}
+							keypress={(e) => numericFilter(e, zipInput, 5)}
+							autocomplete="postal-code"
 							required
 						/>
 					</div>
