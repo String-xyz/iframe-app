@@ -1,30 +1,25 @@
-<!-- <script lang="ts">
-	import ModalBase from '../ModalBase.svelte';
-	import StyledButton from '$lib/components/shared/StyledButton.svelte';
-	import Address from '$lib/components/onboarding/Address.svelte';
-
-	import VerifyEmailForm from './VerifyEmailForm.svelte';
-	// import OrderDetails from '../checkout/OrderDetails.svelte';
-	import VerifyDevice from './VerifyDevice.svelte';
-
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { modalManager, __user, userEmailPreview } from '$lib/stores';
 	import { sdkService } from '$lib/services';
 
-	let action = authorizeWallet; // default component behavior: Show Authorize Wallet button
-	let actionText = 'Authorize Wallet';
+	import GetStarted from './GetStarted.svelte';
+	import Purchase from '../checkout/Purchase.svelte';
+	import VerifyDevice from './VerifyDevice.svelte';
 
 	onMount(async () => {
 		// By default, the component shows the Authorize Wallet button
 		// If the user is logged in, the user is sent to the next step
 		// The SDK loads the iframe with the user id set if the user is logged in
 		if ($__user.id) return handleUserAuthorized();
+
+		await authorizeWallet();
 	});
 
 	const handleUserAuthorized = async () => {
 		if ($__user.status === 'email_verified') return sendToCheckout();
 		else sendToEmailVerify();
-	};
+	}
 
 	async function authorizeWallet() {
 		try {
@@ -62,12 +57,12 @@
 	}
 
 	const sendToEmailVerify = async () => {
-		modalManager.set(VerifyEmailForm);
-	};
+		modalManager.set(GetStarted);
+	}
 
 	const sendToCheckout = () => {
-		modalManager.set(OrderDetails);
-	};
+		modalManager.set(Purchase);
+	}
 
 	const sendToDeviceVerify = async () => {
 		const { email } = await sdkService.getUserEmailPreview($__user.walletAddress);
@@ -76,36 +71,5 @@
 		requestDeviceVerification();
 
 		modalManager.set(VerifyDevice);
-	};
-</script>
-
-<ModalBase title="Pay with String" type="onboarding">
-	<p class="mt-3 text-lg">
-		String makes it easy to purchase digital assets with your credit or debit card. Log-in with your
-		wallet to complete your purchase. This is where we are going to send blockchain items when
-		purchased.
-	</p>
-	<div class="wallet mt-5 flex justify-center">
-		<div class="flex flex-col justify-center">
-			<img
-				class="mb-6"
-				width="140px"
-				height="26px"
-				src="/assets/string_text_logo.svg"
-				alt="String"
-			/>
-			<Address />
-		</div>
-	</div>
-	<div class="flex justify-center mt-7 mb-3">
-		<StyledButton {action}>{actionText}</StyledButton>
-	</div>
-</ModalBase>
-
-<style>
-	.wallet {
-		background-color: #dff1ff;
-		border-radius: 8px;
-		height: 130px;
 	}
-</style> -->
+</script>

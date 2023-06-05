@@ -1,6 +1,6 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import ModalBase from '../ModalBase.svelte';
-	import BackButton from '$lib/components/shared/BackButton.svelte';
+	// import BackButton from '$lib/components/shared/BackButton.svelte';
 
 	import Onboarding from './Onboarding.svelte';
 
@@ -21,6 +21,6 @@
 	<p class="mt-5">Haven’t received the email? Check your spam folder.</p>
 	<div class="float-right mt-7 mb-6">
 		<BackButton {back} />
-		<!-- <StyledButton action={resendVerify} wide={false}>Resend Email</StyledButton> -->
+		<StyledButton action={resendVerify} wide={false}>Resend Email</StyledButton>
 	</div>
-</ModalBase>
+</ModalBase> -->

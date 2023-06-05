@@ -41,6 +41,7 @@ export interface ExecutionRequest {
 export interface TransactionResponse {
 	txId: string;
 	txUrl: string;
+    txTimestamp: string;
 }
 
 export interface Card {

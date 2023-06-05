@@ -5,7 +5,7 @@ export function createSdkService(): SdkService {
 
 	async function requestAuthorization(walletAddress: string) {
 		sendEvent(Events.REQUEST_AUTHORIZE_USER, { walletAddress });
-		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 120 }); // wait 2 minutes for user to authorize
+		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 5 * 60 }); // wait 5 minutes for user to authorize
 	}
 
 	async function requestEmailVerification(userId: string, email: string) {

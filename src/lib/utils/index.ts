@@ -1,2 +1,3 @@
-export * from './modules/abbrev'
-export * from './modules/parsePayload'
+export const abbrevAddr = (addr = "") => {
+	return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+}

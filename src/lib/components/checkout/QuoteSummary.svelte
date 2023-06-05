@@ -1,40 +1,38 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import type { Quote } from "$lib/types";
-
-	export let quote: Quote | null;
+	import { quote } from '$lib/stores';
 
 </script>
 
 <div class="border border-gray-blue-20 rounded-2xl w-full p-4">
-	{#key quote}
+	{#key $quote}
 		<div class="text-gray-blue-60 text-lg font-medium select-text">
 			<div class="flex justify-between mb-4">
 				<span>Item price</span>
 				<span in:fade={{ duration: 1000 }}>
-					${quote?.estimate.baseUSD ?? "..."}
+					${$quote?.estimate.baseUSD ?? "..."}
 				</span>
 			</div>
 			<div class="flex justify-between mb-4">
 				<span>Network fee</span>
 				<span in:fade={{ duration: 1000 }}>
-					${quote?.estimate.gasUSD ?? "..."}
+					${$quote?.estimate.gasUSD ?? "..."}
 				</span>
 			</div>
 			<div class="flex justify-between">
 				<span>Processing fee</span>
 				<span in:fade={{ duration: 1000 }}>
-					${quote?.estimate.serviceUSD ?? "..."}
+					${$quote?.estimate.serviceUSD ?? "..."}
 				</span>
 			</div>
 		</div>
 		<div class="divider mt-3" />
 		<div class="text-gray-blue-100 text-lg font-medium">
-			{#if quote}
+			{#if $quote}
 				<div class="flex justify-between select-text">
 					<span>Total</span>
 					<span in:fade={{ duration: 1000 }}>
-						${quote?.estimate.totalUSD ?? "..."}
+						${$quote?.estimate.totalUSD ?? "..."}
 					</span>
 				</div>
 			{:else}

@@ -13,10 +13,12 @@
 	let firstNameInput = "";
 	let lastNameInput = "";
 	let emailInput = "";
+	let tosAgreement = false;
 
 	let isFNValid = true;
 	let isLNValid = true;
 	let isEmailValid = true;
+	let isTOSValid = true;
 
 	const emailSchema = z.string().trim().email();
 	const nameSchema = z.string().min(1);
@@ -25,8 +27,9 @@
 		isEmailValid = emailSchema.safeParse(emailInput).success;
 		isFNValid = nameSchema.safeParse(firstNameInput).success;
 		isLNValid = nameSchema.safeParse(lastNameInput).success;
+		isTOSValid = tosAgreement;
 
-		return isEmailValid && isFNValid && isLNValid;
+		return isEmailValid && isFNValid && isLNValid && isTOSValid;
 	}
 
 	async function requestEmailVerification() {
@@ -88,7 +91,7 @@
 		<p class="text-gray-blue-60 text-center text-lg font-medium mb-8">
 			String is the most convenient way to purchase NFTs and crypto from within your favorite game. Sign up below!
 		</p>
-		<form class="w-full" on:submit|preventDefault={next}>
+		<form class="w-full" on:submit|preventDefault={handleOnboarding}>
 			<div class="flex mb-4">
 				<StyledInput
 					label="First name"
@@ -119,10 +122,33 @@
 				required
 			/>
 			{#if !isEmailValid && emailInput !== ""}
-				<p class="text-sm text-error font-medium mt-2 mb-9">Please enter a valid email address.</p>
-			{:else}
-				<div class="mb-12"></div>
+				<p class="text-sm text-error font-medium mt-2">Please enter a valid email address.</p>
 			{/if}
+
+			<div class="flex justify-start items-center mt-4 mb-10">
+				<input
+					type="checkbox"
+					bind:checked={tosAgreement}
+					class="checkbox checkbox-primary"
+					class:border-error={!isTOSValid}
+				/>
+				<span class="ml-2 text-sm"
+					>I accept the
+					<a
+						href="https://www.string.xyz/legal/terms-of-service"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="link link-primary">Terms of Service</a
+					>
+					and the
+					<a
+						href="https://www.string.xyz/legal/privacy-policy"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="link link-primary">Privacy Policy</a
+					>
+				</span>
+			</div>
 
 			<StyledButton type="submit">Continue</StyledButton>
 		</form>

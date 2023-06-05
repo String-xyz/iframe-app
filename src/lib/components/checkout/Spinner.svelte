@@ -2,14 +2,11 @@
 
 <style>
 	.spinner {
-		border: 4px solid #f3f3f3;
+		border: 4px solid rgba(255, 255, 255, 0.4);
 		border-radius: 50%;
-		border-top: 4px solid #006AB7;
-		width: 60px;
-		height: 60px;
-		margin: auto;
-		margin-top: 10px;
-		margin-bottom: 10px;
+		border-top: 4px solid #FFFFFF;
+		width: 24px;
+		height: 24px;
 		-webkit-animation: spin 2s linear infinite; /* Safari */
 		animation: spin 2s linear infinite;
 	}
