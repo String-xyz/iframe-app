@@ -43,9 +43,10 @@
 	{#if $cardList && $cardList.length > 0}
 		<div class="flex flex-col box w-3/4 p-4">
 			{#each $cardList as card}
+				{@const active = card == $selectedCard}
 				<div class="flex justify-between items-center">
 					<div class="flex">
-						<img src={true ? radioChecked[0] : radioUnchecked[0]} alt={true ? radioChecked[1] : radioUnchecked[1]} />
+						<img src={active ? radioChecked[0] : radioUnchecked[0]} alt={active ? radioChecked[1] : radioUnchecked[1]} />
 						<img src={getCardIcon(card.scheme)} alt={card.scheme} class="mx-3"/>
 						<div class="flex flex-col">
 							<span class="text-gray-blue-80 font-semibold mb-1">{capitalize(card.scheme)} *{card.last4}</span>
