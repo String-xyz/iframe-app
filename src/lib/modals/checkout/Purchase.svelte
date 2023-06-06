@@ -17,7 +17,7 @@
 	import PurchaseSuccess from './PurchaseSuccess.svelte';
 	import PurchaseFailed from './PurchaseFailed.svelte';
 
-	$: disabled = $quote?.estimate.totalUSD == undefined;
+	$: disabled = !$selectedCard || $quote?.estimate.totalUSD == undefined;
 
 	let isProcessing = false;
 

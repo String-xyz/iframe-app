@@ -4,11 +4,12 @@
 	import { numericFilter, capInputLength } from '$lib/utils';
 
 	import states from "$lib/data/states.json";
+
 	import ModalBase from '../ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
+	import StyledInput from '$lib/components/shared/StyledInput.svelte';
 
 	import Purchase from './Purchase.svelte';
-	import StyledInput from '$lib/components/shared/StyledInput.svelte';
 	import CardFailed from './CardFailed.svelte';
 
 	type Stage = 'card' | 'billing';
@@ -22,8 +23,7 @@
 
 	$: currentHeader = stage === "card" ? cardHeader : billingHeader;
 
-	$: currentAction = stage === "card" ? goToBilling : finishAddCard;
-
+	$: currentAction = stage === "card" ? goToBilling : handleAddCard;
 	let shouldSaveCard = false;
 
 	// Checkout
@@ -114,9 +114,11 @@
 			shouldSaveCard
 		}
 
-		$cardList = [newCard, ...$cardList]
-		
+		$cardList = [newCard, ...$cardList];
+
 		$selectedCard = newCard;
+
+		modalManager.set(Purchase);
 	}
 
 	const isValidBillingInfo = () => {
@@ -132,12 +134,11 @@
 		stage = "billing";
 	}
 
-	const finishAddCard = () => {
-		if (!isValidBillingInfo) return;
+	const handleAddCard = () => {
+		if (!isPaymentInfoValid || !isValidBillingInfo) return;
 		
 		try {
 			submitCard();
-			modalManager.set(Purchase);
 		} catch (e) {
 			modalManager.set(CardFailed);
 		}

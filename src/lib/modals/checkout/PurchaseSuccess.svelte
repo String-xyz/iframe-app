@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { modalManager, txResponse, finalQuote } from '$lib/stores';
+	import { modalManager, txResponse, selectedCard, finalQuote } from '$lib/stores';
 	import { sendEvent, Events } from '$lib/events';
 	import { abbrevAddr } from '$lib/utils';
 
@@ -56,6 +56,12 @@
 						<img class="inline" src="/assets/ext_link.svg" alt="Tx link" />
 					</a>
 				</div>
+				{#if $selectedCard}
+					<div class="flex justify-between mb-4">
+						<span>Payment method</span>
+						<span>{$selectedCard.scheme} *{$selectedCard.last4}</span>
+					</div>
+				{/if}
 				<div class="flex justify-between mb-4">
 					<span>Date</span>
 					<span>{formatTimestamp($txResponse.txTimestamp)}</span>
