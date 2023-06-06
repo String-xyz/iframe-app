@@ -65,7 +65,7 @@ export interface Card {
 	expiryYear: number;
 	expired?: boolean;
 	isSavedCard: boolean;
-	shouldSaveCard: boolean;
+	shouldSaveCard?: boolean;
 }
 
 export interface USState {

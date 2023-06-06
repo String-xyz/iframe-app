@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { modalManager, selectedCard } from '$lib/stores';
+	import { cardList, modalManager, selectedCard } from '$lib/stores';
 	import { numericFilter, capInputLength } from '$lib/utils';
 
 	import ModalBase from '../ModalBase.svelte';
@@ -17,19 +17,11 @@
 	let cardHeader = "Pay with a Debit or Credit Card";
 	let billingHeader = "Billing Address";
 
-	let disabled = true;
-
-	$: {
-		if (stage === "card") {
-			disabled = !isPaymentInfoValid;
-		} else {
-			disabled = !isValidBillingInfo;
-		}
-	}
+	$: disabled = (stage === "card" && (!isPaymentInfoValid || !nameInput)) || (stage === "billing" && (!addressInput || !cityInput || !zipInput || !stateInput));
 
 	$: currentHeader = stage === "card" ? cardHeader : billingHeader;
 
-	$: currentAction = stage === "card" ? handleCardDetails : finishAddCard;
+	$: currentAction = stage === "card" ? goToBilling : finishAddCard;
 
 	let shouldSaveCard = false;
 
@@ -88,7 +80,7 @@
 	});
 
 	const validateCardInfo = (info: any) => {
-		isPaymentInfoValid = info.isValid && nameInput != "" && isCardVendorAccepted;
+		isPaymentInfoValid = info.isValid && isCardVendorAccepted;
 	}
 
 	const onVendorChanged = (data: any) => {
@@ -111,7 +103,19 @@
 	}
 
 	const onCardTokenized = async (data: any) => {
-		// selectedCard.set({ token: data.token, scheme: data.scheme, last4: data.last4 });
+		let newCard = {
+			token: data.token,
+			scheme: data.scheme,
+			last4: data.last4,
+			expiryMonth: data.expiry_month,
+			expiryYear: data.expiry_year,
+			isSavedCard: false,
+			shouldSaveCard
+		}
+
+		$cardList = [newCard, ...$cardList]
+		
+		$selectedCard = newCard;
 	}
 
 	const isValidBillingInfo = () => {
@@ -123,7 +127,7 @@
 		return isAddressValid && isCityValid && isZipValid && isStateValid;
 	}
 
-	const handleCardDetails = () => {
+	const goToBilling = () => {
 		stage = "billing";
 	}
 

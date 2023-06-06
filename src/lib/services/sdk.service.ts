@@ -37,7 +37,7 @@ export function createSdkService(): SdkService {
 		sendEvent(Events.REQUEST_QUOTE_STOP, {});
 	}
 
-	async function requestSavedCards() {
+	async function getSavedCards() {
 		sendEvent(Events.REQUEST_SAVED_CARDS, {});
 		return promisifyEvent<{ cards: SavedCardResponse[] }>(Events.RECEIVE_SAVED_CARDS);
 	}
@@ -55,7 +55,7 @@ export function createSdkService(): SdkService {
 		updateUserName,
 		requestQuoteStart,
 		requestQuoteStop,
-		requestSavedCards,
+		getSavedCards,
 		transact
 	};
 }
@@ -68,7 +68,7 @@ interface SdkService {
 	requestDeviceVerification: (walletAddress: string) => Promise<{ status: string }>;
 	requestQuoteStart: () => Promise<void>;
 	requestQuoteStop: () => Promise<void>;
-	requestSavedCards: () => Promise<{ cards: SavedCardResponse[] }>;
+	getSavedCards: () => Promise<{ cards: SavedCardResponse[] }>;
 	transact: (payload: TransactionRequest) => Promise<TransactionResponse>;
 }
 

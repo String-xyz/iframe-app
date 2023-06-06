@@ -25,14 +25,15 @@
 	</div>
 	<div class="flex flex-col">
 		<span class="flex items-center text-gray-blue-100 ml-auto mb-2">
-			{$item.price}
 			<img
 				src={`/assets/tokens/${$item.currency}.svg`}
 				alt={$item.currency + " Logo"}
-				class="inline ml-2"
+				class="inline mr-2"
 				width="16px"
 				height="16px"
 			/>
+			
+			{$item.price}
 		</span>
 		<Address />
 	</div>

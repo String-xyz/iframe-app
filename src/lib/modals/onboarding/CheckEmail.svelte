@@ -24,7 +24,7 @@
 		<img src="/assets/headers/email_icon.svg" alt="email" class="mb-4" />
 		<h1 class="text-3xl font-semibold mb-4">Check Your Email!</h1>
 		<div class="text-lg font-medium text-center text-gray-blue-60 mb-6">
-			<span>We sent an email to <span class="font-bold">{$__user.email}</span></span>
+			<span>We sent an email to <span class="text-gray-blue-100 font-bold">{$__user.email}</span></span>
 			<p>Please follow the instructions to verify your email</p>
 		</div>
 		<StyledButton className="mb-4" action={resendVerify} disabled={!canResend}>Resend Email</StyledButton>

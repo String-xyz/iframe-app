@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { modalManager, cards, selectedCard } from "$lib/stores";
-	import { capitalize, numericFilter } from "$lib/utils";
-	import type { Card } from "$lib/types";
+	import { modalManager, cardList, selectedCard } from "$lib/stores";
+	import { capitalize, formatExpiryDate, numericFilter } from "$lib/utils";
 
 	import StyledButton from "../shared/StyledButton.svelte";
 
@@ -30,13 +29,6 @@
 		return cardAssetPath + (acceptedVendors.includes(scheme.toLowerCase()) ? scheme : "card") + ".svg";
 	}
 
-	const formatExpiryDate = (card: Card) => {
-		let shortYear = card.expiryYear.toString().slice(-2);
-		let formattedMonth = card.expiryMonth.toString().padStart(2, '0');
-
-		return `${formattedMonth}/${shortYear}`;
-	}
-
 	const toggleDropdown = () => {
 
 	}
@@ -48,9 +40,9 @@
 </script>
 
 <div class="flex justify-between w-full">
-	{#if $cards && $cards.length > 0}
+	{#if $cardList && $cardList.length > 0}
 		<div class="flex box w-3/4 p-4 justify-between items-center">
-			{#each $cards as card}
+			{#each $cardList as card}
 				<div class="flex">
 					<img src={true ? radioChecked[0] : radioUnchecked[0]} alt={true ? radioChecked[1] : radioUnchecked[1]} />
 					<img src={getCardIcon(card.scheme)} alt={card.scheme} class="mx-3"/>
@@ -71,7 +63,7 @@
 		</div>
 	{:else}
 		<StyledButton
-			className="btn-primary-special"
+			className="btn-primary-special !w-3/4"
 			action={gotoAddCard}
 		>
 		Add New Card
