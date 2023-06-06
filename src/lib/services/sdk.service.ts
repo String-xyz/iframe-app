@@ -1,11 +1,11 @@
-import type { ExecutionRequest, TransactionResponse } from '$lib/types';
+import type { SavedCardResponse, TransactionRequest, TransactionResponse } from '$lib/types';
 import { Events, sendEvent, promisifyEvent } from '../events';
 
 export function createSdkService(): SdkService {
 
 	async function requestAuthorization(walletAddress: string) {
 		sendEvent(Events.REQUEST_AUTHORIZE_USER, { walletAddress });
-		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 120 }); // wait 2 minutes for user to authorize
+		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 5 * 60 }); // wait 5 minutes for user to authorize
 	}
 
 	async function requestEmailVerification(userId: string, email: string) {
@@ -37,11 +37,15 @@ export function createSdkService(): SdkService {
 		sendEvent(Events.REQUEST_QUOTE_STOP, {});
 	}
 
-	async function transact(payload: ExecutionRequest) {
+	async function getSavedCards() {
+		sendEvent(Events.REQUEST_SAVED_CARDS, {});
+		return promisifyEvent<{ cards: SavedCardResponse[] }>(Events.RECEIVE_SAVED_CARDS);
+	}
+
+	async function transact(payload: TransactionRequest) {
 		sendEvent(Events.REQUEST_CONFIRM_TRANSACTION, payload);
 		return promisifyEvent<TransactionResponse>(Events.RECEIVE_CONFIRM_TRANSACTION);
 	}
-
 
 	return {
 		requestAuthorization,
@@ -51,6 +55,7 @@ export function createSdkService(): SdkService {
 		updateUserName,
 		requestQuoteStart,
 		requestQuoteStop,
+		getSavedCards,
 		transact
 	};
 }
@@ -63,7 +68,8 @@ interface SdkService {
 	requestDeviceVerification: (walletAddress: string) => Promise<{ status: string }>;
 	requestQuoteStart: () => Promise<void>;
 	requestQuoteStop: () => Promise<void>;
-	transact: (payload: ExecutionRequest) => Promise<TransactionResponse>;
+	getSavedCards: () => Promise<{ cards: SavedCardResponse[] }>;
+	transact: (payload: TransactionRequest) => Promise<TransactionResponse>;
 }
 
 interface UserUpdate {

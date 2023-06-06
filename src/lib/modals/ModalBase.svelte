@@ -1,49 +1,18 @@
-<script lang="ts">
-	import { modalManager } from '$lib/stores';
-	import { Events, sendEvent } from '$lib/events';
-
-	type ModalType = "checkout" | "onboarding";
-
-	export let title: string;
-
-	export let type: ModalType;
-
-	const close = () => {
-		modalManager.set(null);
-		sendEvent(Events.IFRAME_CLOSE);
-	}
-
-</script>
-
-<div class={"str-modal text-neutral border border-neutral " + type} role="dialog" aria-modal="true">
-	<header class="flex flex-col justify-between">
-		<button class="ml-auto mr-6" on:click={close}><img src="/assets/close.svg" alt="Close" /></button>
-		<span class="text-2xl font-bold title pr-9 mt-1">{title}</span>
-	</header>
-	<div class="content pr-9">
+<div class="str-modal text-neutral border border-neutral" role="dialog" aria-modal="true">
+	<div class="content">
 		<slot />
 	</div>
-	{#if type === "checkout"}
-		<footer class="flex flex-col justify-center items-center my-6 pr-9 text-xs">
-			<span>Powered by <img class="inline ml-1" src="/assets/string_text_logo.svg" alt="String" width=70 height=15 /></span>
-		</footer>
-	{/if}
+	<footer class="flex flex-col justify-center items-center mt-6">
+		<span class="text-gray-blue-40 font-medium">Powered by <img class="inline ml-1" src="/assets/string_text_logo.svg" alt="String" width=70 height=15 /></span>
+	</footer>
 </div>
 
 <style>
 	.str-modal {
-		padding-left: 36px;
-		padding-top: 24px;
-		border-radius: 8px;
+		padding: 32px;
+		border-radius: 16px;
 		overflow-y: hidden;
 		background: white;
-	}
-
-	.checkout {
-		max-width: 374px;
-	}
-
-	.onboarding {
 		width: 600px;
 	}
 
