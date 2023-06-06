@@ -1,69 +1,76 @@
 import { z } from "zod";
 
 export interface ExecutionRequest {
-    userAddress: string;
+	userAddress: string;
 	assetName: string;
-    chainId: number;
-    contractAddress: string;
-    contractFunction: string;
-    contractReturn: string;
-    contractParameters: string[];
-    txValue: string;
-    gasLimit: string;
+	chainId: number;
+	contractAddress: string;
+	contractFunction: string;
+	contractReturn: string;
+	contractParameters: string[];
+	txValue: string;
+	gasLimit: string;
 }
 
 export interface Estimate {
-    timestamp: number;
-    baseUSD: string;
-    gasUSD: string;
-    tokenUSD: string;
-    serviceUSD: string;
-    totalUSD: string;
+	timestamp: number;
+	baseUSD: string;
+	gasUSD: string;
+	tokenUSD: string;
+	serviceUSD: string;
+	totalUSD: string;
 }
 
 export interface Quote {
-    request: TransactionRequest;
-    estimate: Estimate;
-    signature: string;
+	request: TransactionRequest;
+	estimate: Estimate;
+	signature: string;
 }
 
 export interface PaymentInfo {
-    cardToken?: string;
-    cardId?: string;
-    cvv?: string;
-    saveCard?: boolean;
+	cardToken?: string;
+	cardId?: string;
+	cvv?: string;
+	saveCard?: boolean;
 }
 
 export interface TransactionRequest {
-    quote: Quote;
-    paymentInfo: PaymentInfo;
+	quote: Quote;
+	paymentInfo: PaymentInfo;
 }
 
 export interface TransactionResponse {
 	txId: string;
 	txUrl: string;
-    txTimestamp: string;
+	txTimestamp: string;
 }
 
-// TODO: Saved cards needs to be working on backend first
-// To find the response fields
-export interface SavedCard {
-    token: string 
+export interface SavedCardResponse {
+	type: string;
+	id: string;
+	scheme: string;
+	last4: string;
+	expiryMonth: number;
+	expiryYear: number;
+	expired: boolean;
+	cardType: string;
 }
 
 export interface Card {
-	token: string;
+	token?: string;
+	cardId?: string;
 	scheme: string;
-	last4: number;
-    exp_month: number;
-    exp_year: number;
-    isSavedCard: boolean;
-    shouldSaveCard: boolean;
+	last4: string;
+	expiryMonth: number;
+	expiryYear: number;
+	expired?: boolean;
+	isSavedCard: boolean;
+	shouldSaveCard: boolean;
 }
 
 export interface USState {
-    name: string;
-    abbrev: string;
+	name: string;
+	abbrev: string;
 }
 
 export const zNFT = z.object({

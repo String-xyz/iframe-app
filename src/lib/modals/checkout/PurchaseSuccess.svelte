@@ -6,6 +6,18 @@
 	import ModalBase from '../ModalBase.svelte';
 	import ItemSummary from '$lib/components/checkout/ItemSummary.svelte';
 
+	const dateOptions: Intl.DateTimeFormatOptions = {
+		year: 'numeric',
+		month: 'numeric',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: '2-digit'
+	}
+
+	const formatTimestamp = (timestamp: string) => {
+		return new Date(timestamp).toLocaleString('en-US', dateOptions);
+	}
+
 	const close = () => {
 		modalManager.set(null);
 		sendEvent(Events.IFRAME_CLOSE);
@@ -46,7 +58,7 @@
 				</div>
 				<div class="flex justify-between mb-4">
 					<span>Date</span>
-					<span>{$txResponse.txTimestamp}</span>
+					<span>{formatTimestamp($txResponse.txTimestamp)}</span>
 				</div>
 				<div class="divider my-3" />
 				<div class="flex justify-between">

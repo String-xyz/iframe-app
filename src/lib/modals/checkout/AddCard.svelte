@@ -48,7 +48,10 @@
 	let zipInput: string;
 	let stateInput: string;
 
-	$: isValidBillingInfo = addressInput != "" && cityInput != "" && zipInput != "" && stateInput != "";
+	let isAddressValid = true;
+	let isCityValid = true;
+	let isZipValid = true;
+	let isStateValid = true;
 
 	const CHECKOUT_PK = import.meta.env.VITE_CHECKOUT_PUBLIC_KEY;
 
@@ -109,6 +112,15 @@
 
 	const onCardTokenized = async (data: any) => {
 		// selectedCard.set({ token: data.token, scheme: data.scheme, last4: data.last4 });
+	}
+
+	const isValidBillingInfo = () => {
+		isAddressValid = addressInput != "";
+		isCityValid = cityInput != "";
+		isZipValid = zipInput.length === 5;
+		isStateValid = stateInput != "";
+
+		return isAddressValid && isCityValid && isZipValid && isStateValid;
 	}
 
 	const handleCardDetails = () => {
@@ -178,6 +190,7 @@
 						label="Address Line 1"
 						placeholder="Address Line 1"
 						className="mb-2"
+						borderError={!isAddressValid}
 						bind:val={addressInput}
 						keypress={(e) => capInputLength(e, addressInput, 100)}
 						autocomplete="address-line1"
@@ -188,6 +201,7 @@
 							label="City"
 							placeholder="City"
 							className="w-1/2 mr-2"
+							borderError={!isCityValid}
 							bind:val={cityInput}
 							keypress={(e) => capInputLength(e, cityInput, 100)}
 							autocomplete="address-level2"
@@ -198,6 +212,7 @@
 							placeholder="Zip code"
 							pattern="[0-9]"
 							className="w-1/2"
+							borderError={!isZipValid}
 							bind:val={zipInput}
 							keypress={(e) => numericFilter(e, zipInput, 5)}
 							autocomplete="postal-code"

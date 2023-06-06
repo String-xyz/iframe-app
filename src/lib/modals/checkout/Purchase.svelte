@@ -16,9 +16,11 @@
 	import PurchaseSuccess from './PurchaseSuccess.svelte';
 	import PurchaseFailed from './PurchaseFailed.svelte';
 
-	$: disabled = $selectedCard?.token == undefined || $quote?.estimate.totalUSD == undefined;
+	$: disabled = $quote?.estimate.totalUSD == undefined;
 
 	let isProcessing = false;
+
+	let cvvInput = '';
 
 	onMount(async () => {
 		await sdkService.requestQuoteStart();
@@ -37,14 +39,26 @@
 		finalQuote.set($quote);
 		if (!$finalQuote) return;
 
-		isProcessing = true;
-
 		try {
+			isProcessing = true;
+
+			let paymentInfo;
+			
+			if ($selectedCard?.isSavedCard) {
+				paymentInfo = {
+					cardId: $selectedCard?.cardId || "",
+					cvv: cvvInput
+				}
+			} else {
+				paymentInfo = {
+					cardToken: $selectedCard?.token || "",
+					saveCard: $selectedCard?.shouldSaveCard || false
+				}
+			}
+
 			let txRequest: TransactionRequest = {
 				quote: $finalQuote,
-				paymentInfo: {
-					cardToken: $selectedCard?.token ?? ''
-				}
+				paymentInfo
 			}
 			const tx = await sdkService.transact(txRequest);
 			$txResponse = tx;
@@ -52,6 +66,8 @@
 			modalManager.set(PurchaseSuccess);
 		} catch (e) {
 			console.error('transact error', e);
+			isProcessing = false;
+
 			modalManager.set(PurchaseFailed);
 		}
 	}
@@ -73,7 +89,7 @@
 
 		<div class="mb-12 mr-auto w-full">
 			<h2 class="text-gray-blue-100 text-xl font-semibold mb-2">Payment Method:</h2>
-			<PaymentSelect />
+			<PaymentSelect bind:cvvInput />
 		</div>
 
 		{#if !isProcessing}

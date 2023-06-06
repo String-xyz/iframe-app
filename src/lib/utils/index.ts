@@ -13,3 +13,8 @@ export const capInputLength = (e: KeyboardEvent, input = "", capLength = -1) => 
 		e.preventDefault();
 	}
 }
+
+export const capitalize = (text: string) => {
+	if (!text) return text;
+	return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}

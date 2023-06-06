@@ -1,4 +1,4 @@
-import type { SavedCard, TransactionRequest, TransactionResponse } from '$lib/types';
+import type { SavedCardResponse, TransactionRequest, TransactionResponse } from '$lib/types';
 import { Events, sendEvent, promisifyEvent } from '../events';
 
 export function createSdkService(): SdkService {
@@ -39,7 +39,7 @@ export function createSdkService(): SdkService {
 
 	async function requestSavedCards() {
 		sendEvent(Events.REQUEST_SAVED_CARDS, {});
-		return promisifyEvent<{ cards: SavedCard[] }>(Events.RECEIVE_SAVED_CARDS);
+		return promisifyEvent<{ cards: SavedCardResponse[] }>(Events.RECEIVE_SAVED_CARDS);
 	}
 
 	async function transact(payload: TransactionRequest) {
@@ -68,7 +68,7 @@ interface SdkService {
 	requestDeviceVerification: (walletAddress: string) => Promise<{ status: string }>;
 	requestQuoteStart: () => Promise<void>;
 	requestQuoteStop: () => Promise<void>;
-	requestSavedCards: () => Promise<{ cards: SavedCard[] }>;
+	requestSavedCards: () => Promise<{ cards: SavedCardResponse[] }>;
 	transact: (payload: TransactionRequest) => Promise<TransactionResponse>;
 }
 
