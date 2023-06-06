@@ -3,6 +3,7 @@
 	import { cardList, modalManager, selectedCard } from '$lib/stores';
 	import { numericFilter, capInputLength } from '$lib/utils';
 
+	import states from "$lib/data/states.json";
 	import ModalBase from '../ModalBase.svelte';
 	import StyledButton from '$lib/components/shared/StyledButton.svelte';
 
@@ -160,8 +161,7 @@
 
 		<div class="flex flex-col border border-gray-blue-20 rounded-2xl w-full mb-12 p-4">
 			<p class="text-gray-blue-100 text-lg whitespace-nowrap font-semibold mb-4">{currentHeader}</p>
-			{#if stage === "card"}
-				<div class="text-gray-blue-60 font-medium mb-6">
+				<div class="text-gray-blue-60 font-medium mb-6" class:hidden={stage != "card"}>
 					<div class="mb-2 pt-2">
 						<label class="ml-1" for="card-number-frame">Card number</label>
 						<div id="card-number-frame" class="input input-bordered border-2 mt-2 card-number-frame" />
@@ -188,58 +188,70 @@
 						</div>
 					</div>
 				</div>
-			{:else if stage === "billing"}
-				<div class="mb-6">
+			<div class="mb-6" class:hidden={stage != "billing"}>
+				<StyledInput
+					label="Address Line 1"
+					placeholder="Address Line 1"
+					className="mb-2"
+					borderError={!isAddressValid}
+					bind:val={addressInput}
+					keypress={(e) => capInputLength(e, addressInput, 100)}
+					autocomplete="address-line1"
+					required
+				/>
+				<div class="flex justify-between mb-2">
 					<StyledInput
-						label="Address Line 1"
-						placeholder="Address Line 1"
-						className="mb-2"
-						borderError={!isAddressValid}
-						bind:val={addressInput}
-						keypress={(e) => capInputLength(e, addressInput, 100)}
-						autocomplete="address-line1"
+						label="City"
+						placeholder="City"
+						className="w-1/2 mr-2"
+						borderError={!isCityValid}
+						bind:val={cityInput}
+						keypress={(e) => capInputLength(e, cityInput, 100)}
+						autocomplete="address-level2"
 						required
 					/>
-					<div class="flex justify-between mb-2">
-						<StyledInput
-							label="City"
-							placeholder="City"
-							className="w-1/2 mr-2"
-							borderError={!isCityValid}
-							bind:val={cityInput}
-							keypress={(e) => capInputLength(e, cityInput, 100)}
-							autocomplete="address-level2"
-							required
-						/>
-						<StyledInput
-							label="Zip code"
-							placeholder="Zip code"
-							pattern="[0-9]"
-							className="w-1/2"
-							borderError={!isZipValid}
-							bind:val={zipInput}
-							keypress={(e) => numericFilter(e, zipInput, 5)}
-							autocomplete="postal-code"
-							required
-						/>
-					</div>
-					<div class="flex justify-between">
-						<StyledInput
-							label="State"
-							placeholder="State"
-							className="w-1/2 mr-2"
-							bind:val={stateInput}
-							required
-						/>
-						<StyledInput
-							label="Country"
-							placeholder="USA"
-							className="w-1/2"
-							disabled
-						/>
-					</div>
+					<StyledInput
+						label="Zip code"
+						placeholder="Zip code"
+						pattern="[0-9]"
+						className="w-1/2"
+						borderError={!isZipValid}
+						bind:val={zipInput}
+						keypress={(e) => numericFilter(e, zipInput, 5)}
+						autocomplete="postal-code"
+						required
+					/>
 				</div>
-			{/if}
+				<div class="flex justify-between items-center">
+					<!-- <StyledInput
+						label="State"
+						placeholder="State"
+						className="w-1/2 mr-2"
+						bind:val={stateInput}
+						required
+					/> -->
+					<div class="flex flex-col w-1/2 mr-2">
+						<label class="text-gray-blue-60 font-medium ml-1 my-2" for="state-input">State</label>
+						<select
+							id="state-input"
+							class="select select-bordered border-gray-blue-20 focus:outline-none font-medium text-gray-blue-100 invalid:text-gray-blue-40 h-14"
+							bind:value={stateInput}
+							required
+						>
+							<option value="" disabled selected>State</option>
+							{#each states as state}
+								<option value={state.name}>{state.name}</option>
+							{/each}
+						</select>
+					</div>
+					<StyledInput
+						label="Country"
+						placeholder="USA"
+						className="w-1/2"
+						disabled
+					/>
+				</div>
+			</div>
 
 			<label class="flex items-center cursor-pointer w-1/2">
 				<input
@@ -264,3 +276,10 @@
 		</StyledButton>
 	</div>
 </ModalBase>
+
+<style>
+	#state-input {
+		background-image: url('/assets/dropdown/down_arrow.svg');
+		background-size: 12px;
+	}
+</style>

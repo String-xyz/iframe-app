@@ -68,11 +68,6 @@ export interface Card {
 	shouldSaveCard?: boolean;
 }
 
-export interface USState {
-	name: string;
-	abbrev: string;
-}
-
 export const zNFT = z.object({
 	assetName: z.string(),
 	price: z.string(),
