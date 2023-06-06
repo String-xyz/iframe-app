@@ -30,7 +30,7 @@
 	}
 
 	const toggleDropdown = () => {
-
+		isDDOpen = !isDDOpen;
 	}
 
 	const gotoAddCard = () => {

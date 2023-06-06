@@ -24,12 +24,12 @@
 	let cvvInput = '';
 
 	onMount(async () => {
-		// await sdkService.requestQuoteStart();
-		// sdkEvents.removeAllListeners(Events.QUOTE_CHANGED);
-		// sdkEvents.on(Events.QUOTE_CHANGED, (event: StringEvent) => {
-		// 	const _quote = <Quote>event.data.quote;
-		// 	quote.set(_quote);
-		// });
+		await sdkService.requestQuoteStart();
+		sdkEvents.removeAllListeners(Events.QUOTE_CHANGED);
+		sdkEvents.on(Events.QUOTE_CHANGED, (event: StringEvent) => {
+			const _quote = <Quote>event.data.quote;
+			quote.set(_quote);
+		});
 
 		const { cards } = await sdkService.getSavedCards();
 		
