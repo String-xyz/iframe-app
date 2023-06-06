@@ -2,11 +2,6 @@
 	import { item } from "$lib/stores";
 
 	import Address from "./Address.svelte";
-
-	// const getTip = (text: string | undefined) => {
-	// 	if (!text) return "";
-	// 	return text.length > 24 ? text : "";
-	// }
 </script>
 
 <div class="flex justify-between bg-gray-blue-10 bg-opacity-40 rounded-2xl font-semibold w-full p-4">

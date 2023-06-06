@@ -224,13 +224,6 @@
 					/>
 				</div>
 				<div class="flex justify-between items-center">
-					<!-- <StyledInput
-						label="State"
-						placeholder="State"
-						className="w-1/2 mr-2"
-						bind:val={stateInput}
-						required
-					/> -->
 					<div class="flex flex-col w-1/2 mr-2">
 						<label class="text-gray-blue-60 font-medium ml-1 my-2" for="state-input">State</label>
 						<select

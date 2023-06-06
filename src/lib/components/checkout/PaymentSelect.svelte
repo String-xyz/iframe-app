@@ -41,24 +41,26 @@
 
 <div class="flex justify-between w-full">
 	{#if $cardList && $cardList.length > 0}
-		<div class="flex box w-3/4 p-4 justify-between items-center">
+		<div class="flex flex-col box w-3/4 p-4">
 			{#each $cardList as card}
-				<div class="flex">
-					<img src={true ? radioChecked[0] : radioUnchecked[0]} alt={true ? radioChecked[1] : radioUnchecked[1]} />
-					<img src={getCardIcon(card.scheme)} alt={card.scheme} class="mx-3"/>
-					<div class="flex flex-col">
-						<span class="text-gray-blue-80 font-semibold mb-1">{capitalize(card.scheme)} *{card.last4}</span>
-						{#if !card.expired}
-							<span class="text-gray-blue-40 text-sm font-medium">Expires on {formatExpiryDate(card)}</span>
-						{:else}
-							<span class="text-error text-sm font-medium">Expired {formatExpiryDate(card)}</span>
-						{/if}
+				<div class="flex justify-between items-center">
+					<div class="flex">
+						<img src={true ? radioChecked[0] : radioUnchecked[0]} alt={true ? radioChecked[1] : radioUnchecked[1]} />
+						<img src={getCardIcon(card.scheme)} alt={card.scheme} class="mx-3"/>
+						<div class="flex flex-col">
+							<span class="text-gray-blue-80 font-semibold mb-1">{capitalize(card.scheme)} *{card.last4}</span>
+							{#if !card.expired}
+								<span class="text-gray-blue-40 text-sm font-medium">Expires on {formatExpiryDate(card)}</span>
+							{:else}
+								<span class="text-error text-sm font-medium">Expired {formatExpiryDate(card)}</span>
+							{/if}
+						</div>
 					</div>
-				</div>
 
-				<button on:click={toggleDropdown}>
-					<img src={arrowIcon} alt="arrow" />
-				</button>
+					<button on:click={toggleDropdown}>
+						<img src={arrowIcon} alt="arrow" />
+					</button>
+				</div>
 			{/each}
 		</div>
 	{:else}
