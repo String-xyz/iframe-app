@@ -19,11 +19,11 @@
 	const handleUserAuthorized = async () => {
 		if ($__user.status === 'email_verified') return sendToCheckout();
 		else sendToEmailVerify();
-	}
+	};
 
 	async function authorizeWallet() {
 		try {
-			const { user } = await sdkService.requestAuthorization($__user.walletAddress);
+			const user = await sdkService.requestAuthorization($__user.walletAddress);
 			// set user store
 			$__user.id = user.id;
 			$__user.status = user.status;
@@ -31,6 +31,7 @@
 			if (user.status !== 'email_verified') return sendToEmailVerify();
 			else return sendToCheckout();
 		} catch (err: any) {
+			console.error('Checkout Iframe Error: ', err);
 			await handleAuthError(err);
 		}
 	}
@@ -46,23 +47,23 @@
 	const requestDeviceVerification = async () => {
 		try {
 			const { status } = await sdkService.requestDeviceVerification($__user.walletAddress);
-				
+
 			if (status === 'verified') {
 				sendToCheckout();
 			}
 		} catch (e: any) {
 			console.error(e);
-			alert("Something went wrong. Please try again.")
+			alert('Something went wrong. Please try again.');
 		}
-	}
+	};
 
 	const sendToEmailVerify = async () => {
 		modalManager.set(GetStarted);
-	}
+	};
 
 	const sendToCheckout = () => {
 		modalManager.set(Purchase);
-	}
+	};
 
 	const sendToDeviceVerify = async () => {
 		const { email } = await sdkService.getUserEmailPreview($__user.walletAddress);
@@ -71,5 +72,5 @@
 		requestDeviceVerification();
 
 		modalManager.set(VerifyDevice);
-	}
+	};
 </script>
