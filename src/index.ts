@@ -10,16 +10,17 @@ export const parsePayload = (payload: IframePayload) => {
 		const nft = zNFT.parse(payload.nft);
 		const user = zUser.parse(payload.user);
 
-		return { item: nft, user }
+		return { item: nft, user };
 	} catch (e: any) {
-		console.debug("Error parsing payload", e);
-		alert("An unexpected error has occurred. Please try again.");
+		console.error('Error parsing payload', e);
 	}
-}
+};
 
 export const startIframe = async () => {
 	await registerEvents();
-	sdkEvents.on(Events.LOAD_PAYLOAD, (event: StringEvent) => {
+	sdkEvents.on(Events.RES_IFRAME_READY, (event: StringEvent) => {
+		if (event.error) return console.error('Error initializing iframe', event.error);
+
 		const payload = parsePayload(event.data);
 		if (!payload) return;
 
@@ -30,4 +31,4 @@ export const startIframe = async () => {
 	});
 
 	sendEvent(Events.IFRAME_READY);
-}
+};

@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import { sdkService } from '$lib/services';
+	import { quoteService, sdkService } from '$lib/services';
 	import { Events, sdkEvents, type StringEvent } from '$lib/events';
-	import { modalManager, quote, finalQuote,
-		selectedCard, cardList, txResponse } from '$lib/stores';
+	import { modalManager, quote, finalQuote, selectedCard, cardList, txResponse } from '$lib/stores';
 	import type { Quote, TransactionRequest } from '$lib/types';
 
 	import ModalBase from '../ModalBase.svelte';
@@ -24,15 +23,17 @@
 	let cvvInput = '';
 
 	onMount(async () => {
-		await sdkService.requestQuoteStart();
-		sdkEvents.removeAllListeners(Events.QUOTE_CHANGED);
-		sdkEvents.on(Events.QUOTE_CHANGED, (event: StringEvent) => {
-			const _quote = <Quote>event.data.quote;
+		quoteService.subscribe((_quote: Quote | null, err: any) => {
+			if (err) {
+				console.error('quote error', err);
+				return;
+			}
+
 			quote.set(_quote);
 		});
 
 		const { cards } = await sdkService.getSavedCards();
-		
+
 		for (const savedCard of cards) {
 			$cardList.push({
 				cardId: savedCard.id,
@@ -51,7 +52,7 @@
 	});
 
 	onDestroy(() => {
-		sdkService.requestQuoteStop();
+		quoteService.unsubscribe();
 	});
 
 	const handlePurchase = async () => {
@@ -62,23 +63,23 @@
 			isProcessing = true;
 
 			let paymentInfo;
-			
+
 			if ($selectedCard?.isSavedCard) {
 				paymentInfo = {
-					cardId: $selectedCard?.cardId || "",
+					cardId: $selectedCard?.cardId || '',
 					cvv: cvvInput
-				}
+				};
 			} else {
 				paymentInfo = {
-					cardToken: $selectedCard?.token || "",
+					cardToken: $selectedCard?.token || '',
 					saveCard: $selectedCard?.shouldSaveCard || false
-				}
+				};
 			}
 
 			let txRequest: TransactionRequest = {
 				quote: $finalQuote,
 				paymentInfo
-			}
+			};
 			const tx = await sdkService.transact(txRequest);
 			$txResponse = tx;
 
@@ -89,8 +90,7 @@
 
 			modalManager.set(PurchaseFailed);
 		}
-	}
-
+	};
 </script>
 
 <ModalBase>
@@ -112,18 +112,11 @@
 		</div>
 
 		{#if !isProcessing}
-			<StyledButton
-				action={handlePurchase}
-				{disabled}
-			>
-				Buy Now
-			</StyledButton>
+			<StyledButton action={handlePurchase} {disabled}>Buy Now</StyledButton>
 		{:else}
 			<StyledButton>
 				<Spinner />
-				<span class="ml-2">
-					Processing Transaction
-				</span>
+				<span class="ml-2"> Processing Transaction </span>
 			</StyledButton>
 		{/if}
 	</div>
