@@ -68,8 +68,7 @@
 		const { email } = await sdkService.getUserEmailPreview($__user.walletAddress);
 		$userEmailPreview = email;
 
-		requestDeviceVerification();
-
 		modalManager.set(VerifyDevice);
+		await requestDeviceVerification();
 	}
 </script>

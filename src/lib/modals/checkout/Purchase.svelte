@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { sdkService } from '$lib/services';
-	import { Events, sdkEvents, type StringEvent } from '$lib/events';
+	import { sendEvent, Events, sdkEvents, type StringEvent } from '$lib/events';
 	import { modalManager, quote, finalQuote,
 		selectedCard, cardList, txResponse } from '$lib/stores';
 	import type { Quote, TransactionRequest } from '$lib/types';
@@ -91,13 +91,22 @@
 		}
 	}
 
+	const close = () => {
+		modalManager.set(null);
+		sendEvent(Events.IFRAME_CLOSE);
+	}
+
 </script>
 
 <ModalBase>
 	<div class="main flex flex-col justify-center items-center">
 		<header class="grid grid-cols-4 items-center w-full mb-3">
-			<img src="/assets/back_arrow.svg" alt="back" class="inline" />
-			<h1 class="text-2xl whitespace-nowrap font-semibold">Complete your Purchase</h1>
+			<div></div>
+			<h1 class="text-2xl whitespace-nowrap font-semibold ">Complete your Purchase</h1>
+			<div></div>
+			<button on:click={close} class="ml-auto">
+				<img src="/assets/headers/close.svg" alt="close" width="32px" height="32px" />
+			</button>
 		</header>
 
 		<ItemSummary />
