@@ -42,7 +42,7 @@
 <div class="flex justify-between w-full">
 	{#if $cardList && $cardList.length > 0}
 		<div class="flex flex-col box w-3/4 p-4">
-			{#each $cardList as card}
+			{#each $cardList as card, i}
 				{@const active = card == $selectedCard}
 				<div class="flex justify-between items-center">
 					<div class="flex">
@@ -57,12 +57,23 @@
 							{/if}
 						</div>
 					</div>
-
-					<button on:click={toggleDropdown}>
-						<img src={arrowIcon} alt="arrow" />
-					</button>
+					{#if i == 0}
+						<button on:click={toggleDropdown}>
+							<img src={arrowIcon} alt="arrow" />
+						</button>
+					{/if}
 				</div>
 			{/each}
+			{#if isDDOpen}
+				<div class="flex justify-center w-full mt-4">
+					<StyledButton
+						className="btn-primary-special"
+						action={gotoAddCard}
+					>
+					Add New Card
+					</StyledButton>
+				</div>
+			{/if}
 		</div>
 	{:else}
 		<StyledButton
@@ -72,9 +83,9 @@
 		Add New Card
 		</StyledButton>
 	{/if}
-	{#if $selectedCard?.isSavedCard}
+	{#if $selectedCard?.isSavedCard || false}
 		<div
-			class="flex box justify-between w-1/4 ml-4"
+			class="flex box justify-between w-1/4 h-20 ml-4"
 			class:border-primary={cvvFocused}
 			class:border-error={!isCvvValid}
 		>
