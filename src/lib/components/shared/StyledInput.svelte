@@ -2,9 +2,12 @@
 	import { onMount } from 'svelte';
 
 	export let label = '';
+	export let id = '';
 	export let className = '';
+	export let inputClassName = '';
 	export let borderError = false;
 	export let autofocus = false;
+	export let keypress = (e: KeyboardEvent) => {};
 	export let val = '';
 
 	let focused = false;
@@ -18,37 +21,23 @@
 
 </script>
 
-<fieldset class={'group ' + className} class:!border-primary={focused} class:!border-error={borderError && !focused}>
-	{#if label}
-		<legend class="ml-3 px-2 text-sm font-medium" class:text-primary={focused}>
-			{label}
-		</legend>
-	{:else}
-		<div class="mt-2" />
-	{/if}
-
+<div class={"flex flex-col " + className}>
+	<label for={id} class="text-gray-blue-60 font-medium ml-1 my-2 whitespace-nowrap">{label}</label>
 	<input
-		class="pl-5 pr-2 mb-2"
-		on:focus={() => (focused = true)}
-		on:blur={() => (focused = false)}
+		{id}
+		class={"text-gray-blue-100 border border-gray-blue-20 rounded-lg px-4 h-14 " + inputClassName}
+		class:!border-error={borderError && !focused}
+		on:focus={() => focused = true}
+		on:blur={() => focused = false}
+		on:keypress={keypress}
 		bind:this={inputElm}
 		bind:value={val}
 		{...$$restProps}
 	/>
-</fieldset>
+</div>
 
-<style>
-	.group {
-		border: 2px solid #e6e4df;
-		border-radius: 4px;
-	}
-
-	input {
-		border: none;
-		width: 100%;
-	}
-
-	input:focus {
-		outline: none;
+<style lang="postcss">
+	::placeholder {
+		@apply text-gray-blue-40;
 	}
 </style>

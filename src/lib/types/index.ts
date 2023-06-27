@@ -1,41 +1,76 @@
 import { z } from "zod";
 
-export interface Quote {
-	timestamp: number;
-	baseUSD: number;
-	gasUSD: number;
-	tokenUSD: number;
-	serviceUSD: number;
-	totalUSD: number;
-	signature: string;
-}
-
-export interface TransactPayload extends Quote {
+export interface ExecutionRequest {
 	userAddress: string;
-	chainID: number;
+	assetName: string;
+	chainId: number;
 	contractAddress: string;
 	contractFunction: string;
 	contractReturn: string;
 	contractParameters: string[];
 	txValue: string;
 	gasLimit: string;
-	cardToken: string;
+}
+
+export interface Estimate {
+	timestamp: number;
+	baseUSD: string;
+	gasUSD: string;
+	tokenUSD: string;
+	serviceUSD: string;
+	totalUSD: string;
+}
+
+export interface Quote {
+	request: TransactionRequest;
+	estimate: Estimate;
+	signature: string;
+}
+
+export interface PaymentInfo {
+	cardToken?: string;
+	cardId?: string;
+	cvv?: string;
+	saveCard?: boolean;
+}
+
+export interface TransactionRequest {
+	quote: Quote;
+	paymentInfo: PaymentInfo;
 }
 
 export interface TransactionResponse {
-	txID: string;
+	txId: string;
 	txUrl: string;
+	txTimestamp: string;
+}
+
+export interface SavedCardResponse {
+	type: string;
+	id: string;
+	scheme: string;
+	last4: string;
+	expiryMonth: number;
+	expiryYear: number;
+	expired: boolean;
+	cardType: string;
 }
 
 export interface Card {
-	token: string;
+	token?: string;
+	cardId?: string;
 	scheme: string;
-	last4: number;
+	last4: string;
+	expiryMonth: number;
+	expiryYear: number;
+	expired?: boolean;
+	isSavedCard: boolean;
+	shouldSaveCard?: boolean;
 }
 
 export const zNFT = z.object({
-	name: z.string(),
-	price: z.number(),
+	assetName: z.string(),
+	price: z.string(),
 	currency: z.string(),
 	collection: z.string().optional(),
 	imageSrc: z.string(),
