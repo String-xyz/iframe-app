@@ -47,12 +47,12 @@
 			
 			if ($selectedCard?.isSavedCard) {
 				paymentInfo = {
-					cardId: $selectedCard?.cardId || "",
+					cardId: $selectedCard?.cardId || '',
 					cvv: cvvInput
 				}
 			} else {
 				paymentInfo = {
-					cardToken: $selectedCard?.token || "",
+					cardToken: $selectedCard?.token || '',
 					saveCard: $selectedCard?.shouldSaveCard || false
 				}
 			}
@@ -61,6 +61,7 @@
 				quote: $finalQuote,
 				paymentInfo
 			}
+
 			const tx = await sdkService.transact(txRequest);
 			$txResponse = tx;
 

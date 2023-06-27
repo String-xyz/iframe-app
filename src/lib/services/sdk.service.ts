@@ -1,8 +1,7 @@
-import type { SavedCardResponse, TransactionRequest, TransactionResponse } from '$lib/types';
 import { Events, sendEvent, promisifyEvent } from '../events';
+import type { SavedCardResponse, TransactionRequest, TransactionResponse } from '$lib/types';
 
 export function createSdkService(): SdkService {
-
 	async function requestAuthorization(walletAddress: string) {
 		sendEvent(Events.REQUEST_AUTHORIZE_USER, { walletAddress });
 		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 5 * 60 }); // wait 5 minutes for user to authorize
@@ -10,12 +9,16 @@ export function createSdkService(): SdkService {
 
 	async function requestEmailVerification(userId: string, email: string) {
 		sendEvent(Events.REQUEST_EMAIL_VERIFICATION, { userId, email });
-		return promisifyEvent<{ status: string }>(Events.RECEIVE_EMAIL_VERIFICATION, { timeout: 15 * 60 }); // wait 15 minutes for user to verify email
+		return promisifyEvent<{ status: string }>(Events.RECEIVE_EMAIL_VERIFICATION, {
+			timeout: 15 * 60
+		}); // wait 15 minutes for user to verify email
 	}
 
 	async function requestDeviceVerification(walletAddress: string) {
 		sendEvent(Events.REQUEST_DEVICE_VERIFICATION, { walletAddress });
-		return promisifyEvent<{ status: string }>(Events.RECEIVE_DEVICE_VERIFICATION, { timeout: 15 * 60 }); // wait 15 minutes for user to verify email
+		return promisifyEvent<{ status: string }>(Events.RECEIVE_DEVICE_VERIFICATION, {
+			timeout: 15 * 60
+		}); // wait 15 minutes for user to verify email
 	}
 
 	async function getUserEmailPreview(walletAddress: string) {
@@ -60,10 +63,10 @@ export function createSdkService(): SdkService {
 	};
 }
 
-interface SdkService {
+export interface SdkService {
 	requestAuthorization: (walletAddress: string) => Promise<{ user: User }>;
 	getUserEmailPreview: (walletAddress: string) => Promise<{ email: string }>;
-	updateUserName: (userId: string, update: UserUpdate) => Promise<void>
+	updateUserName: (userId: string, update: UserUpdate) => Promise<void>;
 	requestEmailVerification: (userId: string, email: string) => Promise<{ status: string }>;
 	requestDeviceVerification: (walletAddress: string) => Promise<{ status: string }>;
 	requestQuoteStart: () => Promise<void>;

@@ -46,13 +46,13 @@
 	const requestDeviceVerification = async () => {
 		try {
 			const { status } = await sdkService.requestDeviceVerification($__user.walletAddress);
-				
+
 			if (status === 'verified') {
 				sendToCheckout();
 			}
 		} catch (e: any) {
 			console.error(e);
-			alert("Something went wrong. Please try again.")
+			alert('Something went wrong. Please try again.');
 		}
 	}
 
@@ -87,4 +87,5 @@
 		modalManager.set(VerifyDevice);
 		await requestDeviceVerification();
 	}
+
 </script>

@@ -20,6 +20,8 @@ export const parsePayload = (payload: IframePayload) => {
 export const startIframe = async () => {
 	await registerEvents();
 	sdkEvents.on(Events.LOAD_PAYLOAD, (event: StringEvent) => {
+		if (event.error) return console.error('Error initializing iframe', event.error);
+
 		const payload = parsePayload(event.data);
 		if (!payload) return;
 

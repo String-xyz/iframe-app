@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Events, sendEvent } from '$lib/events';
 	import { modalManager, userEmailPreview } from '$lib/stores';
+
 	import ModalBase from '../ModalBase.svelte';
 
 	const close = () => {

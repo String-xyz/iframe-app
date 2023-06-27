@@ -1,6 +1,6 @@
 import { EventEmitter } from './EventEmitter';
 
-const CHANNEL = "STRING_PAY";
+const CHANNEL = 'STRING_PAY';
 export const sdkEvents = new EventEmitter();
 
 export interface StringEvent<T = any> {
@@ -38,11 +38,11 @@ export enum Events {
 export const sendEvent = (eventName: string, data?: any) => {
 	const message = JSON.stringify({
 		channel: CHANNEL,
-		event: { eventName, data },
+		event: { eventName, data }
 	});
 
 	window.parent.postMessage(message, '*');
-};
+}
 
 export const registerEvents = async () => {
 	const eventHandler = async (e: any) => {
@@ -50,12 +50,12 @@ export const registerEvents = async () => {
 		if (e.data?.data?.name) return;
 
 		// Filter Checkout events
-		if (e.data?.type == "cko-msg") return;
+		if (e.data?.type == 'cko-msg') return;
 
 		// Our messages
 		try {
 			const payload = JSON.parse(e.data);
-			const event = payload.event
+			const event = payload.event;
 			if (payload.channel == CHANNEL) {
 				// propagate events
 				sdkEvents.emit(event.eventName, event);
@@ -83,7 +83,8 @@ export function promisifyEvent<T = any>(eventName: Events, { timeout = 60 } = {}
 				if (event.error) return reject(event.error);
 
 				// check for nil values but allow boolean false
-				if (event.data === undefined || event.data == null || event.data === '') return reject({ code: 'EVENT_NO_DATA' })
+				if (event.data === undefined || event.data == null || event.data === '')
+					return reject({ code: 'EVENT_NO_DATA' });
 
 				return resolve(event.data);
 			} catch (e) {
