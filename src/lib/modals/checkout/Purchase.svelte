@@ -3,7 +3,7 @@
 	import { sdkService } from '$lib/services';
 	import { sendEvent, Events, sdkEvents, type StringEvent } from '$lib/events';
 	import { modalManager, quote, finalQuote,
-		selectedCard, cardList, txResponse } from '$lib/stores';
+		selectedCard, txResponse } from '$lib/stores';
 	import type { Quote, TransactionRequest } from '$lib/types';
 
 	import ModalBase from '../ModalBase.svelte';
@@ -30,24 +30,6 @@
 			const _quote = <Quote>event.data.quote;
 			quote.set(_quote);
 		});
-
-		const { cards } = await sdkService.getSavedCards();
-		
-		for (const savedCard of cards) {
-			$cardList.push({
-				cardId: savedCard.id,
-				scheme: savedCard.scheme,
-				last4: savedCard.last4,
-				expiryMonth: savedCard.expiryMonth,
-				expiryYear: savedCard.expiryYear,
-				expired: savedCard.expired,
-				isSavedCard: true
-			});
-		}
-
-		$cardList = $cardList;
-
-		$selectedCard = $cardList[0];
 	});
 
 	onDestroy(() => {

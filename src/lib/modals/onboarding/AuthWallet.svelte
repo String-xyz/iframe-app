@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { modalManager, __user, userEmailPreview } from '$lib/stores';
+	import { modalManager, __user, userEmailPreview, cardList, selectedCard } from '$lib/stores';
 	import { sdkService } from '$lib/services';
 
 	import GetStarted from './GetStarted.svelte';
@@ -60,7 +60,23 @@
 		modalManager.set(GetStarted);
 	}
 
-	const sendToCheckout = () => {
+	const sendToCheckout = async () => {
+		const { cards } = await sdkService.getSavedCards();
+
+		for (const savedCard of cards) {
+			$cardList.push({
+				cardId: savedCard.id,
+				scheme: savedCard.scheme,
+				last4: savedCard.last4,
+				expiryMonth: savedCard.expiryMonth,
+				expiryYear: savedCard.expiryYear,
+				expired: savedCard.expired,
+				isSavedCard: true
+			});
+		}
+
+		$selectedCard = $cardList[0];
+
 		modalManager.set(Purchase);
 	}
 
