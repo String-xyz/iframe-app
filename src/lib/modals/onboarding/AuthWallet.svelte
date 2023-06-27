@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { modalManager, __user, userEmailPreview } from '$lib/stores';
+	import { modalManager, __user, userEmailPreview, cardList, selectedCard } from '$lib/stores';
 	import { sdkService } from '$lib/services';
 
 	import GetStarted from './GetStarted.svelte';
@@ -19,11 +19,11 @@
 	const handleUserAuthorized = async () => {
 		if ($__user.status === 'email_verified') return sendToCheckout();
 		else sendToEmailVerify();
-	};
+	}
 
 	async function authorizeWallet() {
 		try {
-			const user = await sdkService.requestAuthorization($__user.walletAddress);
+			const { user } = await sdkService.requestAuthorization($__user.walletAddress);
 			// set user store
 			$__user.id = user.id;
 			$__user.status = user.status;
@@ -31,7 +31,6 @@
 			if (user.status !== 'email_verified') return sendToEmailVerify();
 			else return sendToCheckout();
 		} catch (err: any) {
-			console.error('Checkout Iframe Error: ', err);
 			await handleAuthError(err);
 		}
 	}
@@ -55,22 +54,38 @@
 			console.error(e);
 			alert('Something went wrong. Please try again.');
 		}
-	};
+	}
 
 	const sendToEmailVerify = async () => {
 		modalManager.set(GetStarted);
-	};
+	}
 
-	const sendToCheckout = () => {
+	const sendToCheckout = async () => {
+		const { cards } = await sdkService.getSavedCards();
+
+		for (const savedCard of cards) {
+			$cardList.push({
+				cardId: savedCard.id,
+				scheme: savedCard.scheme,
+				last4: savedCard.last4,
+				expiryMonth: savedCard.expiryMonth,
+				expiryYear: savedCard.expiryYear,
+				expired: savedCard.expired,
+				isSavedCard: true
+			});
+		}
+
+		$selectedCard = $cardList[0];
+
 		modalManager.set(Purchase);
-	};
+	}
 
 	const sendToDeviceVerify = async () => {
 		const { email } = await sdkService.getUserEmailPreview($__user.walletAddress);
 		$userEmailPreview = email;
 
-		requestDeviceVerification();
-
 		modalManager.set(VerifyDevice);
-	};
+		await requestDeviceVerification();
+	}
+
 </script>

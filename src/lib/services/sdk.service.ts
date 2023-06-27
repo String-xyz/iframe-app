@@ -1,16 +1,10 @@
-import type {
-	ExecutionRequest,
-	Quote,
-	SavedCardResponse,
-	TransactionRequest,
-	TransactionResponse
-} from '$lib/types';
 import { Events, sendEvent, promisifyEvent } from '../events';
+import type { SavedCardResponse, TransactionRequest, TransactionResponse } from '$lib/types';
 
 export function createSdkService(): SdkService {
 	async function requestAuthorization(walletAddress: string) {
 		sendEvent(Events.REQUEST_AUTHORIZE_USER, { walletAddress });
-		return promisifyEvent<User>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 5 * 60 }); // wait 5 minutes for user to authorize
+		return promisifyEvent<{ user: User }>(Events.RECEIVE_AUTHORIZE_USER, { timeout: 5 * 60 }); // wait 5 minutes for user to authorize
 	}
 
 	async function requestEmailVerification(userId: string, email: string) {
@@ -36,9 +30,14 @@ export function createSdkService(): SdkService {
 		sendEvent(Events.REQUEST_UPDATE_USER, { userId, update });
 	}
 
-	async function getQuote() {
-		sendEvent(Events.REQUEST_QUOTE);
-		return promisifyEvent<Quote>(Events.RECEIVE_QUOTE);
+	async function requestQuoteStart() {
+		console.debug("✅ Quote started");
+		sendEvent(Events.REQUEST_QUOTE_START, {});
+	}
+
+	async function requestQuoteStop() {
+		console.debug("❌ Quote stopped");
+		sendEvent(Events.REQUEST_QUOTE_STOP, {});
 	}
 
 	async function getSavedCards() {
@@ -57,19 +56,21 @@ export function createSdkService(): SdkService {
 		requestDeviceVerification,
 		getUserEmailPreview,
 		updateUserName,
-		getQuote,
+		requestQuoteStart,
+		requestQuoteStop,
 		getSavedCards,
 		transact
 	};
 }
 
 export interface SdkService {
-	requestAuthorization: (walletAddress: string) => Promise<User>;
+	requestAuthorization: (walletAddress: string) => Promise<{ user: User }>;
 	getUserEmailPreview: (walletAddress: string) => Promise<{ email: string }>;
 	updateUserName: (userId: string, update: UserUpdate) => Promise<void>;
 	requestEmailVerification: (userId: string, email: string) => Promise<{ status: string }>;
 	requestDeviceVerification: (walletAddress: string) => Promise<{ status: string }>;
-	getQuote: () => Promise<Quote>;
+	requestQuoteStart: () => Promise<void>;
+	requestQuoteStop: () => Promise<void>;
 	getSavedCards: () => Promise<{ cards: SavedCardResponse[] }>;
 	transact: (payload: TransactionRequest) => Promise<TransactionResponse>;
 }

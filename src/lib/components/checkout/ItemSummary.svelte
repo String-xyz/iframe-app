@@ -24,8 +24,8 @@
 				src={`/assets/tokens/${$item.currency}.svg`}
 				alt={$item.currency + " Logo"}
 				class="inline mr-2"
-				width="16px"
-				height="16px"
+				width="12px"
+				height="12px"
 			/>
 			
 			{$item.price}

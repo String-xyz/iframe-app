@@ -21,7 +21,7 @@
 	let isTOSValid = true;
 
 	const emailSchema = z.string().trim().email();
-	const nameSchema = z.string().min(1);
+	const nameSchema = z.string().min(1).max(100);
 
 	const isValidInput = () => {
 		isEmailValid = emailSchema.safeParse(emailInput).success;

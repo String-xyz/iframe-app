@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import { quoteService, sdkService } from '$lib/services';
-	import { Events, sdkEvents, type StringEvent } from '$lib/events';
-	import { modalManager, quote, finalQuote, selectedCard, cardList, txResponse } from '$lib/stores';
+	import { sdkService } from '$lib/services';
+	import { sendEvent, Events, sdkEvents, type StringEvent } from '$lib/events';
+	import { modalManager, quote, finalQuote,
+		selectedCard, txResponse } from '$lib/stores';
 	import type { Quote, TransactionRequest } from '$lib/types';
 
 	import ModalBase from '../ModalBase.svelte';
@@ -23,36 +24,16 @@
 	let cvvInput = '';
 
 	onMount(async () => {
-		quoteService.subscribe((_quote: Quote | null, err: any) => {
-			if (err) {
-				console.error('quote error', err);
-				return;
-			}
-
+		await sdkService.requestQuoteStart();
+		sdkEvents.removeAllListeners(Events.QUOTE_CHANGED);
+		sdkEvents.on(Events.QUOTE_CHANGED, (event: StringEvent) => {
+			const _quote = <Quote>event.data.quote;
 			quote.set(_quote);
 		});
-
-		const { cards } = await sdkService.getSavedCards();
-
-		for (const savedCard of cards) {
-			$cardList.push({
-				cardId: savedCard.id,
-				scheme: savedCard.scheme,
-				last4: savedCard.last4,
-				expiryMonth: savedCard.expiryMonth,
-				expiryYear: savedCard.expiryYear,
-				expired: savedCard.expired,
-				isSavedCard: true
-			});
-		}
-
-		$cardList = $cardList;
-
-		$selectedCard = $cardList[0];
 	});
 
 	onDestroy(() => {
-		quoteService.unsubscribe();
+		sdkService.requestQuoteStop();
 	});
 
 	const handlePurchase = async () => {
@@ -63,23 +44,24 @@
 			isProcessing = true;
 
 			let paymentInfo;
-
+			
 			if ($selectedCard?.isSavedCard) {
 				paymentInfo = {
 					cardId: $selectedCard?.cardId || '',
 					cvv: cvvInput
-				};
+				}
 			} else {
 				paymentInfo = {
 					cardToken: $selectedCard?.token || '',
 					saveCard: $selectedCard?.shouldSaveCard || false
-				};
+				}
 			}
 
 			let txRequest: TransactionRequest = {
 				quote: $finalQuote,
 				paymentInfo
-			};
+			}
+
 			const tx = await sdkService.transact(txRequest);
 			$txResponse = tx;
 
@@ -90,14 +72,24 @@
 
 			modalManager.set(PurchaseFailed);
 		}
-	};
+	}
+
+	const close = () => {
+		modalManager.set(null);
+		sendEvent(Events.IFRAME_CLOSE);
+	}
+
 </script>
 
 <ModalBase>
 	<div class="main flex flex-col justify-center items-center">
 		<header class="grid grid-cols-4 items-center w-full mb-3">
-			<img src="/assets/back_arrow.svg" alt="back" class="inline" />
-			<h1 class="text-2xl whitespace-nowrap font-semibold">Complete your Purchase</h1>
+			<div></div>
+			<h1 class="text-2xl whitespace-nowrap font-semibold ">Complete your Purchase</h1>
+			<div></div>
+			<button on:click={close} class="ml-auto">
+				<img src="/assets/headers/close.svg" alt="close" width="32px" height="32px" />
+			</button>
 		</header>
 
 		<ItemSummary />
@@ -112,11 +104,18 @@
 		</div>
 
 		{#if !isProcessing}
-			<StyledButton action={handlePurchase} {disabled}>Buy Now</StyledButton>
+			<StyledButton
+				action={handlePurchase}
+				{disabled}
+			>
+				Buy Now
+			</StyledButton>
 		{:else}
 			<StyledButton>
 				<Spinner />
-				<span class="ml-2"> Processing Transaction </span>
+				<span class="ml-2">
+					Processing Transaction
+				</span>
 			</StyledButton>
 		{/if}
 	</div>

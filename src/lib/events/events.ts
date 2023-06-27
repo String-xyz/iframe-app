@@ -1,6 +1,6 @@
 import { EventEmitter } from './EventEmitter';
 
-const CHANNEL = 'string-checkout-frame';
+const CHANNEL = 'STRING_PAY';
 export const sdkEvents = new EventEmitter();
 
 export interface StringEvent<T = any> {
@@ -10,38 +10,39 @@ export interface StringEvent<T = any> {
 }
 
 export enum Events {
-	IFRAME_READY = 'ready',
-	RES_IFRAME_READY = 'res_ready',
-	IFRAME_RESIZE = 'resize',
-	IFRAME_CLOSE = 'close',
-	REQUEST_AUTHORIZE_USER = 'authorize_user',
-	RECEIVE_AUTHORIZE_USER = 'res_authorize_user',
-	REQUEST_RETRY_LOGIN = 'retry_login',
-	RECEIVE_RETRY_LOGIN = 'res_retry_login',
-	REQUEST_UPDATE_USER = 'update_user',
-	RECEIVE_UPDATE_USER = 'res_update_user',
-	REQUEST_EMAIL_VERIFICATION = 'email_verification',
-	RECEIVE_EMAIL_VERIFICATION = 'res_email_verification',
-	REQUEST_EMAIL_PREVIEW = 'email_preview',
-	RECEIVE_EMAIL_PREVIEW = 'res_preview',
-	REQUEST_DEVICE_VERIFICATION = 'device_verification',
-	RECEIVE_DEVICE_VERIFICATION = 'res_device_verification',
-	REQUEST_SAVED_CARDS = 'saved_cards',
-	RECEIVE_SAVED_CARDS = 'res_saved_cards',
-	REQUEST_CONFIRM_TRANSACTION = 'confirm_transaction',
-	RECEIVE_CONFIRM_TRANSACTION = 'res_confirm_transaction',
-	REQUEST_QUOTE = 'get_quote',
-	RECEIVE_QUOTE = 'res_get_quote'
+	LOAD_PAYLOAD                = "load_payload",
+	IFRAME_READY                = "ready",
+	IFRAME_RESIZE               = "resize",
+	IFRAME_CLOSE                = "close",
+	REQUEST_AUTHORIZE_USER      = "request_authorize_user",
+	RECEIVE_AUTHORIZE_USER      = "receive_authorize_user",
+	REQUEST_RETRY_LOGIN         = "request_retry_login",
+	RECEIVE_RETRY_LOGIN         = "receive_retry_login",
+	REQUEST_UPDATE_USER         = 'request_update_user',
+	RECEIVE_UPDATE_USER         = 'receive_update_user',
+	REQUEST_EMAIL_VERIFICATION  = "request_email_verification",
+	RECEIVE_EMAIL_VERIFICATION  = "receive_email_verification",
+	REQUEST_EMAIL_PREVIEW       = "request_email_preview",
+	RECEIVE_EMAIL_PREVIEW       = "receive_email_preview",
+	REQUEST_DEVICE_VERIFICATION = "request_device_verification",
+	RECEIVE_DEVICE_VERIFICATION = "receive_device_verification",
+	REQUEST_SAVED_CARDS         = "request_saved_cards",
+	RECEIVE_SAVED_CARDS         = "receive_saved_cards",
+	REQUEST_CONFIRM_TRANSACTION = "request_confirm_transaction",
+	RECEIVE_CONFIRM_TRANSACTION = "receive_confirm_transaction",
+	REQUEST_QUOTE_START         = "request_quote_start",
+	QUOTE_CHANGED               = "quote_changed",
+	REQUEST_QUOTE_STOP          = "request_quote_stop",
 }
 
 export const sendEvent = (eventName: string, data?: any) => {
 	const message = JSON.stringify({
 		channel: CHANNEL,
-		data: { eventName, data }
+		event: { eventName, data }
 	});
 
 	window.parent.postMessage(message, '*');
-};
+}
 
 export const registerEvents = async () => {
 	const eventHandler = async (e: any) => {
@@ -54,7 +55,7 @@ export const registerEvents = async () => {
 		// Our messages
 		try {
 			const payload = JSON.parse(e.data);
-			const event = payload.data;
+			const event = payload.event;
 			if (payload.channel == CHANNEL) {
 				// propagate events
 				sdkEvents.emit(event.eventName, event);
@@ -62,11 +63,11 @@ export const registerEvents = async () => {
 		} catch (error) {
 			console.log(error);
 		}
-	};
+	}
 
 	window.removeEventListener('message', eventHandler, true);
 	window.addEventListener('message', eventHandler, true);
-};
+}
 
 // document this function
 /**
