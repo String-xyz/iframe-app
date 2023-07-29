@@ -51,8 +51,8 @@
 			<div class="text-gray-blue-60 text-lg font-medium select-text">
 				<div class="flex justify-between mb-4">
 					<span>Transaction</span>
-					<a href={$txResponse.txUrl} target="_blank" rel="noopener noreferrer" class="flex items-center">
-						<span class="text-primary mr-2">{abbrevAddr($txResponse.txId)}</span>
+					<a href={$txResponse.txUrls[$txResponse.txUrls.length - 1]} target="_blank" rel="noopener noreferrer" class="flex items-center">
+						<span class="text-primary mr-2">{abbrevAddr($txResponse.txIds[$txResponse.txIds.length - 1])}</span>
 						<img class="inline" src="/assets/ext_link.svg" alt="Tx link" />
 					</a>
 				</div>

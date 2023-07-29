@@ -1,15 +1,19 @@
 import { z } from "zod";
 
-export interface ExecutionRequest {
-	userAddress: string;
-	assetName: string;
-	chainId: number;
+export interface ContractAction {
 	contractAddress: string;
 	contractFunction: string;
 	contractReturn: string;
 	contractParameters: string[];
 	txValue: string;
-	gasLimit: string;
+	gasLimit?: string;
+}
+
+export interface ExecutionRequest {
+	userAddress: string;
+	assetName: string;
+	chainID: number;
+	actions: ContractAction[];
 }
 
 export interface Estimate {
@@ -40,8 +44,8 @@ export interface TransactionRequest {
 }
 
 export interface TransactionResponse {
-	txId: string;
-	txUrl: string;
+	txIds: string[];
+	txUrls: string[];
 	txTimestamp: string;
 }
 
